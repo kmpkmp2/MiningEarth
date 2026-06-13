@@ -1,0 +1,208 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: UI
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: UI
+  m_GUID: da9e2a73d4441b9488429ab07884d7df
+  m_SerializeEntries:
+  - m_GUID: 0110dd4786075104aa688cd4da7a6bc1
+    m_Address: UI_EffectCard
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 015cd3daef7b5a746ab2498a73a29ab7
+    m_Address: UI_Panel_HUD
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 073a965511354eb48839bcc49f704fb7
+    m_Address: Effect_CharacterPassive_Mercenary
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0d48cce29ca53be4cad6406a3ef26143
+    m_Address: Effect_Buff_Attack
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0d723716a874f744caf8025517d95288
+    m_Address: Effect_Debuff_MaxHP
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 12c2a9ea46c8f174aa2676e3686385ac
+    m_Address: UI_Panel_InventoryPopup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 12e9442412fd62944877277138cf92a1
+    m_Address: Effect_BossReward_Mineral50
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1ba7dcfc6f9e37b429481f7933306010
+    m_Address: UI_EffectIcon
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1ca85ee6e4de21b4cb3ce30050165e5c
+    m_Address: UI_Panel_RelicPopup
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2053e22657859c04f90cd2bd7e1ad6f0
+    m_Address: Effect_CharacterPassive_Miner
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2132b8b46a545f245a2bc12ee5457653
+    m_Address: UI_Panel_BossReward
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 26383aef4eb14ac40bc838d87cd2b17a
+    m_Address: Effect_BossReward_BossDamage
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2b57b464eb6ba9540a102aee3fd7d150
+    m_Address: Effect_BossReward_Mineral
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2b85ce9f9ccadde41a3d0271411284d8
+    m_Address: ThemeManager
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 318845656257f5043b62d109610ebac3
+    m_Address: Effect_Debuff_MonsterEncounter
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 334faa0f4f470054a86ecd9dc5089a22
+    m_Address: Effect_BossReward_HealDrop
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 38520718afcd1ff48be15204e5a3291a
+    m_Address: UI_Panel_Settings
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 461fc622507087a44a9741e4e8f8d78f
+    m_Address: UI_Panel_GameOver
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4f03ab81851613f4faccefda16cdc3d6
+    m_Address: Effect_Buff_Inventory
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4fe05f5aa7c3ee6478a9d84614b1b602
+    m_Address: Effect_Debuff_HazardEncounter
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5ac1c9a014528b842b13c4af89f26146
+    m_Address: Effect_Debuff_Attack
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6932930ccf207394b962bc578078c5bc
+    m_Address: Map_Wall_Segment
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 77a077074bd955946913d7fa589849d0
+    m_Address: UI_Panel_BossRoom
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 82bf49ea600110f4fa62f972202d7c9e
+    m_Address: Effect_Buff_MonsterDecrease
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 84cc7505ac56e104689d7b672fc1af79
+    m_Address: Effect_CharacterPassive_GraveRobber
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9973b50a77c89764695a580ceec84aea
+    m_Address: Effect_BossReward_AttackPower
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a3437aece77db0344ab81d5c9f90dc29
+    m_Address: Effect_BossReward_SpawnDecrease
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b180c48e7d3113a4eaec8474db73d144
+    m_Address: Effect_Placeholder
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b88507ebc30c58c41929cc737d7be827
+    m_Address: UI_Panel_Event
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b998f63ae6af5a648b750b22251faea1
+    m_Address: Effect_BossReward_MiningPower
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c9fcf934e79453e449c7adc5ad85687b
+    m_Address: Effect_Debuff_InstantDamage
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d5381262033a3cb4cb9a5542997cd4fc
+    m_Address: Effect_Buff_HazardDecrease
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: db284bd0bf412824cb5f4d13968d5845
+    m_Address: Effect_BossReward_DoubleEvent
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: de3174505e4833c4ab86dbce850b967c
+    m_Address: Effect_Buff_MaxHP
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ecea9cbc7b866234b841620e1ad4087e
+    m_Address: Effect_BossReward_MaxHP
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f77e39f8a2d4daa479e0d0812b4ed997
+    m_Address: Effect_BossReward_Revive
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f999d93508d273a4e994463b0bf07eb2
+    m_Address: Effect_Debuff_MiningFail
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: bf53922257c85cf45b1d5828a500e7b9, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: fdf1713a543f422458bfbe142fec9ddc, type: 2}
+    - {fileID: 11400000, guid: 5f8c27d0823d4cf41b410416281b0333, type: 2}
