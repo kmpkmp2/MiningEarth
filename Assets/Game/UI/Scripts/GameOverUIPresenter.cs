@@ -44,7 +44,7 @@ namespace DeepEarth.UI
             UpdateResultsUI();
         }
 
-        private void UpdateResultsUI()
+        public void UpdateResultsUI()
         {
             int depth = _gameManager.CurrentDepth;
             int willEarned = _gameManager.WillEarnedThisRun;
@@ -60,6 +60,7 @@ namespace DeepEarth.UI
             {
                 UnityEngine.Object.Destroy(GameManager.Instance.gameObject);
             }
+            UnityEngine.Debug.Log("[Scene]\nLoad MainMenuScene");
             UnityEngine.SceneManagement.SceneManager.LoadScene("StartMenuScene");
         }
     }

@@ -443,47 +443,117 @@ namespace DeepEarth.Core
 
         private void CheckPlayerDeath()
         {
-            if (StatManager.Instance.CurrentHP <= 0 && CurrentState == GameState.Playing)
+            if (StatManager.Instance.CurrentHP <= 0 && CurrentState != GameState.GameOver && CurrentState != GameState.MainMenu)
             {
+                Debug.Log("[Run]\nPlayer Dead");
                 EndGame();
             }
         }
 
         public void RunEnd()
         {
-            CurrentState = GameState.GameOver;
+            Time.timeScale = 1f;
+            Debug.Log("[Run]\nRunEnd Start");
 
-            // Will reward formula: Depth/5 + Resources value/2
-            int resourceValue = (IronCount * 1) + (SilverCount * 2) + (GoldCount * 3) + (DiamondCount * 5);
-            WillEarnedThisRun = (CurrentDepth / 5) + (resourceValue / 2);
-
-            // Update personal best depth
-            if (CurrentDepth > SaveManager.CurrentData.BestDepth)
+            try
             {
-                SaveManager.CurrentData.BestDepth = CurrentDepth;
+                CurrentState = GameState.GameOver;
+
+                // Step 1: Open Result Popup / Graceful Fallback
+                bool popupSuccess = false;
+                if (_gameOverObject != null && _gameOverPresenter != null)
+                {
+                    Debug.Log("[Run]\nResult Popup Open");
+                    if (_hudObject != null)
+                    {
+                        _hudObject.SetActive(false);
+                    }
+                    _gameOverObject.SetActive(true);
+                    _gameOverPresenter.UpdateResultsUI();
+                    popupSuccess = true;
+                }
+                else
+                {
+                    Debug.Log("[Run]\nResult Popup load failed - Skipping popup presentation");
+                }
+
+                // Step 2: Reward Calculate
+                Debug.Log("[Run]\nReward Calculate");
+                // Will reward formula: Depth/5 + Resources value/2
+                int resourceValue = (IronCount * 1) + (SilverCount * 2) + (GoldCount * 3) + (DiamondCount * 5);
+                WillEarnedThisRun = (CurrentDepth / 5) + (resourceValue / 2);
+
+                // Update personal best depth
+                if (CurrentDepth > SaveManager.CurrentData.BestDepth)
+                {
+                    SaveManager.CurrentData.BestDepth = CurrentDepth;
+                }
+
+                MetaProgressionManager.Instance.AddWill(WillEarnedThisRun);
+
+                // Step 3: Transfer Currency
+                int runStone = 0, runWood = 0, runIron = 0, runSilver = 0, runGold = 0, runDiamond = 0;
+                if (InventoryManager.Instance != null)
+                {
+                    runStone = InventoryManager.Instance.GetItemCount("Item_Stone");
+                    runWood = InventoryManager.Instance.GetItemCount("Item_Wood");
+                    runIron = InventoryManager.Instance.GetItemCount("Item_Iron");
+                    runSilver = InventoryManager.Instance.GetItemCount("Item_Silver");
+                    runGold = InventoryManager.Instance.GetItemCount("Item_Gold");
+                    runDiamond = InventoryManager.Instance.GetItemCount("Item_Diamond");
+                }
+                int runWill = WillEarnedThisRun;
+
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                sb.AppendLine("[Run]\nTransfer Currency");
+                if (runStone > 0) sb.AppendLine($"Stone +{runStone}");
+                if (runWood > 0) sb.AppendLine($"Wood +{runWood}");
+                if (runIron > 0) sb.AppendLine($"Iron +{runIron}");
+                if (runSilver > 0) sb.AppendLine($"Silver +{runSilver}");
+                if (runGold > 0) sb.AppendLine($"Gold +{runGold}");
+                if (runDiamond > 0) sb.AppendLine($"Diamond +{runDiamond}");
+                if (runWill > 0) sb.AppendLine($"Will +{runWill}");
+                Debug.Log(sb.ToString().TrimEnd());
+
+                if (InventoryManager.Instance != null)
+                {
+                    InventoryManager.Instance.TransferRunRewardToMeta();
+                    InventoryManager.Instance.ClearRunInventory();
+                }
+
+                if (EffectManager.Instance != null)
+                {
+                    EffectManager.Instance.ClearRunEffects();
+                }
+
+                StatManager.Instance.ResetStatsForRun();
+
+                OnGameDataChanged?.Invoke();
+
+                // Step 4: Save
+                SaveManager.Save();
+                Debug.Log("[Save]\nSave Complete");
+
+                // Step 5: Transition scene if popup was skipped (Fallback)
+                if (!popupSuccess)
+                {
+                    try
+                    {
+                        Debug.Log("[Scene]\nLoad MainMenuScene");
+                        UnityEngine.SceneManagement.SceneManager.LoadScene("StartMenuScene");
+                    }
+                    catch (Exception sceneEx)
+                    {
+                        Debug.LogError($"[Scene Error] Failed to load MainMenuScene: {sceneEx.Message}\n{sceneEx.StackTrace}");
+                    }
+                }
+
+                Debug.Log("[Run]\nRunEnd Complete");
             }
-
-            MetaProgressionManager.Instance.AddWill(WillEarnedThisRun);
-
-            // Transfer Currency to Meta
-            if (InventoryManager.Instance != null)
+            catch (Exception ex)
             {
-                InventoryManager.Instance.TransferRunRewardToMeta();
-                InventoryManager.Instance.ClearRunInventory();
+                Debug.LogError($"[Run Error]\n{ex.Message}\n{ex.StackTrace}");
             }
-
-            if (EffectManager.Instance != null)
-            {
-                EffectManager.Instance.ClearRunEffects();
-            }
-
-            StatManager.Instance.ResetStatsForRun();
-
-            OnGameDataChanged?.Invoke();
-            Debug.Log("Run Ended!");
-
-            // Load Lobby MainMenuScene
-            UnityEngine.SceneManagement.SceneManager.LoadScene("StartMenuScene");
         }
 
         private void EndGame()
@@ -607,3 +677,4 @@ namespace DeepEarth.Core
         }
     }
 }
+// Trigger rebuild to pick up new connection settings
