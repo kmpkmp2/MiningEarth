@@ -17,6 +17,8 @@ namespace DeepEarth.Core
 
         // Character Selection and Progression
         public CharacterID SelectedCharacterID;
+        public int PersistentStone;
+        public int PersistentWood;
         public int PersistentIron;
         public int PersistentSilver;
         public int PersistentGold;
@@ -34,6 +36,8 @@ namespace DeepEarth.Core
             BestDepth = 0;
 
             SelectedCharacterID = CharacterID.Prisoner;
+            PersistentStone = 0;
+            PersistentWood = 0;
             PersistentIron = 0;
             PersistentSilver = 0;
             PersistentGold = 0;

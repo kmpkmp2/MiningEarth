@@ -162,8 +162,8 @@ namespace DeepEarth.UI
             int hpCost = meta.GetUpgradeCost(UpgradeType.MaxHP);
             _view.SetUpgradeState(UpgradeType.MaxHP, meta.MaxHPLevel, hpCost, currentWill >= hpCost);
 
-            int attackCost = meta.GetUpgradeCost(UpgradeType.Attack);
-            _view.SetUpgradeState(UpgradeType.Attack, meta.AttackLevel, attackCost, currentWill >= attackCost);
+            int invCost = meta.GetUpgradeCost(UpgradeType.InventorySize);
+            _view.SetUpgradeState(UpgradeType.InventorySize, meta.InventorySizeLevel, invCost, currentWill >= invCost);
         }
     }
 }

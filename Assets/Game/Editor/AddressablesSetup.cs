@@ -37,6 +37,7 @@ namespace DeepEarth.Editor
                 // 2. Generate Procedural Textures and Materials
                 GenerateTexturesAndMaterials();
                 GenerateEffectIconSprites();
+                GenerateItemIconSprites();
 
                 // 3. Generate Block Prefabs
                 GenerateBlockPrefabs();
@@ -503,6 +504,8 @@ namespace DeepEarth.Editor
 
         private static void GenerateUIPrefabs()
         {
+            GenerateInventorySlotPrefab();
+
             // 7.1 Effect Icon Prefab
             GameObject iconGo = new GameObject("UI_Prefab_EffectIcon", typeof(RectTransform));
             iconGo.GetComponent<RectTransform>().sizeDelta = new Vector2(64, 64);
@@ -651,20 +654,110 @@ namespace DeepEarth.Editor
             ipOverlayGo.GetComponent<RectTransform>().offsetMin = Vector2.zero;
             ipOverlayGo.GetComponent<RectTransform>().offsetMax = Vector2.zero;
             
-            var ipPanelRootGo = CreateUIElement("PopupRoot", ipOverlayGo, Vector2.zero, new Vector2(900, 1000), new Vector2(0.5f, 0.5f));
+            var ipPanelRootGo = CreateUIElement("PopupRoot", ipOverlayGo, Vector2.zero, new Vector2(900, 1400), new Vector2(0.5f, 0.5f));
             var ipPanelRootImg = ipPanelRootGo.AddComponent<Image>();
             ipPanelRootImg.color = new Color(0.12f, 0.12f, 0.14f, 1.0f);
             
-            var ipTitleGo = CreateUIText("TitleText", ipPanelRootGo, "Inventory Details", 50, Color.white, new Vector2(0, 400));
+            var ipTitleGo = CreateUIText("TitleText", ipPanelRootGo, "Inventory", 50, Color.white, new Vector2(0, 600));
             var ipTitleTmp = ipTitleGo.GetComponent<TextMeshProUGUI>();
             ipTitleTmp.rectTransform.sizeDelta = new Vector2(800, 80);
             
-            var ipStatsGo = CreateUIText("StatsText", ipPanelRootGo, "Resources display", 34, Color.white, new Vector2(0, 0));
-            var ipStatsTmp = ipStatsGo.GetComponent<TextMeshProUGUI>();
-            ipStatsTmp.alignment = TextAlignmentOptions.Center;
-            ipStatsTmp.rectTransform.sizeDelta = new Vector2(800, 600);
+            // Grid Scroll View
+            var gridScrollGo = CreateUIElement("InventoryGrid", ipPanelRootGo, new Vector2(0, 160), new Vector2(800, 700), new Vector2(0.5f, 0.5f));
+            var ipScrollRect = gridScrollGo.AddComponent<ScrollRect>();
+            ipScrollRect.horizontal = false;
+            ipScrollRect.vertical = true;
             
-            var ipCloseBtnGo = CreateUIButton("CloseButton", ipPanelRootGo, "CLOSE", new Vector2(0, -400), new Vector2(300, 80));
+            var ipViewportGo = CreateUIElement("Viewport", gridScrollGo, Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            var ipViewportRt = ipViewportGo.GetComponent<RectTransform>();
+            ipViewportRt.anchorMin = Vector2.zero;
+            ipViewportRt.anchorMax = Vector2.one;
+            ipViewportRt.offsetMin = Vector2.zero;
+            ipViewportRt.offsetMax = Vector2.zero;
+            ipViewportGo.AddComponent<Image>().color = new Color(0, 0, 0, 0);
+            ipViewportGo.AddComponent<Mask>().showMaskGraphic = false;
+            
+            var ipContentGo = CreateUIElement("Content", ipViewportGo, Vector2.zero, new Vector2(800, 0), new Vector2(0.5f, 1.0f));
+            var ipContentRt = ipContentGo.GetComponent<RectTransform>();
+            ipContentRt.anchorMin = new Vector2(0, 1);
+            ipContentRt.anchorMax = new Vector2(1, 1);
+            ipContentRt.offsetMin = new Vector2(0, -700);
+            ipContentRt.offsetMax = new Vector2(0, 0);
+            
+            var gridLayout = ipContentGo.AddComponent<GridLayoutGroup>();
+            gridLayout.cellSize = new Vector2(96, 96);
+            gridLayout.spacing = new Vector2(8, 8);
+            gridLayout.startCorner = GridLayoutGroup.Corner.UpperLeft;
+            gridLayout.startAxis = GridLayoutGroup.Axis.Horizontal;
+            gridLayout.childAlignment = TextAnchor.UpperLeft;
+            gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            gridLayout.constraintCount = 4;
+            gridLayout.padding = new RectOffset(20, 20, 20, 20);
+            
+            var contentCsf = ipContentGo.AddComponent<ContentSizeFitter>();
+            contentCsf.verticalFit = ContentSizeFitter.FitMode.MinSize;
+            
+            ipScrollRect.viewport = ipViewportRt;
+            ipScrollRect.content = ipContentRt;
+
+            // Item Detail Panel
+            var detailPanelGo = CreateUIElement("ItemDetailPanel", ipPanelRootGo, new Vector2(0, -260), new Vector2(800, 300), new Vector2(0.5f, 0.5f));
+            var detailView = detailPanelGo.AddComponent<ItemDetailPanelView>();
+            var detailImg = detailPanelGo.AddComponent<Image>();
+            detailImg.color = new Color(0.18f, 0.2f, 0.22f, 1.0f);
+            
+            var detailIconGo = CreateUIElement("ItemIcon", detailPanelGo, new Vector2(-300, 0), new Vector2(130, 130), new Vector2(0.5f, 0.5f));
+            var detailIconImg = detailIconGo.AddComponent<Image>();
+            detailIconImg.preserveAspect = true;
+            
+            var detailNameGo = CreateUIText("ItemName", detailPanelGo, "Item Name", 34, Color.white, new Vector2(70, 90));
+            var detailNameTmp = detailNameGo.GetComponent<TextMeshProUGUI>();
+            detailNameTmp.alignment = TextAlignmentOptions.Left;
+            detailNameTmp.rectTransform.sizeDelta = new Vector2(500, 50);
+            
+            var detailDescGo = CreateUIText("ItemDescription", detailPanelGo, "Item Description", 24, Color.lightGray, new Vector2(70, 10));
+            var detailDescTmp = detailDescGo.GetComponent<TextMeshProUGUI>();
+            detailDescTmp.alignment = TextAlignmentOptions.TopLeft;
+            detailDescTmp.rectTransform.sizeDelta = new Vector2(500, 90);
+            
+            var detailQtyGo = CreateUIText("ItemQuantity", detailPanelGo, "Quantity: 0", 26, Color.cyan, new Vector2(70, -80));
+            var detailQtyTmp = detailQtyGo.GetComponent<TextMeshProUGUI>();
+            detailQtyTmp.alignment = TextAlignmentOptions.Left;
+            detailQtyTmp.rectTransform.sizeDelta = new Vector2(500, 40);
+            
+            var useBtnGo = CreateUIButton("UseButton", detailPanelGo, "USE", new Vector2(-100, -90), new Vector2(180, 60));
+            var useBtn = useBtnGo.GetComponent<Button>();
+            
+            var dropBtnGo = CreateUIButton("DropButton", detailPanelGo, "DROP", new Vector2(100, -90), new Vector2(180, 60));
+            var dropBtn = dropBtnGo.GetComponent<Button>();
+            
+            var detailCloseBtnGo = CreateUIButton("DetailCloseButton", detailPanelGo, "X", new Vector2(360, 110), new Vector2(50, 50));
+            var detailCloseBtn = detailCloseBtnGo.GetComponent<Button>();
+            
+            SetRef(detailView, "itemIcon", detailIconImg);
+            SetRef(detailView, "itemNameText", detailNameTmp);
+            SetRef(detailView, "itemDescriptionText", detailDescTmp);
+            SetRef(detailView, "itemQuantityText", detailQtyTmp);
+            SetRef(detailView, "useButton", useBtn);
+            SetRef(detailView, "dropButton", dropBtn);
+            SetRef(detailView, "closeButton", detailCloseBtn);
+
+            // Confirmation Panel
+            var confirmPanelGo = CreateUIElement("ConfirmationPanel", ipPanelRootGo, new Vector2(0, 0), new Vector2(800, 400), new Vector2(0.5f, 0.5f));
+            var confirmImg = confirmPanelGo.AddComponent<Image>();
+            confirmImg.color = new Color(0.08f, 0.08f, 0.1f, 0.98f);
+            
+            var confirmTextGo = CreateUIText("ConfirmationText", confirmPanelGo, "Really Drop?", 34, Color.white, new Vector2(0, 60));
+            var confirmTextTmp = confirmTextGo.GetComponent<TextMeshProUGUI>();
+            confirmTextTmp.rectTransform.sizeDelta = new Vector2(700, 120);
+            
+            var confirmOkBtnGo = CreateUIButton("ConfirmOkButton", confirmPanelGo, "YES", new Vector2(-150, -80), new Vector2(220, 70));
+            var confirmOkBtn = confirmOkBtnGo.GetComponent<Button>();
+            
+            var confirmCancelBtnGo = CreateUIButton("ConfirmCancelButton", confirmPanelGo, "NO", new Vector2(150, -80), new Vector2(220, 70));
+            var confirmCancelBtn = confirmCancelBtnGo.GetComponent<Button>();
+
+            var ipCloseBtnGo = CreateUIButton("CloseButton", ipPanelRootGo, "CLOSE", new Vector2(0, -600), new Vector2(300, 80));
             var ipCloseBtn = ipCloseBtnGo.GetComponent<Button>();
             var ipCloseTxt = ipCloseBtnGo.GetComponentInChildren<TextMeshProUGUI>();
             if (ipCloseTxt != null) ipCloseTxt.fontSize = 32;
@@ -672,7 +765,16 @@ namespace DeepEarth.Editor
             SetRef(ipView, "popupRoot", ipPanelRootGo);
             SetRef(ipView, "closeButton", ipCloseBtn);
             SetRef(ipView, "titleText", ipTitleTmp);
-            SetRef(ipView, "inventoryStatsText", ipStatsTmp);
+            SetRef(ipView, "gridContentParent", ipContentRt);
+            SetRef(ipView, "detailPanel", detailView);
+            
+            SetRef(ipView, "confirmationPanel", confirmPanelGo);
+            SetRef(ipView, "confirmationText", confirmTextTmp);
+            SetRef(ipView, "confirmOkButton", confirmOkBtn);
+            SetRef(ipView, "confirmCancelButton", confirmCancelBtn);
+
+            var slotPrefabVal = AssetDatabase.LoadAssetAtPath<GameObject>($"{RootPath}/UI/Prefabs/UI_Prefab_InventorySlot.prefab");
+            SetRef(ipView, "slotPrefab", slotPrefabVal);
             
             ipGo.SetActive(false);
             PrefabUtility.SaveAsPrefabAsset(ipGo, $"{RootPath}/UI/Prefabs/UI_Panel_InventoryPopup.prefab");
@@ -1259,6 +1361,18 @@ namespace DeepEarth.Editor
                 ( $"{RootPath}/UI/Prefabs/UI_Panel_InventoryPopup.prefab", AddressableKeys.UIPanelInventoryPopup, "UI" ),
                 ( $"{RootPath}/UI/Prefabs/UI_Prefab_EffectIcon.prefab", AddressableKeys.UIEffectIcon, "UI" ),
                 ( $"{RootPath}/UI/Prefabs/UI_Prefab_EffectCard.prefab", AddressableKeys.UIEffectCard, "UI" ),
+                ( $"{RootPath}/UI/Prefabs/UI_Prefab_InventorySlot.prefab", AddressableKeys.UIInventorySlot, "UI" ),
+                ( $"{RootPath}/UI/Image/Item_Stone.png", "Item_Stone", "UI" ),
+                ( $"{RootPath}/UI/Image/Item_Wood.png", "Item_Wood", "UI" ),
+                ( $"{RootPath}/UI/Image/Item_Iron.png", "Item_Iron", "UI" ),
+                ( $"{RootPath}/UI/Image/Item_Silver.png", "Item_Silver", "UI" ),
+                ( $"{RootPath}/UI/Image/Item_Gold.png", "Item_Gold", "UI" ),
+                ( $"{RootPath}/UI/Image/Item_Diamond.png", "Item_Diamond", "UI" ),
+                ( $"{RootPath}/UI/Image/Item_Potion.png", "Item_Potion", "UI" ),
+                ( $"{RootPath}/UI/Image/Item_Key.png", "Item_Key", "UI" ),
+                ( $"{RootPath}/UI/Image/Item_Chest.png", "Item_Chest", "UI" ),
+                ( $"{RootPath}/UI/Image/Item_Special.png", "Item_Special", "UI" ),
+                ( $"{RootPath}/UI/Image/Empty_item_Icon.png", "Empty_item_Icon", "UI" ),
 
                 // Map & Themes
                 ( $"{RootPath}/Map/Prefabs/Map_Wall_Segment.prefab", AddressableKeys.MapWallSegment, "UI" ),
@@ -1305,6 +1419,25 @@ namespace DeepEarth.Editor
             foreach (var ek in effectKeys)
             {
                 assetsToRegister.Add( ($"{RootPath}/UI/Textures/{ek}.png", ek, "UI") );
+            }
+
+            var itemKeys = new string[]
+            {
+                "Item_Stone",
+                "Item_Wood",
+                "Item_Iron",
+                "Item_Silver",
+                "Item_Gold",
+                "Item_Diamond",
+                "Item_Potion",
+                "Item_Key",
+                "Item_Chest",
+                "Item_Special"
+            };
+
+            foreach (var ik in itemKeys)
+            {
+                assetsToRegister.Add( ($"{RootPath}/UI/Textures/{ik}.png", ik, "UI") );
             }
 
             foreach (var entry in assetsToRegister)
@@ -1526,6 +1659,190 @@ namespace DeepEarth.Editor
         {
             Debug.Log("Building Addressables content...");
             AddressableAssetSettings.BuildPlayerContent();
+        }
+
+        private static void GenerateItemIconSprites()
+        {
+            var keys = new string[]
+            {
+                "Item_Stone",
+                "Item_Wood",
+                "Item_Iron",
+                "Item_Silver",
+                "Item_Gold",
+                "Item_Diamond",
+                "Item_Potion",
+                "Item_Key",
+                "Item_Chest",
+                "Item_Special"
+            };
+
+            foreach (var key in keys)
+            {
+                string path = $"{RootPath}/UI/Textures/{key}.png";
+                Texture2D tex = new Texture2D(16, 16, TextureFormat.RGBA32, false);
+                tex.filterMode = FilterMode.Point;
+
+                for (int x = 0; x < 16; x++)
+                {
+                    for (int y = 0; y < 16; y++)
+                    {
+                        tex.SetPixel(x, y, new Color(0,0,0,0));
+                    }
+                }
+
+                Color mainCol = Color.white;
+                if (key.Contains("Stone")) mainCol = new Color(0.5f, 0.5f, 0.5f);
+                else if (key.Contains("Wood")) mainCol = new Color(0.6f, 0.45f, 0.3f);
+                else if (key.Contains("Iron")) mainCol = new Color(0.7f, 0.65f, 0.6f);
+                else if (key.Contains("Silver")) mainCol = new Color(0.85f, 0.9f, 0.95f);
+                else if (key.Contains("Gold")) mainCol = new Color(1f, 0.8f, 0.1f);
+                else if (key.Contains("Diamond")) mainCol = new Color(0.3f, 0.85f, 1f);
+                else if (key.Contains("Potion")) mainCol = new Color(0.9f, 0.15f, 0.15f);
+                else if (key.Contains("Key")) mainCol = new Color(0.9f, 0.8f, 0.2f);
+                else if (key.Contains("Chest")) mainCol = new Color(0.75f, 0.5f, 0.25f);
+                else if (key.Contains("Special")) mainCol = new Color(0.65f, 0.15f, 0.9f);
+
+                if (key.Contains("Potion") || key.Contains("Special"))
+                {
+                    for (int y = 2; y <= 9; y++)
+                    {
+                        int w = (y <= 7) ? (y - 1) : 4;
+                        if (w > 4) w = 11 - y;
+                        for (int x = 7 - w; x <= 8 + w; x++)
+                            tex.SetPixel(x, y, mainCol);
+                    }
+                    for (int y = 10; y <= 13; y++)
+                    {
+                        tex.SetPixel(7, y, new Color(0.8f, 0.8f, 0.8f));
+                        tex.SetPixel(8, y, new Color(0.8f, 0.8f, 0.8f));
+                    }
+                    tex.SetPixel(7, 14, new Color(0.5f, 0.35f, 0.2f));
+                    tex.SetPixel(8, 14, new Color(0.5f, 0.35f, 0.2f));
+                }
+                else if (key.Contains("Key"))
+                {
+                    for (int x = 5; x <= 10; x++)
+                    {
+                        tex.SetPixel(x, 10, mainCol);
+                        tex.SetPixel(x, 14, mainCol);
+                    }
+                    for (int y = 10; y <= 14; y++)
+                    {
+                        tex.SetPixel(5, y, mainCol);
+                        tex.SetPixel(10, y, mainCol);
+                    }
+                    for (int y = 3; y <= 9; y++)
+                    {
+                        tex.SetPixel(7, y, mainCol);
+                        tex.SetPixel(8, y, mainCol);
+                    }
+                    tex.SetPixel(5, 4, mainCol);
+                    tex.SetPixel(5, 6, mainCol);
+                }
+                else if (key.Contains("Chest"))
+                {
+                    for (int y = 2; y <= 13; y++)
+                    {
+                        for (int x = 2; x <= 13; x++)
+                        {
+                            bool border = (x == 2 || x == 13 || y == 2 || y == 13 || y == 8);
+                            tex.SetPixel(x, y, border ? new Color(0.9f, 0.8f, 0.2f) : mainCol);
+                        }
+                    }
+                }
+                else
+                {
+                    for (int y = 2; y < 14; y++)
+                    {
+                        int span = 6 - Math.Abs(y - 7);
+                        for (int x = 7 - span; x <= 8 + span; x++)
+                        {
+                            tex.SetPixel(x, y, mainCol * UnityEngine.Random.Range(0.85f, 1.15f));
+                        }
+                    }
+                }
+
+                tex.Apply();
+
+                byte[] bytes = tex.EncodeToPNG();
+                File.WriteAllBytes(path, bytes);
+                AssetDatabase.ImportAsset(path);
+
+                var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+                if (importer != null)
+                {
+                    importer.textureType = TextureImporterType.Sprite;
+                    importer.spriteImportMode = SpriteImportMode.Single;
+                    importer.filterMode = FilterMode.Point;
+                    importer.textureCompression = TextureImporterCompression.Uncompressed;
+                    importer.SaveAndReimport();
+                }
+            }
+
+            // Configure all custom icons importer settings to prevent InvalidKeyException when loaded as Sprite
+            string[] allIconNames = {
+                "Item_Stone", "Item_Wood", "Item_Iron", "Item_Silver", "Item_Gold", 
+                "Item_Diamond", "Item_Potion", "Item_Key", "Item_Chest", "Item_Special", "Empty_item_Icon"
+            };
+            foreach (var iconName in allIconNames)
+            {
+                string iconPath = $"{RootPath}/UI/Image/{iconName}.png";
+                if (File.Exists(iconPath))
+                {
+                    var importer = AssetImporter.GetAtPath(iconPath) as TextureImporter;
+                    if (importer != null)
+                    {
+                        importer.textureType = TextureImporterType.Sprite;
+                        importer.spriteImportMode = SpriteImportMode.Single;
+                        importer.filterMode = FilterMode.Bilinear;
+                        importer.textureCompression = TextureImporterCompression.Uncompressed;
+                        importer.SaveAndReimport();
+                    }
+                }
+            }
+
+            AssetDatabase.SaveAssets();
+        }
+
+        private static void GenerateInventorySlotPrefab()
+        {
+            GameObject slotGo = new GameObject("UI_Prefab_InventorySlot", typeof(RectTransform));
+            slotGo.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 100);
+            var slotView = slotGo.AddComponent<InventorySlotView>();
+
+            var borderGo = CreateUIElement("BorderOutline", slotGo, Vector2.zero, new Vector2(100, 100), new Vector2(0.5f, 0.5f));
+            var borderImg = borderGo.AddComponent<Image>();
+            borderImg.color = new Color(0.4f, 0.42f, 0.45f, 1f);
+
+            var innerBgGo = CreateUIElement("InnerBackground", borderGo, Vector2.zero, new Vector2(92, 92), new Vector2(0.5f, 0.5f));
+            var innerBgImg = innerBgGo.AddComponent<Image>();
+            innerBgImg.color = new Color(0.12f, 0.12f, 0.14f, 1.0f);
+
+            var iconGo = CreateUIElement("ItemIcon", innerBgGo, new Vector2(0, 10), new Vector2(60, 60), new Vector2(0.5f, 0.5f));
+            var iconImg = iconGo.AddComponent<Image>();
+            iconImg.preserveAspect = true;
+
+            var qtyGo = CreateUIText("QuantityText", innerBgGo, "0", 16, Color.yellow, new Vector2(24, -14));
+            var qtyTmp = qtyGo.GetComponent<TextMeshProUGUI>();
+            qtyTmp.alignment = TextAlignmentOptions.BottomRight;
+            qtyTmp.rectTransform.sizeDelta = new Vector2(40, 20);
+
+            var nameGo = CreateUIText("NameText", innerBgGo, "", 15, Color.white, new Vector2(0, -32));
+            var nameTmp = nameGo.GetComponent<TextMeshProUGUI>();
+            nameTmp.alignment = TextAlignmentOptions.Center;
+            nameTmp.rectTransform.sizeDelta = new Vector2(85, 20);
+
+            var selectBtn = borderGo.AddComponent<Button>();
+
+            SetRef(slotView, "borderOutline", borderImg);
+            SetRef(slotView, "itemIcon", iconImg);
+            SetRef(slotView, "quantityText", qtyTmp);
+            SetRef(slotView, "itemNameText", nameTmp);
+            SetRef(slotView, "selectButton", selectBtn);
+
+            PrefabUtility.SaveAsPrefabAsset(slotGo, $"{RootPath}/UI/Prefabs/UI_Prefab_InventorySlot.prefab");
+            GameObject.DestroyImmediate(slotGo);
         }
     }
 }

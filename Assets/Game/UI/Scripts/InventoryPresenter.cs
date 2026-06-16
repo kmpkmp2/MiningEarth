@@ -8,6 +8,7 @@ namespace DeepEarth.UI
     {
         private readonly InventoryPopupView _view;
         private readonly GameManager _gameManager;
+        private readonly InventoryPopupPresenter _popupPresenter;
 
         public InventoryPresenter(InventoryPopupView view, GameManager gameManager)
         {
@@ -18,6 +19,12 @@ namespace DeepEarth.UI
             {
                 _view.OnCloseClicked += HandleClose;
                 _view.SetVisible(false);
+
+                // Create popup presenter linking views with global InventoryManager collection
+                if (InventoryManager.Instance != null)
+                {
+                    _popupPresenter = new InventoryPopupPresenter(_view, InventoryManager.Instance.Collection);
+                }
             }
         }
 
@@ -27,6 +34,7 @@ namespace DeepEarth.UI
             {
                 _view.OnCloseClicked -= HandleClose;
             }
+            _popupPresenter?.Dispose();
         }
 
         public void Open()
@@ -37,20 +45,8 @@ namespace DeepEarth.UI
             _view.SetVisible(true);
             _view.LocalizeTitle(LocalizationManager.Instance.GetTranslation("inventory_popup_title"));
             
-            // Format current resource stats
-            if (_gameManager != null)
-            {
-                int currentItems = _gameManager.IronCount + _gameManager.SilverCount + _gameManager.GoldCount + _gameManager.DiamondCount;
-                int maxCap = StatManager.Instance.GetInventorySize();
-                
-                string stats = $"{LocalizationManager.Instance.GetFormatted("hud_iron", _gameManager.IronCount)}\n" +
-                               $"{LocalizationManager.Instance.GetFormatted("hud_silver", _gameManager.SilverCount)}\n" +
-                               $"{LocalizationManager.Instance.GetFormatted("hud_gold", _gameManager.GoldCount)}\n" +
-                               $"{LocalizationManager.Instance.GetFormatted("hud_diamond", _gameManager.DiamondCount)}\n\n" +
-                               $"{LocalizationManager.Instance.GetFormatted("hud_bag", currentItems, maxCap)}";
-                
-                _view.UpdateInventoryStats(stats);
-            }
+            // Initialize popup presenter data and slots rendering
+            _popupPresenter?.InitializePopup();
         }
 
         private void HandleClose()

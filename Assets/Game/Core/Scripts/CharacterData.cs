@@ -26,6 +26,7 @@ namespace DeepEarth.Core
         public int MiningPowerLevel = 1;
         public int MaxHPLevel = 1;
         public int AttackLevel = 1;
+        public int InventorySizeLevel = 0;
     }
 
     [Serializable]

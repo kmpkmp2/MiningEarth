@@ -76,8 +76,8 @@ namespace DeepEarth.Combat
             // Healing item drop chance (35%)
             if (UnityEngine.Random.value < 0.35f)
             {
-                StatManager.Instance.Heal(3);
-                EffectSystem.Instance.SpawnDamageText(spawnPoint.position + Vector3.up, "+3 HP", Color.green);
+                InventoryManager.Instance.AddItem("Item_Potion", 1);
+                EffectSystem.Instance.SpawnDamageText(spawnPoint.position + Vector3.up, "+1 Potion", Color.green);
             }
 
             Debug.Log("Combat finished!");

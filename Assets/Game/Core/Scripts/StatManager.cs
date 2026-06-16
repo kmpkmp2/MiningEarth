@@ -45,7 +45,7 @@ namespace DeepEarth.Core
         public int CurrentHP { get; private set; }
         public int BaseAttackDamage { get; private set; } = 1;
         public int BaseMiningPower { get; private set; } = 1;
-        public int BaseInventorySize { get; private set; } = 30;
+        public int BaseInventorySize { get; private set; } = 24;
 
         // Boss run-local modifiers (not saved)
         public int BossAttackModifier { get; set; } = 0;
@@ -99,7 +99,14 @@ namespace DeepEarth.Core
             BaseMaxHP = 10 + (meta.MaxHPLevel - 1) * 2;
             BaseAttackDamage = 1 + (meta.AttackLevel - 1) + CharacterManager.Instance.GetStartingAttackBonus(selectedChar);
             BaseMiningPower = 1 + (meta.MiningPowerLevel - 1) + CharacterManager.Instance.GetStartingMiningBonus(selectedChar);
-            BaseInventorySize = 30; // Constant comfortable bag capacity
+            BaseInventorySize = 24; // Base Capacity is 24
+
+            int upgradeBonus = meta.InventorySizeLevel * 4;
+            int finalCapacity = BaseInventorySize + upgradeBonus;
+
+            Debug.Log($"[Inventory]\nBase Capacity : {BaseInventorySize}");
+            Debug.Log($"[Inventory]\nUpgrade Bonus : +{upgradeBonus}");
+            Debug.Log($"[Inventory]\nFinal Capacity : {finalCapacity}");
 
             CurrentHP = BaseMaxHP;
             
@@ -276,8 +283,8 @@ namespace DeepEarth.Core
 
         public int GetInventorySize()
         {
-            int buffModifier = GetEffectStack(EffectType.BuffInventory) * 5;
-            return Mathf.Max(1, BaseInventorySize + buffModifier);
+            int upgradeBonus = (MetaProgressionManager.Instance != null) ? MetaProgressionManager.Instance.InventorySizeLevel * 4 : 0;
+            return BaseInventorySize + upgradeBonus;
         }
 
         public float GetMonsterSpawnRateMultiplier()

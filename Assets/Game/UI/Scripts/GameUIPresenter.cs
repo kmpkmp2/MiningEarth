@@ -8,6 +8,7 @@ namespace DeepEarth.UI
         private readonly GameManager _gameManager;
 
         private readonly EffectHUDPresenter _effectHUDPresenter;
+        private readonly InventoryHUDPresenter _inventoryHUDPresenter;
 
         public GameUIPresenter(GameUIView view, GameManager gameManager)
         {
@@ -41,6 +42,11 @@ namespace DeepEarth.UI
                 _effectHUDPresenter = new EffectHUDPresenter(hudEffectView);
             }
 
+            if (_view != null && InventoryManager.Instance != null)
+            {
+                _inventoryHUDPresenter = new InventoryHUDPresenter(_view, InventoryManager.Instance.Collection);
+            }
+
             UpdateAll();
         }
 
@@ -70,6 +76,7 @@ namespace DeepEarth.UI
             }
 
             _effectHUDPresenter?.Dispose();
+            _inventoryHUDPresenter?.Dispose();
         }
 
         private void HandleSettingsClicked()
@@ -104,19 +111,11 @@ namespace DeepEarth.UI
         private void UpdateStats()
         {
             UpdateHP();
-            UpdateInventoryCapacity();
-        }
-
-        private void UpdateInventoryCapacity()
-        {
-            int currentItems = _gameManager.IronCount + _gameManager.SilverCount + _gameManager.GoldCount + _gameManager.DiamondCount;
-            _view.SetInventorySize(currentItems, StatManager.Instance.GetInventorySize());
         }
 
         private void UpdateAll()
         {
             UpdateHP();
-            UpdateInventoryCapacity();
             _view.SetDepth(_gameManager.CurrentDepth, _gameManager.DifficultyName);
             _view.SetResources(_gameManager.IronCount, _gameManager.SilverCount, _gameManager.GoldCount, _gameManager.DiamondCount);
             

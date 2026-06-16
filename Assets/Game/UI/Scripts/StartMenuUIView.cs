@@ -94,7 +94,7 @@ namespace DeepEarth.UI
             // Bind upgrade stat buttons
             if (miningPowerButton != null) miningPowerButton.onClick.AddListener(() => OnUpgradeStatClicked?.Invoke(UpgradeType.MiningPower));
             if (maxHPButton != null) maxHPButton.onClick.AddListener(() => OnUpgradeStatClicked?.Invoke(UpgradeType.MaxHP));
-            if (inventoryButton != null) inventoryButton.onClick.AddListener(() => OnUpgradeStatClicked?.Invoke(UpgradeType.Attack));
+            if (inventoryButton != null) inventoryButton.onClick.AddListener(() => OnUpgradeStatClicked?.Invoke(UpgradeType.InventorySize));
 
             // Bind character menu click
             if (characterSelectionButton != null) characterSelectionButton.onClick.AddListener(() => OnCharacterMenuClicked?.Invoke());
@@ -135,8 +135,9 @@ namespace DeepEarth.UI
 
             string levelStr = LocalizationManager.Instance.GetFormatted(
                 type == UpgradeType.MiningPower ? "menu_upgrade_power" :
-                type == UpgradeType.MaxHP ? "menu_upgrade_hp" : "menu_upgrade_attack", level);
-            string costStr = LocalizationManager.Instance.GetFormatted("go_will_cost", cost);
+                type == UpgradeType.MaxHP ? "menu_upgrade_hp" :
+                type == UpgradeType.InventorySize ? "menu_upgrade_inventory" : "menu_upgrade_attack", level);
+            string costStr = cost == int.MaxValue ? "MAX" : LocalizationManager.Instance.GetFormatted("go_will_cost", cost);
 
             switch (type)
             {
@@ -150,10 +151,10 @@ namespace DeepEarth.UI
                     if (maxHPCostText != null) maxHPCostText.text = costStr;
                     if (maxHPButton != null) maxHPButton.interactable = canAfford;
                     break;
-                case UpgradeType.Attack:
+                case UpgradeType.InventorySize:
                     if (inventoryLevelText != null) inventoryLevelText.text = levelStr;
                     if (inventoryCostText != null) inventoryCostText.text = costStr;
-                    if (inventoryButton != null) inventoryButton.interactable = canAfford;
+                    if (inventoryButton != null) inventoryButton.interactable = cost != int.MaxValue && canAfford;
                     break;
             }
         }

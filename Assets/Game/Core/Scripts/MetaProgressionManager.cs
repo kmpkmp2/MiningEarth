@@ -25,6 +25,7 @@ namespace DeepEarth.Core
         public int MiningPowerLevel => CharacterManager.Instance.GetCharacterProgress(CharacterManager.Instance.SelectedCharacterID).UpgradeData.MiningPowerLevel;
         public int MaxHPLevel => CharacterManager.Instance.GetCharacterProgress(CharacterManager.Instance.SelectedCharacterID).UpgradeData.MaxHPLevel;
         public int AttackLevel => CharacterManager.Instance.GetCharacterProgress(CharacterManager.Instance.SelectedCharacterID).UpgradeData.AttackLevel;
+        public int InventorySizeLevel => CharacterManager.Instance.GetCharacterProgress(CharacterManager.Instance.SelectedCharacterID).UpgradeData.InventorySizeLevel;
 
         public event Action OnMetaUpdated;
 
@@ -61,6 +62,9 @@ namespace DeepEarth.Core
                     return MaxHPLevel * 8;
                 case UpgradeType.Attack:
                     return AttackLevel * 5;
+                case UpgradeType.InventorySize:
+                    if (InventorySizeLevel >= 5) return int.MaxValue;
+                    return (InventorySizeLevel + 1) * 6;
                 default:
                     return int.MaxValue;
             }
@@ -83,6 +87,13 @@ namespace DeepEarth.Core
                         break;
                     case UpgradeType.Attack:
                         progress.UpgradeData.AttackLevel++;
+                        break;
+                    case UpgradeType.InventorySize:
+                        if (progress.UpgradeData.InventorySizeLevel < 5)
+                        {
+                            progress.UpgradeData.InventorySizeLevel++;
+                            Debug.Log($"[Inventory]\nUpgrade Bonus : +{progress.UpgradeData.InventorySizeLevel * 4}");
+                        }
                         break;
                 }
                 SaveManager.Save();

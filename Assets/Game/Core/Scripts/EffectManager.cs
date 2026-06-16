@@ -61,6 +61,11 @@ namespace DeepEarth.Core
             _collection.AddOrUpdate(effect);
             OnEffectsChanged?.Invoke();
             Debug.Log($"EffectManager: Registered/Updated effect: {id}");
+            
+            if (type != EffectSystemType.CharacterPassive)
+            {
+                Debug.Log("[Inventory]\nRelic Acquired\nInventory Capacity Unchanged");
+            }
         }
 
         public void RemoveEffect(string id)

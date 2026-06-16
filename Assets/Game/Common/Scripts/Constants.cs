@@ -32,7 +32,8 @@ namespace DeepEarth.Common
     {
         MiningPower,
         MaxHP,
-        Attack
+        Attack,
+        InventorySize
     }
 
     public static class AddressableKeys
@@ -66,6 +67,20 @@ namespace DeepEarth.Common
         public const string UIPanelInventoryPopup = "UI_Panel_InventoryPopup";
         public const string UIEffectIcon = "UI_EffectIcon";
         public const string UIEffectCard = "UI_EffectCard";
+        public const string UIInventorySlot = "UI_Prefab_InventorySlot";
+        
+        // Items
+        public const string ItemStone = "Item_Stone";
+        public const string ItemWood = "Item_Wood";
+        public const string ItemIron = "Item_Iron";
+        public const string ItemSilver = "Item_Silver";
+        public const string ItemGold = "Item_Gold";
+        public const string ItemDiamond = "Item_Diamond";
+        public const string ItemPotion = "Item_Potion";
+        public const string ItemKey = "Item_Key";
+        public const string ItemChest = "Item_Chest";
+        public const string ItemSpecial = "Item_Special";
+
         public const string FontMalgunSDF = "Font_Malgun_SDF";
         public const string FontDefault = "Font_Default";
         public const string FontNotoSansKR = "Font_NotoSansKR";

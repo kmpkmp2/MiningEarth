@@ -6,6 +6,7 @@ using DeepEarth.Mining;
 using DeepEarth.Combat;
 using DeepEarth.Event;
 using DeepEarth.UI;
+using DeepEarth.Map;
 using UnityEngine.UI;
 using TMPro;
 
@@ -21,10 +22,10 @@ namespace DeepEarth.Core
 
         [Header("Run Data")]
         public int CurrentDepth { get; private set; } = 0;
-        public int IronCount { get; private set; } = 0;
-        public int SilverCount { get; private set; } = 0;
-        public int GoldCount { get; private set; } = 0;
-        public int DiamondCount { get; private set; } = 0;
+        public int IronCount => InventoryManager.Instance.GetItemCount("Item_Iron");
+        public int SilverCount => InventoryManager.Instance.GetItemCount("Item_Silver");
+        public int GoldCount => InventoryManager.Instance.GetItemCount("Item_Gold");
+        public int DiamondCount => InventoryManager.Instance.GetItemCount("Item_Diamond");
         public int WillEarnedThisRun { get; private set; } = 0;
 
         // UI references
@@ -233,20 +234,59 @@ namespace DeepEarth.Core
             }
         }
 
-        public void StartGame()
+        public void RunStart()
         {
-            CurrentDepth = 0;
-            IronCount = 0;
-            SilverCount = 0;
-            GoldCount = 0;
-            DiamondCount = 0;
-            WillEarnedThisRun = 0;
+            Debug.Log("[Run]\nNew Run Started");
 
+            // 1. Run Inventory Clear
+            if (InventoryManager.Instance != null)
+            {
+                InventoryManager.Instance.ClearRunInventory();
+                
+                int runItemCount = InventoryManager.Instance.GetRunInventory().GetTotalItemCount();
+                Debug.Log($"[Run]\nRun Inventory Count : {runItemCount}");
+            }
+
+            // 2. EffectManager Clear
+            if (EffectManager.Instance != null)
+            {
+                EffectManager.Instance.ClearRunEffects();
+            }
+
+            // 3. Player Runtime Stat Reset
             StatManager.Instance.ResetStatsForRun();
-            CurrentState = GameState.Playing;
 
-            _hudObject.SetActive(true);
-            _gameOverObject.SetActive(false);
+            // 4. Depth Reset
+            CurrentDepth = 0;
+
+            // 5. Event State Reset
+            if (EventManager.Instance != null)
+            {
+                var choiceField = typeof(EventManager).GetField("_choiceTcs", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                choiceField?.SetValue(EventManager.Instance, null);
+            }
+
+            // 6. Boss State Reset
+            if (BossManager.Instance != null)
+            {
+                var spawnedBossField = typeof(BossManager).GetField("_spawnedBossObject", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                var spawnedBoss = spawnedBossField?.GetValue(BossManager.Instance) as GameObject;
+                if (spawnedBoss != null)
+                {
+                    if (PoolSystem.Instance != null) PoolSystem.Instance.Return(spawnedBoss);
+                    spawnedBossField.SetValue(BossManager.Instance, null);
+                }
+                
+                var bossPresField = typeof(BossManager).GetField("_bossPresenter", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                var bossPresenter = bossPresField?.GetValue(BossManager.Instance) as IDisposable;
+                bossPresenter?.Dispose();
+                bossPresField?.SetValue(BossManager.Instance, null);
+
+                var rewardPresField = typeof(BossManager).GetField("_bossRewardPresenter", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                var rewardPresenter = rewardPresField?.GetValue(BossManager.Instance) as IDisposable;
+                rewardPresenter?.Dispose();
+                rewardPresField?.SetValue(BossManager.Instance, null);
+            }
 
             // Reset Map system
             if (DeepEarth.Map.MapGenerator.Instance != null)
@@ -257,6 +297,17 @@ namespace DeepEarth.Core
             {
                 DeepEarth.Map.MapPresenter.Instance.Model.CurrentDepth = 0;
             }
+        }
+
+        public void StartGame()
+        {
+            RunStart();
+            
+            WillEarnedThisRun = 0;
+            CurrentState = GameState.Playing;
+
+            _hudObject.SetActive(true);
+            _gameOverObject.SetActive(false);
 
             OnGameDataChanged?.Invoke();
 
@@ -296,24 +347,28 @@ namespace DeepEarth.Core
                 }
             }
 
-            // Check Inventory Capacity limit
-            int currentTotal = IronCount + SilverCount + GoldCount + DiamondCount;
-            int maxCap = StatManager.Instance.GetInventorySize();
-
-            if (currentTotal + amount > maxCap)
-            {
-                EffectSystem.Instance.SpawnDamageText(Camera.main.transform.position + Camera.main.transform.forward * 1.5f, LocalizationManager.Instance.GetTranslation("hud_inv_full"), Color.red);
-                return;
-            }
-
+            string itemId = "";
             switch (type)
             {
-                case BlockType.Iron: IronCount += amount; break;
-                case BlockType.Silver: SilverCount += amount; break;
-                case BlockType.Gold: GoldCount += amount; break;
-                case BlockType.Diamond: DiamondCount += amount; break;
+                case BlockType.Dirt: itemId = "Item_Stone"; break;
+                case BlockType.Stone: itemId = "Item_Stone"; break;
+                case BlockType.Root: itemId = "Item_Wood"; break;
+                case BlockType.Iron: itemId = "Item_Iron"; break;
+                case BlockType.Silver: itemId = "Item_Silver"; break;
+                case BlockType.Gold: itemId = "Item_Gold"; break;
+                case BlockType.Diamond: itemId = "Item_Diamond"; break;
             }
 
+            if (!string.IsNullOrEmpty(itemId))
+            {
+                InventoryManager.Instance.AddItem(itemId, amount);
+            }
+
+            OnGameDataChanged?.Invoke();
+        }
+
+        public void TriggerStatsOrResourcesChanged()
+        {
             OnGameDataChanged?.Invoke();
         }
 
@@ -394,19 +449,13 @@ namespace DeepEarth.Core
             }
         }
 
-        private void EndGame()
+        public void RunEnd()
         {
             CurrentState = GameState.GameOver;
 
             // Will reward formula: Depth/5 + Resources value/2
             int resourceValue = (IronCount * 1) + (SilverCount * 2) + (GoldCount * 3) + (DiamondCount * 5);
             WillEarnedThisRun = (CurrentDepth / 5) + (resourceValue / 2);
-
-            // Accumulate collected resources in persistent save data
-            SaveManager.CurrentData.PersistentIron += IronCount;
-            SaveManager.CurrentData.PersistentSilver += SilverCount;
-            SaveManager.CurrentData.PersistentGold += GoldCount;
-            SaveManager.CurrentData.PersistentDiamond += DiamondCount;
 
             // Update personal best depth
             if (CurrentDepth > SaveManager.CurrentData.BestDepth)
@@ -416,16 +465,30 @@ namespace DeepEarth.Core
 
             MetaProgressionManager.Instance.AddWill(WillEarnedThisRun);
 
+            // Transfer Currency to Meta
+            if (InventoryManager.Instance != null)
+            {
+                InventoryManager.Instance.TransferRunRewardToMeta();
+                InventoryManager.Instance.ClearRunInventory();
+            }
+
             if (EffectManager.Instance != null)
             {
                 EffectManager.Instance.ClearRunEffects();
             }
 
-            _hudObject.SetActive(false);
-            _gameOverObject.SetActive(true);
+            StatManager.Instance.ResetStatsForRun();
 
             OnGameDataChanged?.Invoke();
-            Debug.Log("Game Over!");
+            Debug.Log("Run Ended!");
+
+            // Load Lobby MainMenuScene
+            UnityEngine.SceneManagement.SceneManager.LoadScene("StartMenuScene");
+        }
+
+        private void EndGame()
+        {
+            RunEnd();
         }
 
         public void RestartGame()

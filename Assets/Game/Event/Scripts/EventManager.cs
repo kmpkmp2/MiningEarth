@@ -82,7 +82,6 @@ namespace DeepEarth.Event
             {
                 new EventOption("event_opt_mining_title", "event_opt_mining_desc", new List<EffectType> { EffectType.BuffAttackDamage }),
                 new EventOption("event_opt_hp_title", "event_opt_hp_desc", new List<EffectType> { EffectType.BuffMaxHP }),
-                new EventOption("event_opt_inv_title", "event_opt_inv_desc", new List<EffectType> { EffectType.BuffInventory }),
                 new EventOption("event_opt_stealth_title", "event_opt_stealth_desc", new List<EffectType> { EffectType.BuffMonsterSpawnRateDecrease }),
                 new EventOption("event_opt_hat_title", "event_opt_hat_desc", new List<EffectType> { EffectType.BuffHazardSpawnRateDecrease })
             };
@@ -107,11 +106,6 @@ namespace DeepEarth.Event
                     "event_opt_demonic_title",
                     "event_opt_demonic_desc",
                     new List<EffectType> { EffectType.BuffAttackDamage, EffectType.BuffAttackDamage, EffectType.CurseMaxHP }
-                ),
-                new EventOption(
-                    "event_opt_greed_title",
-                    "event_opt_greed_desc",
-                    new List<EffectType> { EffectType.BuffInventory, EffectType.BuffInventory, EffectType.CurseMonsterSpawnRateIncrease }
                 ),
                 new EventOption(
                     "event_opt_fortitude_title",

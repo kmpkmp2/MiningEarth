@@ -28,6 +28,59 @@ namespace DeepEarth.Common
         private GameObject _particlePrefab;
         private TMP_FontAsset _customFont;
 
+        private Vector3 _originalLocalPosition;
+        private Vector3 _shakeOffset = Vector3.zero;
+        private Coroutine _shakeCoroutine;
+        private bool _isOriginalPositionSet = false;
+
+        private void OnEnable()
+        {
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        private void OnDisable()
+        {
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+
+        private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+        {
+            ResetCameraReference();
+        }
+
+        private void ResetCameraReference()
+        {
+            _mainCamera = Camera.main;
+            if (_mainCamera != null)
+            {
+                _originalLocalPosition = _mainCamera.transform.localPosition;
+                _isOriginalPositionSet = true;
+                #if UNITY_EDITOR
+                Debug.Log($"[Camera] Original Position: {_originalLocalPosition}");
+                #endif
+            }
+            else
+            {
+                _isOriginalPositionSet = false;
+            }
+            _shakeOffset = Vector3.zero;
+            _shakeCoroutine = null;
+        }
+
+        private void EnsureCameraReference()
+        {
+            Camera current = Camera.main;
+            if (current != null && (_mainCamera != current || !_isOriginalPositionSet))
+            {
+                _mainCamera = current;
+                _originalLocalPosition = _mainCamera.transform.localPosition;
+                _isOriginalPositionSet = true;
+                #if UNITY_EDITOR
+                Debug.Log($"[Camera] Original Position (Auto-Detected): {_originalLocalPosition}");
+                #endif
+            }
+        }
+
         private void Awake()
         {
             if (_instance == null)
@@ -47,6 +100,15 @@ namespace DeepEarth.Common
             _uiCanvas = uiCanvas;
             _flashOverlay = flashOverlay;
             _particlePrefab = particlePrefab;
+
+            if (_mainCamera != null)
+            {
+                _originalLocalPosition = _mainCamera.transform.localPosition;
+                _isOriginalPositionSet = true;
+                #if UNITY_EDITOR
+                Debug.Log($"[Camera] Original Position (Init): {_originalLocalPosition}");
+                #endif
+            }
         }
 
         public void SetCustomFont(TMP_FontAsset font)
@@ -56,30 +118,71 @@ namespace DeepEarth.Common
 
         public void ShakeCamera(float duration = 0.2f, float magnitude = 0.1f)
         {
-            if (_mainCamera == null) _mainCamera = Camera.main;
+            EnsureCameraReference();
             if (_mainCamera != null)
             {
-                StartCoroutine(CoShakeCamera(duration, magnitude));
+                if (_shakeCoroutine != null)
+                {
+                    StopCoroutine(_shakeCoroutine);
+                    _shakeCoroutine = null;
+                    _shakeOffset = Vector3.zero;
+                    ApplyCameraPosition();
+                    #if UNITY_EDITOR
+                    Debug.Log("[Camera] Reset Position due to overlap / restart");
+                    #endif
+                }
+                _shakeCoroutine = StartCoroutine(CoShakeCamera(duration, magnitude));
             }
         }
 
         private IEnumerator CoShakeCamera(float duration, float magnitude)
         {
-            Vector3 originalPos = _mainCamera.transform.localPosition;
             float elapsed = 0.0f;
+            #if UNITY_EDITOR
+            if (_mainCamera != null)
+            {
+                Debug.Log($"[Camera] Original Position: {_originalLocalPosition}");
+                Debug.Log($"[Camera] Current Position: {_mainCamera.transform.localPosition}");
+            }
+            #endif
 
             while (elapsed < duration)
             {
                 float x = Random.Range(-1f, 1f) * magnitude;
                 float y = Random.Range(-1f, 1f) * magnitude;
 
-                _mainCamera.transform.localPosition = new Vector3(originalPos.x + x, originalPos.y + y, originalPos.z);
+                _shakeOffset = new Vector3(x, y, 0f);
 
                 elapsed += Time.deltaTime;
                 yield return null;
             }
 
-            _mainCamera.transform.localPosition = originalPos;
+            _shakeOffset = Vector3.zero;
+            ApplyCameraPosition();
+            _shakeCoroutine = null;
+
+            #if UNITY_EDITOR
+            Debug.Log($"[Camera] Shake End");
+            Debug.Log($"[Camera] Position Reset");
+            if (_mainCamera != null)
+            {
+                Debug.Log($"[Camera] Current Position: {_mainCamera.transform.localPosition}");
+            }
+            #endif
+        }
+
+        private void LateUpdate()
+        {
+            ApplyCameraPosition();
+        }
+
+        private void ApplyCameraPosition()
+        {
+            EnsureCameraReference();
+            if (_mainCamera != null && _isOriginalPositionSet)
+            {
+                _mainCamera.transform.localPosition = _originalLocalPosition + _shakeOffset;
+            }
         }
 
         public void FlashScreen(Color color, float duration = 0.15f)
