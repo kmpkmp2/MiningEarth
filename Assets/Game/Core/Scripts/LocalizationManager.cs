@@ -262,7 +262,35 @@ namespace DeepEarth.Core
                 { "effect_boss_mineral50_name", "Millionaire" },
                 { "effect_boss_mineral50_desc", "Mineral Yield +50%" },
                 { "effect_boss_doubleevent_name", "Double Blessing" },
-                { "effect_boss_doubleevent_desc", "Doubles event buff effects" }
+                { "effect_boss_doubleevent_desc", "Doubles event buff effects" },
+
+                { "hud_pickaxe_broken", "Broken" },
+                { "pickaxe_broken_alert_title", "Pickaxe is broken!" },
+                { "pickaxe_broken_alert_desc", "Mining will now consume HP." },
+                { "pickaxe_repair_full", "Durability is already full!" },
+                { "pickaxe_repair_not_enough", "Not enough materials!" },
+
+                { "effect_type_StatusEffect", "Status Effect" },
+
+                { "status_burn_name", "Burn" },
+                { "status_burn_desc", "Takes burn damage each action turn" },
+
+                { "relic_heat_resistant_charm_name", "Heat Resistant Charm" },
+                { "relic_heat_resistant_charm_desc", "Burn duration -3 turns" },
+                { "relic_frozen_crystal_name", "Frozen Crystal" },
+                { "relic_frozen_crystal_desc", "Burn damage -1" },
+                { "relic_firefighter_helmet_name", "Firefighter Helmet" },
+                { "relic_firefighter_helmet_desc", "Burn duration -2 turns, damage -1" },
+                { "relic_purification_ring_name", "Purification Ring" },
+                { "relic_purification_ring_desc", "50% chance to negate Burn" },
+                { "relic_burning_heart_name", "Burning Heart" },
+                { "relic_burning_heart_desc", "Attack +2, Burn duration +3 turns" },
+                { "relic_lava_contract_name", "Lava Contract" },
+                { "relic_lava_contract_desc", "Resource +25%, Burn damage +1" },
+                { "relic_cursed_ash_name", "Cursed Ash" },
+                { "relic_cursed_ash_desc", "Max HP +5, Burn duration +5 turns" },
+                { "relic_fire_cult_mask_name", "Fire Cult Mask" },
+                { "relic_fire_cult_mask_desc", "Monster Attack +2, Burn damage +2" }
             };
 
             // Korean translations
@@ -484,7 +512,35 @@ namespace DeepEarth.Core
                 { "effect_boss_mineral50_name", "대부호" },
                 { "effect_boss_mineral50_desc", "광물 획득량 +50%" },
                 { "effect_boss_doubleevent_name", "이중 축복" },
-                { "effect_boss_doubleevent_desc", "이벤트 선택 시 얻는 버프 효과 2배" }
+                { "effect_boss_doubleevent_desc", "이벤트 선택 시 얻는 버프 효과 2배" },
+
+                { "hud_pickaxe_broken", "파손" },
+                { "pickaxe_broken_alert_title", "곡괭이가 파손되었습니다." },
+                { "pickaxe_broken_alert_desc", "이제 채굴 시 체력을 소모합니다." },
+                { "pickaxe_repair_full", "내구도가 이미 최대입니다." },
+                { "pickaxe_repair_not_enough", "재료가 부족합니다." },
+
+                { "effect_type_StatusEffect", "상태이상" },
+
+                { "status_burn_name", "화상" },
+                { "status_burn_desc", "행동 시 화상 피해를 입는 지속 상태이상" },
+
+                { "relic_heat_resistant_charm_name", "내열 부적" },
+                { "relic_heat_resistant_charm_desc", "화상 지속 시간 3턴 감소" },
+                { "relic_frozen_crystal_name", "냉동 수정" },
+                { "relic_frozen_crystal_desc", "화상 피해 1 감소" },
+                { "relic_firefighter_helmet_name", "소방관 헬멧" },
+                { "relic_firefighter_helmet_desc", "화상 지속 2턴, 피해 1 감소" },
+                { "relic_purification_ring_name", "정화의 반지" },
+                { "relic_purification_ring_desc", "50% 확률로 화상 무효" },
+                { "relic_burning_heart_name", "불타는 심장" },
+                { "relic_burning_heart_desc", "공격력 +2, 화상 지속 시간 3턴 증가" },
+                { "relic_lava_contract_name", "용암 계약" },
+                { "relic_lava_contract_desc", "광물 획득량 +25%, 화상 피해 1 증가" },
+                { "relic_cursed_ash_name", "저주받은 재" },
+                { "relic_cursed_ash_desc", "최대 체력 +5, 화상 지속 시간 5턴 증가" },
+                { "relic_fire_cult_mask_name", "불의 교단 가면" },
+                { "relic_fire_cult_mask_desc", "몬스터 공격력 +2, 화상 피해 2 증가" }
             };
 
             _translations["en"] = en;

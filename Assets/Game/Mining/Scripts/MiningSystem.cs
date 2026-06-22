@@ -98,7 +98,13 @@ namespace DeepEarth.Mining
             ClearCurrentBlock();
             OnBlockCleared?.Invoke();
 
-            // Notify GameManager to proceed (this triggers depth increase, check combat, check events, etc.)
+            // Pickaxe durability loss (before HP death check in ProcessActionTurn)
+            PickaxeDurabilityManager.Instance?.OnOreDestroyed(presenter.Model.Type);
+
+            // Action turn: triggers status effect ticks (Burn, etc.)
+            StatusEffectManager.Instance?.ProcessActionTurn();
+
+            // Notify GameManager to proceed — OnBlockMined guards against GameOver state internally
             GameManager.Instance.OnBlockMined().Forget();
         }
 

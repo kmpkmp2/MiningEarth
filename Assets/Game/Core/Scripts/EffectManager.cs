@@ -77,6 +77,14 @@ namespace DeepEarth.Core
             }
         }
 
+        public void UpdateEffectDisplay(string id, string displayString, float value)
+        {
+            if (_collection.UpdateDisplay(id, displayString, value))
+            {
+                OnEffectsChanged?.Invoke();
+            }
+        }
+
         public void ClearRunEffects()
         {
             var active = _collection.Effects;

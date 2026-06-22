@@ -33,7 +33,8 @@ namespace DeepEarth.Common
         MiningPower,
         MaxHP,
         Attack,
-        InventorySize
+        InventorySize,
+        PickaxeDurability
     }
 
     public static class AddressableKeys
@@ -65,6 +66,7 @@ namespace DeepEarth.Common
         public const string UIPanelBossReward = "UI_Panel_BossReward";
         public const string UIPanelRelicPopup = "UI_Panel_RelicPopup";
         public const string UIPanelInventoryPopup = "UI_Panel_InventoryPopup";
+        public const string UIPanelEventReveal = "UI_Panel_EventReveal";
         public const string UIEffectIcon = "UI_EffectIcon";
         public const string UIEffectCard = "UI_EffectCard";
         public const string UIInventorySlot = "UI_Prefab_InventorySlot";
@@ -81,6 +83,16 @@ namespace DeepEarth.Common
         public const string ItemChest = "Item_Chest";
         public const string ItemSpecial = "Item_Special";
 
+        public const string StatusEffectBurn = "StatusEffect_Burn";
+
+        // Pickaxe
+        public const string PickaxeDefault = "Pickaxe_Default";
+        public const string PickaxeConfig = "Pickaxe_Config";
+
+        // Relic Addressable Labels (label-based load — no per-relic key needed)
+        public const string LabelRelicTreasure = "Relic_Treasure";
+        public const string LabelRelicTombstone = "Relic_Tombstone";
+
         public const string FontMalgunSDF = "Font_Malgun_SDF";
         public const string FontDefault = "Font_Default";
         public const string FontNotoSansKR = "Font_NotoSansKR";
@@ -93,6 +105,17 @@ namespace DeepEarth.Common
         public const string ThemeIron = "Theme_Iron";
         public const string ThemeGold = "Theme_Gold";
         public const string ThemeCrystal = "Theme_Crystal";
+    }
+
+    public enum EventRevealType
+    {
+        Treasure,
+        Tombstone,
+        MonsterRat,
+        MonsterSpider,
+        Water,
+        Lava,
+        Boss
     }
 
     public static class GameSettings

@@ -14,7 +14,70 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
   m_GroupName: Default Local Group
   m_GUID: 2b62d59d0d0fa2f4e8d5322a476c5dde
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 03bada0e93854194188c51c61287c2c9
+    m_Address: Relic_PurificationRing
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 47fa4ec966b0eaf429893772febc419d
+    m_Address: Relic_FrozenCrystal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 516bf29c119a8de4da54d3c412f43790
+    m_Address: Pickaxe_Default
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 624035da422aa1a458f321876adc2b15
+    m_Address: Relic_LavaContract
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 77a9a6e40a6a3964ca3bc7d321d44bd4
+    m_Address: StatusEffect_Burn
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 89e96dd4159e7b24dab10600b0773245
+    m_Address: Relic_BurningHeart
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: adecc1b34968bd943b034618fcad6dfb
+    m_Address: Relic_FireCultMask
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ae5be52e32b88534699fb194aff25c60
+    m_Address: Pickaxe_Config
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: afdef158a0da975459376edc0c12e735
+    m_Address: Relic_HeatResistantCharm
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b7880e6d9d39b294fbc578fa3e32cbbe
+    m_Address: Relic_CursedAsh
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c4305b9afe0454d4f8864d629f082424
+    m_Address: Relic_FirefighterHelmet
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: bf53922257c85cf45b1d5828a500e7b9, type: 2}
   m_SchemaSet:

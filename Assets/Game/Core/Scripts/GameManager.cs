@@ -35,6 +35,7 @@ namespace DeepEarth.Core
         private GameObject _settingsObject;
         private GameObject _relicPopupObject;
         private GameObject _inventoryPopupObject;
+        private GameObject _eventRevealObject;
 
         private GameUIPresenter _hudPresenter;
         private GameOverUIPresenter _gameOverPresenter;
@@ -42,6 +43,7 @@ namespace DeepEarth.Core
         private SettingsUIPresenter _settingsPresenter;
         private RelicPopupPresenter _relicPopupPresenter;
         private InventoryPresenter _inventoryPopupPresenter;
+        private EventRevealPresenter _eventRevealPresenter;
 
         private GameState _previousState;
 
@@ -120,6 +122,8 @@ namespace DeepEarth.Core
             _relicPopupPresenter = null;
             _inventoryPopupPresenter?.Dispose();
             _inventoryPopupPresenter = null;
+            _eventRevealPresenter?.Dispose();
+            _eventRevealPresenter = null;
         }
 
         public async UniTask InitializeUIAsync(Canvas canvas, Image flashOverlay, GameObject particlePrefab)
@@ -193,6 +197,14 @@ namespace DeepEarth.Core
                     SetRef(fallbackView, "inventoryStatsText", statsText);
                 }
 
+                // Load Event Reveal panel
+                _eventRevealObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelEventReveal, canvas.transform);
+                if (_eventRevealObject == null)
+                {
+                    Debug.LogWarning("UIPanelEventReveal failed to load. Creating fallback placeholder...");
+                    _eventRevealObject = CreateRevealFallback(canvas.transform);
+                }
+
                 if (_hudObject == null || _gameOverObject == null || _eventObject == null || _settingsObject == null)
                 {
                     Debug.LogError("GameManager: One or more UI panels failed to instantiate via Addressables!");
@@ -205,18 +217,26 @@ namespace DeepEarth.Core
                 var settingsView = _settingsObject.GetComponent<SettingsUIView>();
                 var relicPopupView = _relicPopupObject.GetComponent<RelicPopupView>();
                 var inventoryPopupView = _inventoryPopupObject.GetComponent<InventoryPopupView>();
+                var revealView = _eventRevealObject.GetComponent<EventRevealView>();
 
                 // Setup EffectSystem
                 EffectSystem.Instance.Initialize(Camera.main, canvas, flashOverlay, particlePrefab);
 
-
                 // Setup Presenters
                 _hudPresenter = new GameUIPresenter(hudView, this);
+
+                // Setup Pickaxe Durability Presenter (auto-add component if not wired in prefab)
+                var pickaxeView = _hudObject.GetComponent<DeepEarth.UI.PickaxeDurabilityView>();
+                if (pickaxeView == null)
+                    pickaxeView = _hudObject.AddComponent<DeepEarth.UI.PickaxeDurabilityView>();
+                PickaxeDurabilityManager.Instance?.SetupPresenter(pickaxeView);
                 _gameOverPresenter = new GameOverUIPresenter(gameOverView, this);
                 _eventPresenter = new EventUIPresenter(eventView);
                 _settingsPresenter = new SettingsUIPresenter(settingsView, this);
                 _relicPopupPresenter = new RelicPopupPresenter(relicPopupView, this);
                 _inventoryPopupPresenter = new InventoryPresenter(inventoryPopupView, this);
+                _eventRevealPresenter = new EventRevealPresenter(revealView);
+                EventManager.Instance.SetRevealPresenter(_eventRevealPresenter);
 
                 // Initially hide panels and show Main HUD
                 _hudObject.SetActive(true);
@@ -253,8 +273,21 @@ namespace DeepEarth.Core
                 EffectManager.Instance.ClearRunEffects();
             }
 
+            // 2b. StatusEffect Clear (Burn etc.)
+            StatusEffectManager.Instance?.ClearAll();
+
+            // 2c. Relic Clear
+            RelicManager.Instance?.ClearAll();
+
+            // 2d. Pickaxe Durability Clear
+            PickaxeDurabilityManager.Instance?.ClearForRun();
+
             // 3. Player Runtime Stat Reset
             StatManager.Instance.ResetStatsForRun();
+
+            // 3b. Pickaxe Durability Init (after stat reset so upgrade level is current)
+            int pickaxeUpgradeBonus = MetaProgressionManager.Instance.PickaxeDurabilityLevel * 20;
+            PickaxeDurabilityManager.Instance?.InitializeForRun(pickaxeUpgradeBonus);
 
             // 4. Depth Reset
             CurrentDepth = 0;
@@ -388,6 +421,7 @@ namespace DeepEarth.Core
             // Check Boss trigger at Depth 50, 100, 150, 200, 250, and every 50 Depth thereafter
             if (CurrentDepth > 0 && CurrentDepth % 50 == 0)
             {
+                await EventManager.Instance.PlayRevealAsync(EventRevealType.Boss);
                 BossManager.Instance.StartBossSequenceAsync(CurrentDepth).Forget();
                 return;
             }
@@ -396,15 +430,16 @@ namespace DeepEarth.Core
             float monsterChance = GetMonsterSpawnChance(CurrentDepth) * StatManager.Instance.GetMonsterSpawnRateMultiplier();
             if (UnityEngine.Random.value < monsterChance)
             {
-                // Trigger combat
                 MonsterType mType = (UnityEngine.Random.value < 0.6f) ? MonsterType.CaveRat : MonsterType.CaveSpider;
-                
+                EventRevealType mReveal = mType == MonsterType.CaveRat ? EventRevealType.MonsterRat : EventRevealType.MonsterSpider;
+                await EventManager.Instance.PlayRevealAsync(mReveal);
+
                 EffectSystem.Instance.FlashScreen(new Color(1f, 0f, 0f, 0.2f), 0.2f);
                 EffectSystem.Instance.SpawnDamageText(Camera.main.transform.position + Camera.main.transform.forward * 1.5f, LocalizationManager.Instance.GetTranslation("combat_monster_encounter"), Color.red);
-                
+
                 await CombatSystem.Instance.StartCombatAsync(mType, CurrentDepth);
 
-                if (StatManager.Instance.CurrentHP <= 0) return; // Player died in combat
+                if (StatManager.Instance.CurrentHP <= 0) return;
             }
             // 2. Check Hazard (water/lava) trigger
             else
@@ -412,25 +447,37 @@ namespace DeepEarth.Core
                 float hazardChance = GetHazardSpawnChance(CurrentDepth) * StatManager.Instance.GetHazardSpawnRateMultiplier();
                 if (UnityEngine.Random.value < hazardChance)
                 {
-                    int damage = 1 + DifficultyLevel;
                     bool isLava = UnityEngine.Random.value < 0.5f;
-                    Color flashColor = isLava ? new Color(1f, 0.4f, 0f, 0.35f) : new Color(0f, 0.4f, 1f, 0.35f);
+                    await EventManager.Instance.PlayRevealAsync(isLava ? EventRevealType.Lava : EventRevealType.Water);
 
-                    StatManager.Instance.TakeDamage(damage);
-                    
-                    EffectSystem.Instance.FlashScreen(flashColor, 0.25f);
-                    EffectSystem.Instance.ShakeCamera(0.2f, 0.08f);
-                    string msg = LocalizationManager.Instance.GetFormatted(isLava ? "combat_lava" : "combat_water", damage);
-                    EffectSystem.Instance.SpawnDamageText(Camera.main.transform.position + Camera.main.transform.forward * 1.5f, msg, Color.red);
+                    if (isLava)
+                    {
+                        // Lava: apply Burn status effect (turn-based damage) instead of instant damage
+                        StatusEffectManager.Instance.ApplyBurn();
+                        EffectSystem.Instance.FlashScreen(new Color(1f, 0.4f, 0f, 0.35f), 0.25f);
+                        EffectSystem.Instance.ShakeCamera(0.2f, 0.08f);
+                        string burnMsg = LocalizationManager.Instance.GetTranslation("status_burn_applied_msg");
+                        EffectSystem.Instance.SpawnDamageText(Camera.main.transform.position + Camera.main.transform.forward * 1.5f, burnMsg.Length > 0 ? burnMsg : "화상!", new Color(1f, 0.4f, 0f));
+                    }
+                    else
+                    {
+                        // Water: instant damage (unchanged)
+                        int damage = 1 + DifficultyLevel;
+                        StatManager.Instance.TakeDamage(damage);
+                        EffectSystem.Instance.FlashScreen(new Color(0f, 0.4f, 1f, 0.35f), 0.25f);
+                        EffectSystem.Instance.ShakeCamera(0.2f, 0.08f);
+                        string msg = LocalizationManager.Instance.GetFormatted("combat_water", damage);
+                        EffectSystem.Instance.SpawnDamageText(Camera.main.transform.position + Camera.main.transform.forward * 1.5f, msg, Color.red);
 
-                    if (StatManager.Instance.CurrentHP <= 0) return; // Player died to hazard
+                        if (StatManager.Instance.CurrentHP <= 0) return;
+                    }
                 }
-                // 3. Check Event trigger (Chest / Tombstone)
+                // 3. Check Event trigger (Chest / Tombstone) — reveal is handled inside TriggerRandomEventAsync
                 else if (UnityEngine.Random.value < 0.08f)
                 {
-                    bool isTombstone = UnityEngine.Random.value < 0.3f; // 30% tombstone, 70% treasure box
+                    bool isTombstone = UnityEngine.Random.value < 0.3f;
                     await EventManager.Instance.TriggerRandomEventAsync(isTombstone);
-                    return; // EventManager triggers next block after completion, so exit here
+                    return;
                 }
             }
 
@@ -525,6 +572,9 @@ namespace DeepEarth.Core
                 {
                     EffectManager.Instance.ClearRunEffects();
                 }
+
+                StatusEffectManager.Instance?.ClearAll();
+                RelicManager.Instance?.ClearAll();
 
                 StatManager.Instance.ResetStatsForRun();
 
@@ -665,6 +715,58 @@ namespace DeepEarth.Core
 
             CurrentState = _previousState;
             OnGameDataChanged?.Invoke();
+        }
+
+        private GameObject CreateRevealFallback(Transform parent)
+        {
+            var root = new GameObject("EventReveal_Fallback", typeof(RectTransform));
+            root.transform.SetParent(parent, false);
+
+            var rt = root.GetComponent<RectTransform>();
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.offsetMin = Vector2.zero;
+            rt.offsetMax = Vector2.zero;
+
+            var cg = root.AddComponent<CanvasGroup>();
+
+            var bg = new GameObject("Bg", typeof(RectTransform));
+            bg.transform.SetParent(root.transform, false);
+            var bgRt = bg.GetComponent<RectTransform>();
+            bgRt.anchorMin = Vector2.zero;
+            bgRt.anchorMax = Vector2.one;
+            bgRt.offsetMin = Vector2.zero;
+            bgRt.offsetMax = Vector2.zero;
+            bg.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.75f);
+
+            var panel = new GameObject("Panel", typeof(RectTransform));
+            panel.transform.SetParent(root.transform, false);
+            var panelRt = panel.GetComponent<RectTransform>();
+            panelRt.anchorMin = new Vector2(0.1f, 0.35f);
+            panelRt.anchorMax = new Vector2(0.9f, 0.65f);
+            panelRt.offsetMin = Vector2.zero;
+            panelRt.offsetMax = Vector2.zero;
+            panel.AddComponent<Image>().color = new Color(0.1f, 0.08f, 0.05f, 0.95f);
+
+            var nameObj = new GameObject("EventName", typeof(RectTransform));
+            nameObj.transform.SetParent(panel.transform, false);
+            var nameRt = nameObj.GetComponent<RectTransform>();
+            nameRt.anchorMin = Vector2.zero;
+            nameRt.anchorMax = Vector2.one;
+            nameRt.offsetMin = Vector2.zero;
+            nameRt.offsetMax = Vector2.zero;
+            var nameText = nameObj.AddComponent<TextMeshProUGUI>();
+            nameText.text = "";
+            nameText.alignment = TMPro.TextAlignmentOptions.Center;
+            nameText.fontSize = 48f;
+            nameText.color = Color.white;
+
+            var revealView = root.AddComponent<EventRevealView>();
+            SetRef(revealView, "eventNameText", nameText);
+            SetRef(revealView, "canvasGroup", cg);
+            SetRef(revealView, "panelRoot", panel.transform);
+
+            return root;
         }
 
         private void SetRef(object target, string fieldName, object value)

@@ -19,6 +19,7 @@ namespace DeepEarth.Combat
         private readonly List<GameObject> _activeMonsterObjects = new List<GameObject>();
 
         private UniTaskCompletionSource _combatTcs;
+        private int _spawnCounter;
 
         private void Awake()
         {
@@ -41,6 +42,7 @@ namespace DeepEarth.Combat
         {
             ClearActiveMonsters();
             _combatTcs = new UniTaskCompletionSource();
+            _spawnCounter = 0;
 
             // Apply CurseInstantDamageOnEncounter if any
             int instantDmg = StatManager.Instance.GetEncounterInstantDamage();
@@ -105,6 +107,10 @@ namespace DeepEarth.Combat
                 view = mGo.AddComponent<MonsterView>();
             }
 
+            int spawnIdx = _spawnCounter++;
+            view.InitializeSpawn(spawnIdx);
+            Debug.Log($"[Battle]\nSpawn Monster\nIndex : {spawnIdx}\nPosition : {worldPos.x:F2},{worldPos.y:F2},{worldPos.z:F2}");
+
             var model = new MonsterModel(type, depth);
             var presenter = new MonsterPresenter(model, view);
             _activePresenters.Add(presenter);
@@ -115,6 +121,8 @@ namespace DeepEarth.Combat
         private void HandleMonsterKilled(MonsterPresenter presenter)
         {
             presenter.OnMonsterKilled -= HandleMonsterKilled;
+
+            Debug.Log($"[Battle]\nMonster Dead\nSpawnIndex : {presenter.View.SpawnIndex}");
 
             // Visual feedback on death
             EffectSystem.Instance.SpawnHitParticles(presenter.View.transform.position, presenter.View.GetMonsterColor());
@@ -127,6 +135,9 @@ namespace DeepEarth.Combat
 
             _activePresenters.Remove(presenter);
             presenter.Dispose();
+
+            // Action turn: 1 monster kill = 1 turn (triggers status effect ticks)
+            StatusEffectManager.Instance?.ProcessActionTurn();
 
             // If all monsters are killed, complete combat
             if (_activePresenters.Count == 0)

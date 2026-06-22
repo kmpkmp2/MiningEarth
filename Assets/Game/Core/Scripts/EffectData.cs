@@ -10,6 +10,7 @@ namespace DeepEarth.Core
         BossReward,
         Buff,
         Debuff,
+        StatusEffect,  // Turn-based status effects (Burn, Poison, ...)
         Special
     }
 
@@ -95,6 +96,16 @@ namespace DeepEarth.Core
         public void Clear()
         {
             _effects.Clear();
+        }
+
+        // Updates the display string and value for a status effect without changing its stack count.
+        public bool UpdateDisplay(string id, string displayString, float value)
+        {
+            var effect = _effects.Find(e => e.EffectID == id);
+            if (effect == null) return false;
+            effect.ValueDisplayString = displayString;
+            effect.Value = value;
+            return true;
         }
 
         public List<EffectData> GetSortedEffects()

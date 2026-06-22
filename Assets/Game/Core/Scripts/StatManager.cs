@@ -58,6 +58,9 @@ namespace DeepEarth.Core
         public float BossDamageToBossMultiplier { get; set; } = 1f;
         public bool BossRareEventDouble { get; set; } = false;
 
+        // Relic modifier: monster attack bonus (FireCultMask 등)
+        public int RelicMonsterAttackBonus { get; set; } = 0;
+
         // Buff / Curse stacks (Limited to max 3 per effect type)
         private readonly Dictionary<EffectType, int> _effectStacks = new Dictionary<EffectType, int>();
 
@@ -91,6 +94,7 @@ namespace DeepEarth.Core
             BossReviveCount = 0;
             BossDamageToBossMultiplier = 1f;
             BossRareEventDouble = false;
+            RelicMonsterAttackBonus = 0;
 
             // Apply Meta Upgrades and Character stats
             var meta = MetaProgressionManager.Instance;

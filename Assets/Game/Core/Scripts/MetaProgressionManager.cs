@@ -26,6 +26,7 @@ namespace DeepEarth.Core
         public int MaxHPLevel => CharacterManager.Instance.GetCharacterProgress(CharacterManager.Instance.SelectedCharacterID).UpgradeData.MaxHPLevel;
         public int AttackLevel => CharacterManager.Instance.GetCharacterProgress(CharacterManager.Instance.SelectedCharacterID).UpgradeData.AttackLevel;
         public int InventorySizeLevel => CharacterManager.Instance.GetCharacterProgress(CharacterManager.Instance.SelectedCharacterID).UpgradeData.InventorySizeLevel;
+        public int PickaxeDurabilityLevel => CharacterManager.Instance.GetCharacterProgress(CharacterManager.Instance.SelectedCharacterID).UpgradeData.PickaxeDurabilityLevel;
 
         public event Action OnMetaUpdated;
 
@@ -65,6 +66,8 @@ namespace DeepEarth.Core
                 case UpgradeType.InventorySize:
                     if (InventorySizeLevel >= 5) return int.MaxValue;
                     return (InventorySizeLevel + 1) * 6;
+                case UpgradeType.PickaxeDurability:
+                    return (PickaxeDurabilityLevel + 1) * 8;
                 default:
                     return int.MaxValue;
             }
@@ -94,6 +97,10 @@ namespace DeepEarth.Core
                             progress.UpgradeData.InventorySizeLevel++;
                             Debug.Log($"[Inventory]\nUpgrade Bonus : +{progress.UpgradeData.InventorySizeLevel * 4}");
                         }
+                        break;
+                    case UpgradeType.PickaxeDurability:
+                        progress.UpgradeData.PickaxeDurabilityLevel++;
+                        Debug.Log($"[Pickaxe]\nUpgrade\nNew Level : {progress.UpgradeData.PickaxeDurabilityLevel}\nBonus : +{progress.UpgradeData.PickaxeDurabilityLevel * 20}");
                         break;
                 }
                 SaveManager.Save();

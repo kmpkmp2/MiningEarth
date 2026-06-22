@@ -63,6 +63,26 @@ namespace DeepEarth.Core
             }
         }
 
+        public async UniTask<List<T>> LoadAllByLabelAsync<T>(string label) where T : Object
+        {
+            try
+            {
+                var handle = Addressables.LoadAssetsAsync<T>(label, null);
+                await handle.ToUniTask();
+
+                if (handle.Status == AsyncOperationStatus.Succeeded)
+                    return new List<T>(handle.Result);
+
+                Addressables.Release(handle);
+                return new List<T>();
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogWarning($"LoadAllByLabelAsync: label '{label}' 에서 에셋을 찾을 수 없습니다: {ex.Message}");
+                return new List<T>();
+            }
+        }
+
         public async UniTask<GameObject> InstantiateAsync(string key, Transform parent = null)
         {
             try

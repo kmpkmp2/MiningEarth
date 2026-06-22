@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f61e97e7b164404eab6468deb79d824, type: 3}
+  m_Name: PickaxeConfig
+  m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.Core.PickaxeConfigData
+  oreEntries:
+  - blockType: 0
+    durabilityLoss: 0
+    brokenDamage: 0
+  - blockType: 2
+    durabilityLoss: 1
+    brokenDamage: 1
+  - blockType: 1
+    durabilityLoss: 1
+    brokenDamage: 1
+  - blockType: 3
+    durabilityLoss: 1
+    brokenDamage: 1
+  - blockType: 4
+    durabilityLoss: 2
+    brokenDamage: 2
+  - blockType: 5
+    durabilityLoss: 2
+    brokenDamage: 2
+  - blockType: 6
+    durabilityLoss: 3
+    brokenDamage: 3
+  repairRecipes:
+  - itemID: Item_Stone
+    itemNameLocKey: item_stone_name
+    itemCostPerUse: 10
+    durabilityGain: 5
+  - itemID: Item_Iron
+    itemNameLocKey: item_iron_name
+    itemCostPerUse: 5
+    durabilityGain: 10
+  - itemID: Item_Silver
+    itemNameLocKey: item_silver_name
+    itemCostPerUse: 3
+    durabilityGain: 15
+  - itemID: Item_Gold
+    itemNameLocKey: item_gold_name
+    itemCostPerUse: 2
+    durabilityGain: 25
+  - itemID: Item_Diamond
+    itemNameLocKey: item_diamond_name
+    itemCostPerUse: 1
+    durabilityGain: 40

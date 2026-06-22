@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using DeepEarth.Common;
 using DeepEarth.Core;
+using DeepEarth.UI;
 
 namespace DeepEarth.Event
 {
@@ -15,6 +17,8 @@ namespace DeepEarth.Event
         public event Action OnEventCompleted;
 
         private UniTaskCompletionSource<int> _choiceTcs;
+        private EventRevealPresenter _revealPresenter;
+        private bool _isRevealPlaying;
 
         private void Awake()
         {
@@ -28,52 +32,119 @@ namespace DeepEarth.Event
             }
         }
 
+        public void SetRevealPresenter(EventRevealPresenter presenter)
+        {
+            _revealPresenter = presenter;
+        }
+
+        public async UniTask PlayRevealAsync(EventRevealType type)
+        {
+            if (_isRevealPlaying) return;
+            _isRevealPlaying = true;
+
+            Debug.Log($"[Event]\nGenerated : {type}");
+            Debug.Log("[Event]\nReveal Start");
+
+            string displayName = GetRevealDisplayName(type);
+            if (_revealPresenter != null)
+            {
+                await _revealPresenter.ShowAsync(displayName);
+            }
+
+            EffectSystem.Instance.ShakeCamera(0.1f, 0.05f);
+            await UniTask.Delay(500);
+
+            if (_revealPresenter != null)
+            {
+                await _revealPresenter.HideAsync();
+            }
+
+            Debug.Log("[Event]\nReveal Complete");
+            _isRevealPlaying = false;
+        }
+
         public async UniTask TriggerRandomEventAsync(bool isTombstone)
         {
+            EventRevealType revealType = isTombstone ? EventRevealType.Tombstone : EventRevealType.Treasure;
+            await PlayRevealAsync(revealType);
+
             _choiceTcs = new UniTaskCompletionSource<int>();
 
-            EventData eventData;
-            if (isTombstone)
-            {
-                eventData = GenerateTombstoneEvent();
-            }
-            else
-            {
-                eventData = GenerateTreasureEvent();
-            }
+            EventData eventData = isTombstone ? GenerateTombstoneEvent() : GenerateTreasureEvent();
 
-            // Pause Game via GameManager
             GameManager.Instance.PauseForEvent();
 
-            // Invoke UI event
+            Debug.Log("[Event]\nOpen Event");
+
             OnEventTriggered?.Invoke(eventData);
 
-            // Wait for player to choose
             int selectedIndex = await _choiceTcs.Task;
 
-            // Apply effects
             var chosenOption = eventData.Options[selectedIndex];
             foreach (var effect in chosenOption.Effects)
             {
                 StatManager.Instance.AddEffect(effect);
-                
-                // Double event rewards (buffs only) if the player has the rare Double Blessing buff
+
                 if (StatManager.Instance.BossRareEventDouble && effect.ToString().StartsWith("Buff"))
                 {
                     StatManager.Instance.AddEffect(effect);
                 }
             }
 
-            // Invoke complete
+            if (chosenOption.RelicReward != null)
+            {
+                RelicManager.Instance?.AddRelic(chosenOption.RelicReward);
+            }
+
+            // Action turn: event choice completed = 1 turn
+            StatusEffectManager.Instance?.ProcessActionTurn();
+
             OnEventCompleted?.Invoke();
 
-            // Resume Game
-            GameManager.Instance.ResumeAfterEvent();
+            // Guard: burn tick may have killed the player — don't resume if dead
+            if (StatManager.Instance.CurrentHP > 0)
+            {
+                GameManager.Instance.ResumeAfterEvent();
+            }
         }
 
         public void SelectOption(int index)
         {
             _choiceTcs?.TrySetResult(index);
+        }
+
+        private static string GetRevealDisplayName(EventRevealType type)
+        {
+            var lm = LocalizationManager.Instance;
+            string key = type switch
+            {
+                EventRevealType.Treasure     => "reveal_treasure",
+                EventRevealType.Tombstone    => "reveal_tombstone",
+                EventRevealType.MonsterRat   => "reveal_monster_rat",
+                EventRevealType.MonsterSpider => "reveal_monster_spider",
+                EventRevealType.Water        => "reveal_water",
+                EventRevealType.Lava         => "reveal_lava",
+                EventRevealType.Boss         => "reveal_boss",
+                _                            => "reveal_unknown"
+            };
+
+            string translated = lm != null ? lm.GetTranslation(key) : key;
+
+            if (string.IsNullOrEmpty(translated) || translated == key)
+            {
+                return type switch
+                {
+                    EventRevealType.Treasure      => "보물상자 발견!",
+                    EventRevealType.Tombstone      => "수상한 무덤 발견!",
+                    EventRevealType.MonsterRat     => "동굴쥐 발견!",
+                    EventRevealType.MonsterSpider  => "동굴거미 무리 발견!",
+                    EventRevealType.Water          => "지하수 발견!",
+                    EventRevealType.Lava           => "용암 지대 발견!",
+                    EventRevealType.Boss           => "보스 출현!",
+                    _                              => "???",
+                };
+            }
+            return translated;
         }
 
         private EventData GenerateTreasureEvent()
@@ -86,16 +157,18 @@ namespace DeepEarth.Event
                 new EventOption("event_opt_hat_title", "event_opt_hat_desc", new List<EffectType> { EffectType.BuffHazardSpawnRateDecrease })
             };
 
-            // Shuffle and pick 3 unique options
-            ShuffleList(optionsPool);
-            var selectedOptions = new List<EventOption> { optionsPool[0], optionsPool[1], optionsPool[2] };
+            if (RelicManager.Instance != null)
+            {
+                foreach (var relic in RelicManager.Instance.GetAvailableTreasureRelics())
+                    optionsPool.Add(new EventOption(relic));
+            }
 
-            return new EventData(
-                "event_chest_title",
-                "event_chest_desc",
-                false,
-                selectedOptions
-            );
+            ShuffleList(optionsPool);
+            int count = Mathf.Min(3, optionsPool.Count);
+            var selectedOptions = new List<EventOption>();
+            for (int i = 0; i < count; i++) selectedOptions.Add(optionsPool[i]);
+
+            return new EventData("event_chest_title", "event_chest_desc", false, selectedOptions);
         }
 
         private EventData GenerateTombstoneEvent()
@@ -124,15 +197,18 @@ namespace DeepEarth.Event
                 )
             };
 
-            ShuffleList(optionsPool);
-            var selectedOptions = new List<EventOption> { optionsPool[0], optionsPool[1] };
+            if (RelicManager.Instance != null)
+            {
+                foreach (var relic in RelicManager.Instance.GetAvailableTombstoneRelics())
+                    optionsPool.Add(new EventOption(relic));
+            }
 
-            return new EventData(
-                "event_tomb_title",
-                "event_tomb_desc",
-                true,
-                selectedOptions
-            );
+            ShuffleList(optionsPool);
+            int count = Mathf.Min(2, optionsPool.Count);
+            var selectedOptions = new List<EventOption>();
+            for (int i = 0; i < count; i++) selectedOptions.Add(optionsPool[i]);
+
+            return new EventData("event_tomb_title", "event_tomb_desc", true, selectedOptions);
         }
 
         private void ShuffleList<T>(List<T> list)

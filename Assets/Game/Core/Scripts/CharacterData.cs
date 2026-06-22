@@ -27,6 +27,7 @@ namespace DeepEarth.Core
         public int MaxHPLevel = 1;
         public int AttackLevel = 1;
         public int InventorySizeLevel = 0;
+        public int PickaxeDurabilityLevel = 0;
     }
 
     [Serializable]

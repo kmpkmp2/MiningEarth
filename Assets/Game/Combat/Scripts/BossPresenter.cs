@@ -226,6 +226,10 @@ namespace DeepEarth.Combat
             var view = mGo.GetComponent<MonsterView>();
             if (view == null) view = mGo.AddComponent<MonsterView>();
 
+            int spawnIdx = _activeBabySpiders.Count;
+            view.InitializeSpawn(spawnIdx);
+            Debug.Log($"[Battle]\nSpawn Monster\nIndex : {spawnIdx}\nPosition : {worldPos.x:F2},{worldPos.y:F2},{worldPos.z:F2}");
+
             var model = new MonsterModel(MonsterType.CaveSpider, GameManager.Instance.CurrentDepth);
             var presenter = new MonsterPresenter(model, view);
             _activeBabySpiders.Add(presenter);
@@ -236,6 +240,9 @@ namespace DeepEarth.Combat
         private void HandleBabySpiderKilled(MonsterPresenter presenter)
         {
             presenter.OnMonsterKilled -= HandleBabySpiderKilled;
+
+            Debug.Log($"[Battle]\nMonster Dead\nSpawnIndex : {presenter.View.SpawnIndex}");
+
             EffectSystem.Instance.SpawnHitParticles(presenter.View.transform.position, presenter.View.GetMonsterColor());
             EffectSystem.Instance.ShakeCamera(0.2f, 0.08f);
 

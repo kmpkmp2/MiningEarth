@@ -10,15 +10,16 @@ namespace DeepEarth.Combat
         [SerializeField] private MeshRenderer meshRenderer;
 
         private Vector3 _originalScale;
-        private Vector3 _originalPosition;
+        private Vector3 _spawnWorldPosition;
         private Color _originalColor;
         private Material _instancedMaterial;
+
+        public int SpawnIndex { get; private set; } = -1;
 
         private void Awake()
         {
             _originalScale = transform.localScale;
-            _originalPosition = transform.localPosition;
-            
+
             if (meshRenderer == null)
             {
                 meshRenderer = GetComponent<MeshRenderer>();
@@ -29,6 +30,14 @@ namespace DeepEarth.Combat
                 _instancedMaterial = meshRenderer.material;
                 _originalColor = _instancedMaterial.color;
             }
+        }
+
+        // Must be called after transform.position is set at spawn time.
+        // Stores world position so attack animation is independent of parent changes.
+        public void InitializeSpawn(int spawnIndex)
+        {
+            SpawnIndex = spawnIndex;
+            _spawnWorldPosition = transform.position;
         }
 
         private void OnMouseDown()
@@ -57,14 +66,18 @@ namespace DeepEarth.Combat
 
         private System.Collections.IEnumerator CoAttackLunge()
         {
+            Vector3 spawnPos = _spawnWorldPosition;
+            Vector3 forwardPos = spawnPos + new Vector3(0f, 0f, -1.5f);
+
+            Debug.Log($"[Battle]\nAttack Start\nPosition : {spawnPos.x:F2},{spawnPos.y:F2},{spawnPos.z:F2}");
+
             float elapsed = 0f;
             float duration = 0.25f;
-            Vector3 forwardPos = _originalPosition + new Vector3(0, 0, -1.5f); // Lunge towards camera
 
             while (elapsed < duration * 0.4f)
             {
                 float t = elapsed / (duration * 0.4f);
-                transform.localPosition = Vector3.Lerp(_originalPosition, forwardPos, t);
+                transform.position = Vector3.Lerp(spawnPos, forwardPos, t);
                 elapsed += Time.deltaTime;
                 yield return null;
             }
@@ -73,12 +86,13 @@ namespace DeepEarth.Combat
             while (elapsed < duration * 0.6f)
             {
                 float t = elapsed / (duration * 0.6f);
-                transform.localPosition = Vector3.Lerp(forwardPos, _originalPosition, t);
+                transform.position = Vector3.Lerp(forwardPos, spawnPos, t);
                 elapsed += Time.deltaTime;
                 yield return null;
             }
 
-            transform.localPosition = _originalPosition;
+            transform.position = spawnPos;
+            Debug.Log($"[Battle]\nReturn To Spawn Position\nPosition : {spawnPos.x:F2},{spawnPos.y:F2},{spawnPos.z:F2}");
         }
 
         public Color GetMonsterColor()

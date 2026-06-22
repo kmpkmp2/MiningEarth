@@ -78,7 +78,7 @@ namespace DeepEarth.UI
 
         private async UniTaskVoid LoadIconSpriteForCardAsync(EffectCardView cardView, string key)
         {
-            if (cardView == null) return;
+            if (cardView == null || string.IsNullOrEmpty(key)) return;
 
             Sprite sprite = null;
             if (ResourceManager.Instance != null)

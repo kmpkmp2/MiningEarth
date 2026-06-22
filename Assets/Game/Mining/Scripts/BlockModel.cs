@@ -1,4 +1,5 @@
 using DeepEarth.Common;
+using UnityEngine;
 
 namespace DeepEarth.Mining
 {
@@ -15,7 +16,7 @@ namespace DeepEarth.Mining
         {
             Type = type;
             BaseHits = GetBaseHitsForType(type);
-            MaxHits = BaseHits + GetDifficultyBonus(depth);
+            MaxHits = Mathf.RoundToInt(BaseHits * (1f + (float)depth / 15f));
             CurrentHits = MaxHits;
         }
 
@@ -23,23 +24,15 @@ namespace DeepEarth.Mining
         {
             switch (type)
             {
-                case BlockType.Dirt: return 1;
-                case BlockType.Stone: return 2;
-                case BlockType.Root: return 1;
-                case BlockType.Iron: return 3;
-                case BlockType.Silver: return 2;
-                case BlockType.Gold: return 3;
-                case BlockType.Diamond: return 5;
-                default: return 1;
+                case BlockType.Dirt:    return 1;
+                case BlockType.Root:    return 2;
+                case BlockType.Stone:   return 4;
+                case BlockType.Iron:    return 8;
+                case BlockType.Silver:  return 15;
+                case BlockType.Gold:    return 25;
+                case BlockType.Diamond: return 50;
+                default:                return 1;
             }
-        }
-
-        private int GetDifficultyBonus(int depth)
-        {
-            if (depth < 80) return 0;
-            if (depth < 150) return 1;
-            if (depth < 250) return 2;
-            return 3;
         }
 
         public bool TakeHit(int damage)

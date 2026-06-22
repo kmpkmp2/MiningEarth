@@ -70,6 +70,24 @@ namespace DeepEarth.Core
                 go.AddComponent<EffectManager>();
             }
 
+            if (FindAnyObjectByType<StatusEffectManager>() == null)
+            {
+                var go = new GameObject("StatusEffectManager");
+                go.AddComponent<StatusEffectManager>();
+            }
+
+            if (FindAnyObjectByType<RelicManager>() == null)
+            {
+                var go = new GameObject("RelicManager");
+                go.AddComponent<RelicManager>();
+            }
+
+            if (FindAnyObjectByType<PickaxeDurabilityManager>() == null)
+            {
+                var go = new GameObject("PickaxeDurabilityManager");
+                go.AddComponent<PickaxeDurabilityManager>();
+            }
+
             // Initialize Map and Theme systems
             InitializeMapSystem();
 
@@ -129,6 +147,21 @@ namespace DeepEarth.Core
         {
             // Wait a frame for everything to settle
             await UniTask.Yield();
+
+            if (StatusEffectManager.Instance != null)
+            {
+                await StatusEffectManager.Instance.InitializeAsync();
+            }
+
+            if (RelicManager.Instance != null)
+            {
+                await RelicManager.Instance.InitializeAsync();
+            }
+
+            if (PickaxeDurabilityManager.Instance != null)
+            {
+                await PickaxeDurabilityManager.Instance.InitializeAsync();
+            }
 
             if (GameManager.Instance != null)
             {

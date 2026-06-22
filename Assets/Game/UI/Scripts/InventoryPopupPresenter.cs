@@ -233,6 +233,13 @@ namespace DeepEarth.UI
         {
             if (_selectedSlotData == null) return;
 
+            // Resource items → pickaxe repair
+            if (_selectedSlotData.Item.Type == ItemType.Resource)
+            {
+                HandleRepairWithOre();
+                return;
+            }
+
             // Only consumable items can be used
             if (_selectedSlotData.Item.Type != ItemType.Consumable) return;
 
@@ -283,6 +290,45 @@ namespace DeepEarth.UI
             _collection.RemoveItem(itemId, 1);
             
             // Invoke GameManager/HUD update
+            GameManager.Instance.TriggerStatsOrResourcesChanged();
+        }
+
+        private void HandleRepairWithOre()
+        {
+            var manager = DeepEarth.Core.PickaxeDurabilityManager.Instance;
+            if (manager == null) return;
+
+            string itemId = _selectedSlotData.Item.Id;
+            var recipe = manager.GetRepairRecipe(itemId);
+            if (recipe == null) return;
+
+            if (manager.CurrentDurability >= manager.MaxDurability)
+            {
+                TriggerFloatingText(
+                    LocalizationManager.Instance.GetTranslation("pickaxe_repair_full"),
+                    Color.yellow);
+                return;
+            }
+
+            int available = InventoryManager.Instance.GetItemCount(itemId);
+            if (available < recipe.itemCostPerUse)
+            {
+                TriggerFloatingText(
+                    LocalizationManager.Instance.GetTranslation("pickaxe_repair_not_enough"),
+                    Color.red);
+                return;
+            }
+
+            int gain = UnityEngine.Mathf.Max(1,
+                UnityEngine.Mathf.RoundToInt(recipe.durabilityGain * manager.CurrentPickaxeEfficiency));
+
+            _collection.RemoveItem(itemId, recipe.itemCostPerUse);
+            manager.Repair(gain);
+
+            string oreName = LocalizationManager.Instance.GetTranslation(_selectedSlotData.Item.NameKey) ?? itemId;
+            Debug.Log($"[Pickaxe]\nRepair\nOre : {oreName}\nConsumed : {recipe.itemCostPerUse}\nRecovered : {gain}\nCurrent : {manager.CurrentDurability} / {manager.MaxDurability}");
+
+            TriggerFloatingText($"⛏ +{gain}", new Color(0.6f, 1f, 0.6f));
             GameManager.Instance.TriggerStatsOrResourcesChanged();
         }
 
