@@ -5,12 +5,17 @@ using UnityEngine;
 namespace DeepEarth.Core
 {
     [Serializable]
+    public class AchievementSaveEntry
+    {
+        public string AchievementID;
+        public int    CurrentProgress;
+        public bool   IsCompleted;
+    }
+
+    [Serializable]
     public class SaveData
     {
         public int Will;
-        public int MiningPowerLevel;
-        public int MaxHPLevel;
-        public int InventorySizeLevel;
         public string Language;
         public System.Collections.Generic.List<string> UnlockedCharacters = new System.Collections.Generic.List<string>();
         public int BestDepth;
@@ -24,14 +29,16 @@ namespace DeepEarth.Core
         public int PersistentGold;
         public int PersistentDiamond;
         public System.Collections.Generic.List<CharacterSaveEntry> CharacterProgress = new System.Collections.Generic.List<CharacterSaveEntry>();
+        public System.Collections.Generic.List<AchievementSaveEntry> AchievementProgress = new System.Collections.Generic.List<AchievementSaveEntry>();
+
+        // Pickaxe Shop
+        public string EquippedPickaxeID = "pickaxe_wood";
+        public System.Collections.Generic.List<string> UnlockedPickaxeIDs = new System.Collections.Generic.List<string>();
 
         public void InitializeDefault()
         {
             Will = 0;
-            MiningPowerLevel = 1;
-            MaxHPLevel = 1;
-            InventorySizeLevel = 1;
-            Language = (Application.systemLanguage == SystemLanguage.Korean) ? "ko" : "en";
+            Language =(Application.systemLanguage == SystemLanguage.Korean) ? "ko" : "en";
             UnlockedCharacters = new System.Collections.Generic.List<string> { "Prisoner" };
             BestDepth = 0;
 
@@ -50,6 +57,11 @@ namespace DeepEarth.Core
                 new CharacterSaveEntry { ID = CharacterID.Miner, IsUnlocked = false },
                 new CharacterSaveEntry { ID = CharacterID.GraveRobber, IsUnlocked = false }
             };
+
+            AchievementProgress = new System.Collections.Generic.List<AchievementSaveEntry>();
+
+            EquippedPickaxeID = "pickaxe_wood";
+            UnlockedPickaxeIDs = new System.Collections.Generic.List<string> { "pickaxe_wood" };
         }
     }
 
@@ -87,7 +99,17 @@ namespace DeepEarth.Core
                     else
                     {
                         // Ensure compatibility for existing older saves
-                        if (_cachedData.CharacterProgress == null || _cachedData.CharacterProgress.Count == 0)
+                        if (_cachedData.AchievementProgress == null)
+                            _cachedData.AchievementProgress = new System.Collections.Generic.List<AchievementSaveEntry>();
+
+                        if (_cachedData.UnlockedPickaxeIDs == null || _cachedData.UnlockedPickaxeIDs.Count == 0)
+                        {
+                            _cachedData.UnlockedPickaxeIDs = new System.Collections.Generic.List<string> { "pickaxe_wood" };
+                            if (string.IsNullOrEmpty(_cachedData.EquippedPickaxeID))
+                                _cachedData.EquippedPickaxeID = "pickaxe_wood";
+                        }
+
+                    if (_cachedData.CharacterProgress == null || _cachedData.CharacterProgress.Count == 0)
                         {
                             _cachedData.SelectedCharacterID = CharacterID.Prisoner;
                             _cachedData.CharacterProgress = new System.Collections.Generic.List<CharacterSaveEntry>
@@ -125,7 +147,7 @@ namespace DeepEarth.Core
             {
                 string json = JsonUtility.ToJson(_cachedData, true);
                 File.WriteAllText(SaveFilePath, json);
-                Debug.Log($"Game saved successfully at {SaveFilePath}");
+                Debug.Log("[Save]\nSave Complete");
             }
             catch (Exception ex)
             {

@@ -82,10 +82,22 @@ namespace DeepEarth.Core
                 go.AddComponent<RelicManager>();
             }
 
+            if (FindAnyObjectByType<PickaxeManager>() == null)
+            {
+                var go = new GameObject("PickaxeManager");
+                go.AddComponent<PickaxeManager>();
+            }
+
             if (FindAnyObjectByType<PickaxeDurabilityManager>() == null)
             {
                 var go = new GameObject("PickaxeDurabilityManager");
                 go.AddComponent<PickaxeDurabilityManager>();
+            }
+
+            if (FindAnyObjectByType<AchievementManager>() == null)
+            {
+                var go = new GameObject("AchievementManager");
+                go.AddComponent<AchievementManager>();
             }
 
             // Initialize Map and Theme systems
@@ -158,9 +170,19 @@ namespace DeepEarth.Core
                 await RelicManager.Instance.InitializeAsync();
             }
 
+            if (PickaxeManager.Instance != null)
+            {
+                await PickaxeManager.Instance.InitializeAsync();
+            }
+
             if (PickaxeDurabilityManager.Instance != null)
             {
                 await PickaxeDurabilityManager.Instance.InitializeAsync();
+            }
+
+            if (AchievementManager.Instance != null)
+            {
+                await AchievementManager.Instance.InitializeAsync();
             }
 
             if (GameManager.Instance != null)

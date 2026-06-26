@@ -106,6 +106,12 @@ namespace DeepEarth.Core
                 { "char_cost_label", "Cost:" },
                 { "char_owned_resources", "Owned Resources:" },
                 { "char_btn_open", "CHARACTER" },
+                { "achievement_btn_open", "ACHIEVEMENTS" },
+                { "achievement_popup_title", "Achievements" },
+                { "achievement_unlocked_header", "Achievement Unlocked!" },
+                { "achievement_completed_label", "Completed" },
+                { "achievement_hidden_name", "???" },
+                { "achievement_hidden_desc", "Complete to reveal." },
 
                 { "char_prisoner_name", "Prisoner" },
                 { "char_prisoner_desc", "Starting point of all growth. No special passive ability." },
@@ -270,6 +276,40 @@ namespace DeepEarth.Core
                 { "pickaxe_repair_full", "Durability is already full!" },
                 { "pickaxe_repair_not_enough", "Not enough materials!" },
 
+                // Achievement names / descs
+                { "ach_first_step_name", "First Step" },
+                { "ach_first_step_desc", "Start your first run." },
+                { "ach_depth50_name", "Fifty Fathoms" },
+                { "ach_depth50_desc", "Reach depth 50." },
+                { "ach_depth100_name", "Deep Dive" },
+                { "ach_depth100_desc", "Reach depth 100." },
+                { "ach_depth200_name", "The Abyss" },
+                { "ach_depth200_desc", "Reach depth 200." },
+                { "ach_kill10_name", "Monster Slayer" },
+                { "ach_kill10_desc", "Defeat 10 monsters." },
+                { "ach_kill50_name", "Exterminator" },
+                { "ach_kill50_desc", "Defeat 50 monsters." },
+                { "ach_boss_first_name", "First Blood" },
+                { "ach_boss_first_desc", "Defeat your first boss." },
+                { "ach_boss_cave_rat_name", "Rat Catcher" },
+                { "ach_boss_cave_rat_desc", "Defeat the Cave Rat boss." },
+                { "ach_ore_iron50_name", "Iron Will" },
+                { "ach_ore_iron50_desc", "Mine 50 iron ore." },
+                { "ach_ore_diamond10_name", "Diamond Hunter" },
+                { "ach_ore_diamond10_desc", "Mine 10 diamond ore." },
+                { "ach_relic1_name", "Collector" },
+                { "ach_relic1_desc", "Collect your first relic." },
+                { "ach_relic5_name", "Hoarder" },
+                { "ach_relic5_desc", "Collect 5 relics." },
+                { "ach_death1_name", "It Hurts" },
+                { "ach_death1_desc", "Die for the first time." },
+                { "ach_repair1_name", "Handyman" },
+                { "ach_repair1_desc", "Repair your pickaxe once." },
+                { "ach_lava1_name", "Playing with Fire" },
+                { "ach_lava1_desc", "Survive a lava encounter." },
+                { "ach_treasure5_name", "Treasure Hunter" },
+                { "ach_treasure5_desc", "Open 5 treasure chests." },
+
                 { "effect_type_StatusEffect", "Status Effect" },
 
                 { "status_burn_name", "Burn" },
@@ -290,7 +330,70 @@ namespace DeepEarth.Core
                 { "relic_cursed_ash_name", "Cursed Ash" },
                 { "relic_cursed_ash_desc", "Max HP +5, Burn duration +5 turns" },
                 { "relic_fire_cult_mask_name", "Fire Cult Mask" },
-                { "relic_fire_cult_mask_desc", "Monster Attack +2, Burn damage +2" }
+                { "relic_fire_cult_mask_desc", "Monster Attack +2, Burn damage +2" },
+
+                // Shop tabs
+                { "shop_tab_pickaxe",    "Pickaxe" },
+                { "shop_tab_character",  "Character" },
+                { "shop_tab_consumable", "Item" },
+                { "shop_tab_special",    "Special" },
+                { "shop_owned",          "OWNED" },
+                { "shop_info_select",    "Select an item" },
+
+                // Pickaxe Shop
+                { "shop_pickaxe_title",        "Pickaxes" },
+                { "shop_pickaxe_mining_power", "⛏ Mining Power: {0}" },
+                { "shop_pickaxe_durability",   "♦ Max Durability: {0}" },
+                { "shop_pickaxe_buy",          "BUY" },
+                { "shop_pickaxe_equip",        "EQUIP" },
+                { "shop_pickaxe_equipped",     "EQUIPPED" },
+
+                { "pickaxe_wood_name",    "Wood Pickaxe" },
+                { "pickaxe_wood_desc",    "A basic pickaxe. Reliable but weak." },
+                { "pickaxe_iron_name",    "Iron Pickaxe" },
+                { "pickaxe_iron_desc",    "Forged from iron. Breaks ore faster." },
+                { "pickaxe_silver_name",  "Silver Pickaxe" },
+                { "pickaxe_silver_desc",  "A refined pickaxe. Cuts through stone with ease." },
+                { "pickaxe_gold_name",    "Gold Pickaxe" },
+                { "pickaxe_gold_desc",    "A heavy pickaxe of great power." },
+                { "pickaxe_diamond_name", "Diamond Pickaxe" },
+                { "pickaxe_diamond_desc", "The ultimate pickaxe. Nothing can stop it." },
+
+                // Mining Power buff/curse effects
+                { "effect_buff_mining_name", "Mining Power Up" },
+                { "effect_buff_mining_desc", "Mining Power +{0}" },
+                { "effect_curse_mining_name", "Mining Curse" },
+                { "effect_curse_mining_desc", "Mining Power -{0}" },
+
+                // New Treasure Relics - Mining
+                { "relic_miners_gloves_name", "Miner's Gloves" },
+                { "relic_miners_gloves_desc", "Mining Power +1" },
+                { "relic_mining_king_helmet_name", "Mining King's Helmet" },
+                { "relic_mining_king_helmet_desc", "Mining Power +2" },
+                { "relic_broken_drill_name", "Broken Drill" },
+                { "relic_broken_drill_desc", "Mining Power +3, Max HP -5" },
+                { "relic_ore_detector_name", "Ore Detector" },
+                { "relic_ore_detector_desc", "Mining Power +1, Resource Yield +20%" },
+
+                // New Treasure Relics - Combat
+                { "relic_warriors_ring_name", "Warrior's Ring" },
+                { "relic_warriors_ring_desc", "Attack Power +1" },
+                { "relic_mercenary_medal_name", "Mercenary's Medal" },
+                { "relic_mercenary_medal_desc", "Attack Power +2" },
+                { "relic_blood_contract_name", "Blood Contract" },
+                { "relic_blood_contract_desc", "Attack Power +3, Max HP -5" },
+                { "relic_hunters_eye_name", "Hunter's Eye" },
+                { "relic_hunters_eye_desc", "Attack Power +1, Monster Encounter +10%" },
+
+                // New Tombstone Relics
+                { "relic_cursed_pickaxe_name", "Cursed Pickaxe" },
+                { "relic_cursed_pickaxe_desc", "Mining Power +2, Burn Damage +1" },
+                { "relic_madness_sword_name", "Blade of Madness" },
+                { "relic_madness_sword_desc", "Attack Power +2, Monster Encounter +15%" },
+                { "relic_cursed_mining_gloves_name", "Cursed Mining Gloves" },
+                { "relic_cursed_mining_gloves_desc", "Mining Power +1, Max HP -3" },
+                { "relic_blood_rune_name", "Blood Rune" },
+                { "relic_blood_rune_desc", "Attack Power +1, Burn Duration +2 turns" }
             };
 
             // Korean translations
@@ -356,6 +459,12 @@ namespace DeepEarth.Core
                 { "char_cost_label", "해금 비용:" },
                 { "char_owned_resources", "보유 자원:" },
                 { "char_btn_open", "캐릭터" },
+                { "achievement_btn_open", "업적" },
+                { "achievement_popup_title", "업적" },
+                { "achievement_unlocked_header", "업적 달성!" },
+                { "achievement_completed_label", "달성" },
+                { "achievement_hidden_name", "???" },
+                { "achievement_hidden_desc", "달성 시 공개됩니다." },
 
                 { "char_prisoner_name", "죄인" },
                 { "char_prisoner_desc", "모든 성장의 시작점. 특별한 고유 능력이 없습니다." },
@@ -520,6 +629,40 @@ namespace DeepEarth.Core
                 { "pickaxe_repair_full", "내구도가 이미 최대입니다." },
                 { "pickaxe_repair_not_enough", "재료가 부족합니다." },
 
+                // 업적 이름/설명
+                { "ach_first_step_name", "첫 발걸음" },
+                { "ach_first_step_desc", "첫 번째 런을 시작합니다." },
+                { "ach_depth50_name", "50미 아래로" },
+                { "ach_depth50_desc", "깊이 50에 도달합니다." },
+                { "ach_depth100_name", "심연을 향해" },
+                { "ach_depth100_desc", "깊이 100에 도달합니다." },
+                { "ach_depth200_name", "지하 심층" },
+                { "ach_depth200_desc", "깊이 200에 도달합니다." },
+                { "ach_kill10_name", "몬스터 사냥꾼" },
+                { "ach_kill10_desc", "몬스터 10마리를 처치합니다." },
+                { "ach_kill50_name", "해충 구제사" },
+                { "ach_kill50_desc", "몬스터 50마리를 처치합니다." },
+                { "ach_boss_first_name", "첫 번째 피" },
+                { "ach_boss_first_desc", "첫 번째 보스를 처치합니다." },
+                { "ach_boss_cave_rat_name", "쥐 사냥꾼" },
+                { "ach_boss_cave_rat_desc", "동굴쥐 보스를 처치합니다." },
+                { "ach_ore_iron50_name", "철의 의지" },
+                { "ach_ore_iron50_desc", "철 광석을 50개 채굴합니다." },
+                { "ach_ore_diamond10_name", "다이아몬드 사냥꾼" },
+                { "ach_ore_diamond10_desc", "다이아몬드 광석을 10개 채굴합니다." },
+                { "ach_relic1_name", "수집가" },
+                { "ach_relic1_desc", "처음으로 유물을 수집합니다." },
+                { "ach_relic5_name", "사재기꾼" },
+                { "ach_relic5_desc", "유물을 5개 수집합니다." },
+                { "ach_death1_name", "아프다" },
+                { "ach_death1_desc", "처음으로 사망합니다." },
+                { "ach_repair1_name", "수리공" },
+                { "ach_repair1_desc", "곡괭이를 한 번 수리합니다." },
+                { "ach_lava1_name", "불장난" },
+                { "ach_lava1_desc", "용암 조우에서 살아남습니다." },
+                { "ach_treasure5_name", "보물 사냥꾼" },
+                { "ach_treasure5_desc", "보물 상자를 5개 엽니다." },
+
                 { "effect_type_StatusEffect", "상태이상" },
 
                 { "status_burn_name", "화상" },
@@ -540,7 +683,70 @@ namespace DeepEarth.Core
                 { "relic_cursed_ash_name", "저주받은 재" },
                 { "relic_cursed_ash_desc", "최대 체력 +5, 화상 지속 시간 5턴 증가" },
                 { "relic_fire_cult_mask_name", "불의 교단 가면" },
-                { "relic_fire_cult_mask_desc", "몬스터 공격력 +2, 화상 피해 2 증가" }
+                { "relic_fire_cult_mask_desc", "몬스터 공격력 +2, 화상 피해 2 증가" },
+
+                // 상점 탭
+                { "shop_tab_pickaxe",    "곡괭이" },
+                { "shop_tab_character",  "캐릭터" },
+                { "shop_tab_consumable", "아이템" },
+                { "shop_tab_special",    "특수" },
+                { "shop_owned",          "보유 중" },
+                { "shop_info_select",    "상품을 선택하세요" },
+
+                // 곡괭이 상점
+                { "shop_pickaxe_title",        "곡괭이" },
+                { "shop_pickaxe_mining_power", "⛏ 채굴력: {0}" },
+                { "shop_pickaxe_durability",   "♦ 최대 내구도: {0}" },
+                { "shop_pickaxe_buy",          "구매" },
+                { "shop_pickaxe_equip",        "장착" },
+                { "shop_pickaxe_equipped",     "장착 중" },
+
+                { "pickaxe_wood_name",    "나무 곡괭이" },
+                { "pickaxe_wood_desc",    "기본 곡괭이. 튼튼하지만 약하다." },
+                { "pickaxe_iron_name",    "철 곡괭이" },
+                { "pickaxe_iron_desc",    "철로 단조된 곡괭이. 광석을 더 빠르게 부순다." },
+                { "pickaxe_silver_name",  "은 곡괭이" },
+                { "pickaxe_silver_desc",  "정제된 곡괭이. 돌을 쉽게 뚫는다." },
+                { "pickaxe_gold_name",    "금 곡괭이" },
+                { "pickaxe_gold_desc",    "강력한 힘을 가진 묵직한 곡괭이." },
+                { "pickaxe_diamond_name", "다이아 곡괭이" },
+                { "pickaxe_diamond_desc", "최강의 곡괭이. 무엇도 막을 수 없다." },
+
+                // 채굴력 버프/디버프 효과
+                { "effect_buff_mining_name", "채굴력 증가" },
+                { "effect_buff_mining_desc", "채굴력 +{0}" },
+                { "effect_curse_mining_name", "채굴력 저주" },
+                { "effect_curse_mining_desc", "채굴력 -{0}" },
+
+                // 신규 보물 유물 - 채굴 계열
+                { "relic_miners_gloves_name", "광부의 장갑" },
+                { "relic_miners_gloves_desc", "채굴력 +1" },
+                { "relic_mining_king_helmet_name", "채굴왕의 헬멧" },
+                { "relic_mining_king_helmet_desc", "채굴력 +2" },
+                { "relic_broken_drill_name", "부서진 드릴" },
+                { "relic_broken_drill_desc", "채굴력 +3, 최대 체력 -5" },
+                { "relic_ore_detector_name", "광맥 탐지기" },
+                { "relic_ore_detector_desc", "채굴력 +1, 광물 획득량 +20%" },
+
+                // 신규 보물 유물 - 전투 계열
+                { "relic_warriors_ring_name", "전사의 반지" },
+                { "relic_warriors_ring_desc", "공격력 +1" },
+                { "relic_mercenary_medal_name", "용병의 훈장" },
+                { "relic_mercenary_medal_desc", "공격력 +2" },
+                { "relic_blood_contract_name", "피의 계약서" },
+                { "relic_blood_contract_desc", "공격력 +3, 최대 체력 -5" },
+                { "relic_hunters_eye_name", "사냥꾼의 눈" },
+                { "relic_hunters_eye_desc", "공격력 +1, 몬스터 조우 확률 +10%" },
+
+                // 신규 무덤 저주 유물
+                { "relic_cursed_pickaxe_name", "저주받은 곡괭이" },
+                { "relic_cursed_pickaxe_desc", "채굴력 +2, 화상 피해 +1" },
+                { "relic_madness_sword_name", "광기의 검" },
+                { "relic_madness_sword_desc", "공격력 +2, 몬스터 조우 확률 +15%" },
+                { "relic_cursed_mining_gloves_name", "저주받은 채굴 장갑" },
+                { "relic_cursed_mining_gloves_desc", "채굴력 +1, 최대 체력 -3" },
+                { "relic_blood_rune_name", "피의 룬" },
+                { "relic_blood_rune_desc", "공격력 +1, 화상 지속 시간 +2턴" }
             };
 
             _translations["en"] = en;

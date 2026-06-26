@@ -9,6 +9,7 @@ namespace DeepEarth.Core
     {
         // Buffs
         BuffAttackDamage,
+        BuffMiningPower,
         BuffMaxHP,
         BuffInventory,
         BuffMonsterSpawnRateDecrease,
@@ -16,6 +17,7 @@ namespace DeepEarth.Core
 
         // Curses
         CurseAttackDamage,
+        CurseMiningPower,
         CurseMaxHP,
         CurseMonsterSpawnRateIncrease,
         CurseHazardSpawnRateIncrease,
@@ -60,6 +62,8 @@ namespace DeepEarth.Core
 
         // Relic modifier: monster attack bonus (FireCultMask 등)
         public int RelicMonsterAttackBonus { get; set; } = 0;
+        // Relic modifier: mining power bonus
+        public int RelicMiningModifier { get; set; } = 0;
 
         // Buff / Curse stacks (Limited to max 3 per effect type)
         private readonly Dictionary<EffectType, int> _effectStacks = new Dictionary<EffectType, int>();
@@ -95,6 +99,7 @@ namespace DeepEarth.Core
             BossDamageToBossMultiplier = 1f;
             BossRareEventDouble = false;
             RelicMonsterAttackBonus = 0;
+            RelicMiningModifier = 0;
 
             // Apply Meta Upgrades and Character stats
             var meta = MetaProgressionManager.Instance;
@@ -102,7 +107,8 @@ namespace DeepEarth.Core
             
             BaseMaxHP = 10 + (meta.MaxHPLevel - 1) * 2;
             BaseAttackDamage = 1 + (meta.AttackLevel - 1) + CharacterManager.Instance.GetStartingAttackBonus(selectedChar);
-            BaseMiningPower = 1 + (meta.MiningPowerLevel - 1) + CharacterManager.Instance.GetStartingMiningBonus(selectedChar);
+            int pickaxeMiningPower = PickaxeManager.Instance?.GetEquippedMiningPower() ?? 1;
+            BaseMiningPower = pickaxeMiningPower + (meta.MiningPowerLevel - 1) + CharacterManager.Instance.GetStartingMiningBonus(selectedChar);
             BaseInventorySize = 24; // Base Capacity is 24
 
             int upgradeBonus = meta.InventorySizeLevel * 4;
@@ -177,8 +183,15 @@ namespace DeepEarth.Core
                     nameKey = "effect_buff_attack_name";
                     descKey = "effect_buff_attack_desc";
                     value = stack * 1;
-                    display = $"⚔{value}";
+                    display = $"⚔+{value}";
                     iconKey = "Effect_Buff_Attack";
+                    break;
+                case EffectType.BuffMiningPower:
+                    nameKey = "effect_buff_mining_name";
+                    descKey = "effect_buff_mining_desc";
+                    value = stack * 1;
+                    display = $"⛏+{value}";
+                    iconKey = "Effect_Buff_Mining";
                     break;
                 case EffectType.BuffMaxHP:
                     nameKey = "effect_buff_maxhp_name";
@@ -212,8 +225,15 @@ namespace DeepEarth.Core
                     nameKey = "effect_curse_attack_name";
                     descKey = "effect_curse_attack_desc";
                     value = stack * 1;
-                    display = $"-{value}";
+                    display = $"⚔-{value}";
                     iconKey = "Effect_Debuff_Attack";
+                    break;
+                case EffectType.CurseMiningPower:
+                    nameKey = "effect_curse_mining_name";
+                    descKey = "effect_curse_mining_desc";
+                    value = stack * 1;
+                    display = $"⛏-{value}";
+                    iconKey = "Effect_Debuff_Mining";
                     break;
                 case EffectType.CurseMaxHP:
                     nameKey = "effect_curse_maxhp_name";
@@ -280,9 +300,9 @@ namespace DeepEarth.Core
         {
             var selectedChar = CharacterManager.Instance.SelectedCharacterID;
             int passiveBonus = CharacterManager.Instance.GetPassiveMiningBonus(selectedChar);
-            int buffModifier = GetEffectStack(EffectType.BuffAttackDamage) * 1;
-            int curseModifier = GetEffectStack(EffectType.CurseAttackDamage) * 1;
-            return Mathf.Max(1, BaseMiningPower + passiveBonus + buffModifier - curseModifier + BossMiningModifier);
+            int buffModifier = GetEffectStack(EffectType.BuffMiningPower) * 1;
+            int curseModifier = GetEffectStack(EffectType.CurseMiningPower) * 1;
+            return Mathf.Max(1, BaseMiningPower + passiveBonus + buffModifier - curseModifier + BossMiningModifier + RelicMiningModifier);
         }
 
         public int GetInventorySize()
@@ -296,7 +316,8 @@ namespace DeepEarth.Core
             float baseRate = 1.0f;
             float buffModifier = GetEffectStack(EffectType.BuffMonsterSpawnRateDecrease) * 0.15f; // -15% per stack
             float curseModifier = GetEffectStack(EffectType.CurseMonsterSpawnRateIncrease) * 0.25f; // +25% per stack
-            return Mathf.Max(0.1f, (baseRate - buffModifier + curseModifier) * BossMonsterSpawnMultiplier);
+            float relicModifier = RelicManager.Instance?.GetRelicMonsterSpawnRateBonus() ?? 0f;
+            return Mathf.Max(0.1f, (baseRate - buffModifier + curseModifier + relicModifier) * BossMonsterSpawnMultiplier);
         }
 
         public float GetHazardSpawnRateMultiplier()

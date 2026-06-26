@@ -139,6 +139,9 @@ namespace DeepEarth.Combat
             // Action turn: 1 monster kill = 1 turn (triggers status effect ticks)
             StatusEffectManager.Instance?.ProcessActionTurn();
 
+            // Achievement event
+            DeepEarth.Common.GameEvents.FireMonsterKilled();
+
             // If all monsters are killed, complete combat
             if (_activePresenters.Count == 0)
             {

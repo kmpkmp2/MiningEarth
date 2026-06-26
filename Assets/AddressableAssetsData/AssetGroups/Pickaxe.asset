@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Pickaxe
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Pickaxe
+  m_GUID: 0cbc10adcb5490e43a2a56baf131d0f4
+  m_SerializeEntries:
+  - m_GUID: 5d871d2079573a54095f5762cffd9730
+    m_Address: Pickaxe_Silver
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Pickaxe
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7891bfea4d5d5e44aa3e92ef875277db
+    m_Address: Pickaxe_Diamond
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Pickaxe
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7b7540b49c7b15d419b7b045796e1c2c
+    m_Address: Pickaxe_Gold
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Pickaxe
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d372f5560e405da42b49ea5e84c041b0
+    m_Address: Pickaxe_Iron
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Pickaxe
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e33cc3d7afa59d947bd054ebcce53d3f
+    m_Address: Pickaxe_Wood
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Pickaxe
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: bf53922257c85cf45b1d5828a500e7b9, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 018c6d9b6ae3728408a7fafe40082f35, type: 2}
+    - {fileID: 11400000, guid: 4643e2335b3e5d541a533f587f200d3a, type: 2}

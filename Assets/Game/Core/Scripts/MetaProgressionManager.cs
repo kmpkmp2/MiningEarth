@@ -100,7 +100,7 @@ namespace DeepEarth.Core
                         break;
                     case UpgradeType.PickaxeDurability:
                         progress.UpgradeData.PickaxeDurabilityLevel++;
-                        Debug.Log($"[Pickaxe]\nUpgrade\nNew Level : {progress.UpgradeData.PickaxeDurabilityLevel}\nBonus : +{progress.UpgradeData.PickaxeDurabilityLevel * 20}");
+                        Debug.Log($"[Pickaxe]\nUpgrade\nNew Level : {progress.UpgradeData.PickaxeDurabilityLevel}\nBonus : +{progress.UpgradeData.PickaxeDurabilityLevel * 10}%");
                         break;
                 }
                 SaveManager.Save();

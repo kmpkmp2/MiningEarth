@@ -183,8 +183,6 @@ namespace DeepEarth.Core
             int runSilver = RunCollection.GetItemCount("Item_Silver");
             int runGold = RunCollection.GetItemCount("Item_Gold");
             int runDiamond = RunCollection.GetItemCount("Item_Diamond");
-            int runWill = (GameManager.Instance != null) ? GameManager.Instance.WillEarnedThisRun : 0;
-
             if (runStone > 0)
             {
                 data.PersistentStone += runStone;
@@ -221,11 +219,7 @@ namespace DeepEarth.Core
                 MetaCollection.AddItem(GetTemplate("Item_Diamond"), runDiamond);
                 Debug.Log($"[Run]\nDiamond +{runDiamond}");
             }
-            if (runWill > 0)
-            {
-                data.Will += runWill;
-                Debug.Log($"[Run]\nWill +{runWill}");
-            }
+            // Will은 GameManager.RunEnd()에서 MetaProgressionManager.AddWill()로 이미 저장됨 — 중복 추가 제거
 
             SaveManager.Save();
         }

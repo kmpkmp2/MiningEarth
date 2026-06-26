@@ -21,6 +21,89 @@ MonoBehaviour:
     m_SerializedLabels:
     - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0605fbd06f5bbe64592f32a42c813c3f
+    m_Address: ach_relic5
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Achievement
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 09377517552e474798c8f3ee81807a14
+    m_Address: Relic_BrokenDrill
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 13361750ad4c467bab5ea29dfc528bb3
+    m_Address: Relic_MinersGloves
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 158049cb385e67143a938584326c1cfa
+    m_Address: ach_lava1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Achievement
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 16781b2368db2b243aa8c87ef7a49ef1
+    m_Address: ach_ore_iron50
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Achievement
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1dcdbd36da3db454ba8ad789306a88d4
+    m_Address: ach_boss_first
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Achievement
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e164bf7aaa3477eacd9e24d4ab8ca57
+    m_Address: Relic_BloodContract
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 21fa4e6a6caf4409b8cca5772202fd3b
+    m_Address: Relic_MercenaryMedal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 25ccbe8b462defe459bdb9c6e480a3e8
+    m_Address: ach_treasure5
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Achievement
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 30255cab670d5ef43a4ba321868dc98f
+    m_Address: ach_relic1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Achievement
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 36a7df9d4bb5dc346952699cfedd6726
+    m_Address: UI_Prefab_ShopItemSlot
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3da17855428de584ebb6dfc596bb3a9b
+    m_Address: ach_repair1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Achievement
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 40a467cc1dd59c441a33bdbdbffd0544
+    m_Address: ach_ore_diamond10
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Achievement
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4175d04d3afd443d81c8344f2f0276f1
+    m_Address: Relic_BloodRune
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 47fa4ec966b0eaf429893772febc419d
     m_Address: Relic_FrozenCrystal
     m_ReadOnly: 0
@@ -32,22 +115,82 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 519c51b915074554e888a70f65033577
+    m_Address: ach_depth100
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Achievement
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5e4d6e73f4664df39b020dc3eecd71d0
+    m_Address: Relic_OreDetector
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 618e981dcb63450a94ef5e4ccf65eacc
+    m_Address: Relic_MadnessSword
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 624035da422aa1a458f321876adc2b15
     m_Address: Relic_LavaContract
     m_ReadOnly: 0
     m_SerializedLabels:
     - Relic_Tombstone
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 693d82b5c77e4d7591f7b0e66f4c3423
+    m_Address: Relic_CursedMiningGloves
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 76a61630e35d379429773aba69f1cb0c
+    m_Address: ach_boss_cave_rat
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Achievement
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 77a9a6e40a6a3964ca3bc7d321d44bd4
     m_Address: StatusEffect_Burn
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8560bbd83fb4dbe47ba2dc000b0029f8
+    m_Address: ach_kill50
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Achievement
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 89e96dd4159e7b24dab10600b0773245
     m_Address: Relic_BurningHeart
     m_ReadOnly: 0
     m_SerializedLabels:
     - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8a37362d18a5e8e4d97231c9f54634a0
+    m_Address: ach_depth200
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Achievement
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8f15d65638584de9901bdb087942d15e
+    m_Address: Relic_HuntersEye
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a9137ab19b07d974a9fa63bb3c6965dc
+    m_Address: ach_depth50
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Achievement
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: aa18e768350ef3242a4ae08ff260896c
+    m_Address: ach_first_step
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Achievement
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: adecc1b34968bd943b034618fcad6dfb
     m_Address: Relic_FireCultMask
@@ -72,8 +215,38 @@ MonoBehaviour:
     m_SerializedLabels:
     - Relic_Tombstone
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b9e1ff49f70ce964588ccc1ed066aa2b
+    m_Address: ach_kill10
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Achievement
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bf891c3affd648ffa717e8f458e3b2f4
+    m_Address: Relic_CursedPickaxe
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c4305b9afe0454d4f8864d629f082424
     m_Address: Relic_FirefighterHelmet
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d93235663ebc4232b66b49215cef0d0b
+    m_Address: Relic_WarriorsRing
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dd1900d9d171078499950dc2704af073
+    m_Address: ach_death1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Achievement
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f1a49154007543e1a55fc3193dda5ff2
+    m_Address: Relic_MiningKingHelmet
     m_ReadOnly: 0
     m_SerializedLabels:
     - Relic_Treasure

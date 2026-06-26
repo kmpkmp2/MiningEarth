@@ -330,6 +330,24 @@ namespace DeepEarth.UI
 
             TriggerFloatingText($"⛏ +{gain}", new Color(0.6f, 1f, 0.6f));
             GameManager.Instance.TriggerStatsOrResourcesChanged();
+
+            // Achievement event
+            var oreType = ItemIdToBlockType(itemId);
+            if (oreType.HasValue)
+                DeepEarth.Common.GameEvents.FireRepairWithOre(oreType.Value);
+        }
+
+        private DeepEarth.Common.BlockType? ItemIdToBlockType(string itemId)
+        {
+            switch (itemId)
+            {
+                case "Item_Stone":   return DeepEarth.Common.BlockType.Stone;
+                case "Item_Iron":    return DeepEarth.Common.BlockType.Iron;
+                case "Item_Silver":  return DeepEarth.Common.BlockType.Silver;
+                case "Item_Gold":    return DeepEarth.Common.BlockType.Gold;
+                case "Item_Diamond": return DeepEarth.Common.BlockType.Diamond;
+                default:             return null;
+            }
         }
 
         private void HandleDropClick()

@@ -114,7 +114,7 @@ namespace DeepEarth.Core
                 _spawnedBossObject.name = "FallbackBoss";
                 _spawnedBossObject.transform.position = spawnPoint.position;
                 _spawnedBossObject.transform.rotation = spawnPoint.rotation;
-                _spawnedBossObject.transform.localScale = new Vector3(2f, 2f, 2f);
+                _spawnedBossObject.transform.localScale = Vector3.one;
 
                 var renderer = _spawnedBossObject.GetComponent<MeshRenderer>();
                 if (renderer != null)
@@ -131,6 +131,25 @@ namespace DeepEarth.Core
             {
                 _spawnedBossObject.transform.position = spawnPoint.position;
                 _spawnedBossObject.transform.rotation = spawnPoint.rotation;
+
+                // Scale 안전장치: 프리팹 또는 풀 재사용으로 인한 비정상 Scale 보정
+                Vector3 scale = _spawnedBossObject.transform.localScale;
+                if (scale != Vector3.one)
+                {
+                    Debug.Log($"[Boss]\nInvalid Scale Detected\nBefore : {scale}\nAfter : (1,1,1)");
+                    _spawnedBossObject.transform.localScale = Vector3.one;
+                }
+
+                string bossDisplayName = bossId switch
+                {
+                    BossID.CaveRat      => "Cave Rat King",
+                    BossID.QueenSpider  => "Queen Spider",
+                    BossID.RockGolem    => "Rock Golem",
+                    BossID.LavaWorm     => "Lava Worm",
+                    BossID.CrystalTitan => "Crystal Titan",
+                    _                   => bossId.ToString()
+                };
+                Debug.Log($"[Boss]\nSpawned\nBoss : {bossDisplayName}\nScale : (1,1,1)");
             }
 
             var monsterView = _spawnedBossObject.GetComponent<MonsterView>();
@@ -150,6 +169,10 @@ namespace DeepEarth.Core
 
             _bossPresenter = new BossPresenter(bossData, _bossView, monsterView, spawnPoint);
             _bossPresenter.OnBossDefeated += () => bossDefeatedTcs.TrySetResult();
+
+            // Achievement: subscribe before waiting
+            _bossPresenter.OnBossDefeated += () =>
+                DeepEarth.Common.GameEvents.FireBossKilled(bossId.ToString());
 
             // Wait until Boss is defeated
             await bossDefeatedTcs.Task;

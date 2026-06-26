@@ -85,6 +85,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 297856b315f6e1d4097f3858f33afd7c
+    m_Address: UI_Panel_EventReveal
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2b57b464eb6ba9540a102aee3fd7d150
     m_Address: Effect_BossReward_Mineral
     m_ReadOnly: 0

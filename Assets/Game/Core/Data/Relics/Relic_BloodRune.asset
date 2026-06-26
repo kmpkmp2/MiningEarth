@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 535cdf5e4fecdd1438a9ed245133baa2, type: 3}
+  m_Name: Relic_BloodRune
+  m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.Core.RelicData
+  relicID: relic_blood_rune
+  nameLocKey: relic_blood_rune_name
+  descLocKey: relic_blood_rune_desc
+  iconKey:
+  isTombstone: 1
+  burnDurationModifier: 2
+  burnDamageModifier: 0
+  burnImmunityChance: 0
+  attackBonus: 1
+  miningPowerBonus: 0
+  maxHPBonus: 0
+  resourceMultiplierBonus: 0
+  monsterAttackBonus: 0
+  monsterSpawnRateBonus: 0

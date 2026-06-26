@@ -58,6 +58,7 @@ namespace DeepEarth.Common
         public const string MonsterBossTitan = "Combat_Boss_Titan";
 
         // UI Panels
+        public const string ShopItemSlot = "UI_Prefab_ShopItemSlot";
         public const string UIPanelHUD = "UI_Panel_HUD";
         public const string UIPanelGameOver = "UI_Panel_GameOver";
         public const string UIPanelEvent = "UI_Panel_Event";
@@ -87,7 +88,13 @@ namespace DeepEarth.Common
 
         // Pickaxe
         public const string PickaxeDefault = "Pickaxe_Default";
-        public const string PickaxeConfig = "Pickaxe_Config";
+        public const string PickaxeConfig  = "Pickaxe_Config";
+
+        // Achievement
+        public const string LabelAchievement = "Achievement";
+
+        // Pickaxe label (multi-load)
+        public const string LabelPickaxe = "Pickaxe";
 
         // Relic Addressable Labels (label-based load — no per-relic key needed)
         public const string LabelRelicTreasure = "Relic_Treasure";
@@ -122,5 +129,13 @@ namespace DeepEarth.Common
     {
         public const float BaseAttackInterval = 1f;
         public const int MaxBuffDebuffStack = 3;
+        public const int BossSpawnDepthInterval = 50;
+    }
+
+    public static class SceneNames
+    {
+        public const string Loading   = "LoadingScene";
+        public const string StartMenu = "StartMenuScene";
+        public const string MainGame  = "MainGameScene";
     }
 }

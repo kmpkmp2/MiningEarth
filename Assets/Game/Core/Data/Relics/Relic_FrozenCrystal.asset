@@ -24,3 +24,5 @@ MonoBehaviour:
   maxHPBonus: 0
   resourceMultiplierBonus: 0
   monsterAttackBonus: 0
+  miningPowerBonus: 0
+  monsterSpawnRateBonus: 0

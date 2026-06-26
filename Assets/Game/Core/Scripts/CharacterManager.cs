@@ -102,8 +102,9 @@ namespace DeepEarth.Core
 
             var progress = GetCharacterProgress(id);
             progress.IsUnlocked = true;
-            
+
             SaveManager.Save();
+            DeepEarth.Common.GameEvents.FireCharacterUnlocked(id);
             return true;
         }
 

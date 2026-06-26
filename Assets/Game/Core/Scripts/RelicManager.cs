@@ -63,6 +63,9 @@ namespace DeepEarth.Core
             if (relic.attackBonus != 0)
                 StatManager.Instance.BossAttackModifier += relic.attackBonus;
 
+            if (relic.miningPowerBonus != 0)
+                StatManager.Instance.RelicMiningModifier += relic.miningPowerBonus;
+
             if (relic.maxHPBonus != 0)
             {
                 StatManager.Instance.BossMaxHPModifier += relic.maxHPBonus;
@@ -90,6 +93,8 @@ namespace DeepEarth.Core
 
             StatManager.Instance.TriggerStatsUpdated();
             Debug.Log($"[Relic]\nAcquired\n{relic.relicID}");
+
+            DeepEarth.Common.GameEvents.FireRelicCollected();
         }
 
         public int GetBurnDurationModifier()
@@ -123,6 +128,13 @@ namespace DeepEarth.Core
             return total;
         }
 
+        public float GetRelicMonsterSpawnRateBonus()
+        {
+            float total = 0f;
+            foreach (var r in _activeRelics) total += r.monsterSpawnRateBonus;
+            return total;
+        }
+
         public void LogBurnContributions()
         {
             foreach (var r in _activeRelics)
@@ -152,7 +164,9 @@ namespace DeepEarth.Core
             var sb = new System.Text.StringBuilder();
 
             if (relic.attackBonus != 0)
-                sb.Append($"공격 {(relic.attackBonus > 0 ? "+" : "")}{relic.attackBonus}  ");
+                sb.Append($"공격력 {(relic.attackBonus > 0 ? "+" : "")}{relic.attackBonus}  ");
+            if (relic.miningPowerBonus != 0)
+                sb.Append($"채굴력 {(relic.miningPowerBonus > 0 ? "+" : "")}{relic.miningPowerBonus}  ");
             if (relic.maxHPBonus != 0)
                 sb.Append($"HP {(relic.maxHPBonus > 0 ? "+" : "")}{relic.maxHPBonus}  ");
             if (relic.burnDurationModifier != 0)
@@ -160,9 +174,11 @@ namespace DeepEarth.Core
             if (relic.burnDamageModifier != 0)
                 sb.Append($"화상 피해 {(relic.burnDamageModifier > 0 ? "+" : "")}{relic.burnDamageModifier}  ");
             if (relic.resourceMultiplierBonus != 0)
-                sb.Append($"광물 +{relic.resourceMultiplierBonus * 100:0}%  ");
+                sb.Append($"광물 {(relic.resourceMultiplierBonus > 0 ? "+" : "")}{relic.resourceMultiplierBonus * 100:0}%  ");
             if (relic.monsterAttackBonus != 0)
-                sb.Append($"몬스터 공격 +{relic.monsterAttackBonus}  ");
+                sb.Append($"몬스터 공격 {(relic.monsterAttackBonus > 0 ? "+" : "")}{relic.monsterAttackBonus}  ");
+            if (relic.monsterSpawnRateBonus != 0)
+                sb.Append($"몬스터 조우 {(relic.monsterSpawnRateBonus > 0 ? "+" : "")}{relic.monsterSpawnRateBonus * 100:0}%  ");
             if (relic.burnImmunityChance > 0f)
                 sb.Append($"화상 무효 {relic.burnImmunityChance * 100:0}%  ");
 

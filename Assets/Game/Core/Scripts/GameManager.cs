@@ -199,13 +199,8 @@ namespace DeepEarth.Core
 
                 // Load Event Reveal panel
                 _eventRevealObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelEventReveal, canvas.transform);
-                if (_eventRevealObject == null)
-                {
-                    Debug.LogWarning("UIPanelEventReveal failed to load. Creating fallback placeholder...");
-                    _eventRevealObject = CreateRevealFallback(canvas.transform);
-                }
 
-                if (_hudObject == null || _gameOverObject == null || _eventObject == null || _settingsObject == null)
+                if (_hudObject == null || _gameOverObject == null || _eventObject == null || _settingsObject == null || _eventRevealObject == null)
                 {
                     Debug.LogError("GameManager: One or more UI panels failed to instantiate via Addressables!");
                     return;
@@ -230,6 +225,14 @@ namespace DeepEarth.Core
                 if (pickaxeView == null)
                     pickaxeView = _hudObject.AddComponent<DeepEarth.UI.PickaxeDurabilityView>();
                 PickaxeDurabilityManager.Instance?.SetupPresenter(pickaxeView);
+
+                // Achievement in-game notification
+                if (AchievementManager.Instance != null)
+                {
+                    var notifView = DeepEarth.UI.AchievementNotificationView.Create(canvas.transform);
+                    AchievementManager.Instance.OnAchievementCompleted += notifView.ShowNotification;
+                }
+
                 _gameOverPresenter = new GameOverUIPresenter(gameOverView, this);
                 _eventPresenter = new EventUIPresenter(eventView);
                 _settingsPresenter = new SettingsUIPresenter(settingsView, this);
@@ -286,8 +289,7 @@ namespace DeepEarth.Core
             StatManager.Instance.ResetStatsForRun();
 
             // 3b. Pickaxe Durability Init (after stat reset so upgrade level is current)
-            int pickaxeUpgradeBonus = MetaProgressionManager.Instance.PickaxeDurabilityLevel * 20;
-            PickaxeDurabilityManager.Instance?.InitializeForRun(pickaxeUpgradeBonus);
+            PickaxeDurabilityManager.Instance?.InitializeForRun();
 
             // 4. Depth Reset
             CurrentDepth = 0;
@@ -335,9 +337,11 @@ namespace DeepEarth.Core
         public void StartGame()
         {
             RunStart();
-            
+
             WillEarnedThisRun = 0;
             CurrentState = GameState.Playing;
+
+            DeepEarth.Common.GameEvents.FireRunStarted();
 
             _hudObject.SetActive(true);
             _gameOverObject.SetActive(false);
@@ -412,6 +416,8 @@ namespace DeepEarth.Core
             CurrentDepth++;
             OnGameDataChanged?.Invoke();
 
+            DeepEarth.Common.GameEvents.FireDepthReached(CurrentDepth);
+
             // Trigger MapView slide transition and MapGenerator wall updates
             if (DeepEarth.Map.MapPresenter.Instance != null)
             {
@@ -454,6 +460,7 @@ namespace DeepEarth.Core
                     {
                         // Lava: apply Burn status effect (turn-based damage) instead of instant damage
                         StatusEffectManager.Instance.ApplyBurn();
+                        DeepEarth.Common.GameEvents.FireLavaEncountered();
                         EffectSystem.Instance.FlashScreen(new Color(1f, 0.4f, 0f, 0.35f), 0.25f);
                         EffectSystem.Instance.ShakeCamera(0.2f, 0.08f);
                         string burnMsg = LocalizationManager.Instance.GetTranslation("status_burn_applied_msg");
@@ -462,6 +469,7 @@ namespace DeepEarth.Core
                     else
                     {
                         // Water: instant damage (unchanged)
+                        DeepEarth.Common.GameEvents.FireWaterEncountered();
                         int damage = 1 + DifficultyLevel;
                         StatManager.Instance.TakeDamage(damage);
                         EffectSystem.Instance.FlashScreen(new Color(0f, 0.4f, 1f, 0.35f), 0.25f);
@@ -476,6 +484,10 @@ namespace DeepEarth.Core
                 else if (UnityEngine.Random.value < 0.08f)
                 {
                     bool isTombstone = UnityEngine.Random.value < 0.3f;
+                    if (isTombstone)
+                        DeepEarth.Common.GameEvents.FireTombstoneOpened();
+                    else
+                        DeepEarth.Common.GameEvents.FireTreasureOpened();
                     await EventManager.Instance.TriggerRandomEventAsync(isTombstone);
                     return;
                 }
@@ -493,6 +505,7 @@ namespace DeepEarth.Core
             if (StatManager.Instance.CurrentHP <= 0 && CurrentState != GameState.GameOver && CurrentState != GameState.MainMenu)
             {
                 Debug.Log("[Run]\nPlayer Dead");
+                DeepEarth.Common.GameEvents.FirePlayerDied();
                 EndGame();
             }
         }
@@ -715,58 +728,6 @@ namespace DeepEarth.Core
 
             CurrentState = _previousState;
             OnGameDataChanged?.Invoke();
-        }
-
-        private GameObject CreateRevealFallback(Transform parent)
-        {
-            var root = new GameObject("EventReveal_Fallback", typeof(RectTransform));
-            root.transform.SetParent(parent, false);
-
-            var rt = root.GetComponent<RectTransform>();
-            rt.anchorMin = Vector2.zero;
-            rt.anchorMax = Vector2.one;
-            rt.offsetMin = Vector2.zero;
-            rt.offsetMax = Vector2.zero;
-
-            var cg = root.AddComponent<CanvasGroup>();
-
-            var bg = new GameObject("Bg", typeof(RectTransform));
-            bg.transform.SetParent(root.transform, false);
-            var bgRt = bg.GetComponent<RectTransform>();
-            bgRt.anchorMin = Vector2.zero;
-            bgRt.anchorMax = Vector2.one;
-            bgRt.offsetMin = Vector2.zero;
-            bgRt.offsetMax = Vector2.zero;
-            bg.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.75f);
-
-            var panel = new GameObject("Panel", typeof(RectTransform));
-            panel.transform.SetParent(root.transform, false);
-            var panelRt = panel.GetComponent<RectTransform>();
-            panelRt.anchorMin = new Vector2(0.1f, 0.35f);
-            panelRt.anchorMax = new Vector2(0.9f, 0.65f);
-            panelRt.offsetMin = Vector2.zero;
-            panelRt.offsetMax = Vector2.zero;
-            panel.AddComponent<Image>().color = new Color(0.1f, 0.08f, 0.05f, 0.95f);
-
-            var nameObj = new GameObject("EventName", typeof(RectTransform));
-            nameObj.transform.SetParent(panel.transform, false);
-            var nameRt = nameObj.GetComponent<RectTransform>();
-            nameRt.anchorMin = Vector2.zero;
-            nameRt.anchorMax = Vector2.one;
-            nameRt.offsetMin = Vector2.zero;
-            nameRt.offsetMax = Vector2.zero;
-            var nameText = nameObj.AddComponent<TextMeshProUGUI>();
-            nameText.text = "";
-            nameText.alignment = TMPro.TextAlignmentOptions.Center;
-            nameText.fontSize = 48f;
-            nameText.color = Color.white;
-
-            var revealView = root.AddComponent<EventRevealView>();
-            SetRef(revealView, "eventNameText", nameText);
-            SetRef(revealView, "canvasGroup", cg);
-            SetRef(revealView, "panelRoot", panel.transform);
-
-            return root;
         }
 
         private void SetRef(object target, string fieldName, object value)

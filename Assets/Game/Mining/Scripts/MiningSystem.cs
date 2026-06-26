@@ -101,6 +101,9 @@ namespace DeepEarth.Mining
             // Pickaxe durability loss (before HP death check in ProcessActionTurn)
             PickaxeDurabilityManager.Instance?.OnOreDestroyed(presenter.Model.Type);
 
+            // Achievement event
+            DeepEarth.Common.GameEvents.FireOreMined(presenter.Model.Type, 1);
+
             // Action turn: triggers status effect ticks (Burn, etc.)
             StatusEffectManager.Instance?.ProcessActionTurn();
 

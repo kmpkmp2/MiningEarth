@@ -20,8 +20,10 @@ namespace DeepEarth.Core
 
         [Header("Stat Modifiers")]
         public int attackBonus;
+        public int miningPowerBonus;
         public int maxHPBonus;
         public float resourceMultiplierBonus;
         public int monsterAttackBonus;
+        public float monsterSpawnRateBonus;
     }
 }

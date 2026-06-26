@@ -72,7 +72,7 @@ namespace DeepEarth.Core
                 DescKey = "char_mercenary_desc",
                 Passive = PassiveType.AttackBonus,
                 PassiveValue = 1f,
-                StartAttackBonus = 1,
+                StartAttackBonus = 0,
                 StartMiningBonus = 0,
                 UnlockCost = new Dictionary<BlockType, int>
                 {
@@ -88,7 +88,7 @@ namespace DeepEarth.Core
                 Passive = PassiveType.MiningBonus,
                 PassiveValue = 1f,
                 StartAttackBonus = 0,
-                StartMiningBonus = 1,
+                StartMiningBonus = 0,
                 UnlockCost = new Dictionary<BlockType, int>
                 {
                     { BlockType.Iron, 30 },

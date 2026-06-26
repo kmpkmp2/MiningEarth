@@ -1,3 +1,4 @@
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using DeepEarth.Common;
 using DeepEarth.Core;
@@ -6,10 +7,12 @@ namespace DeepEarth.UI
 {
     public class StartMenuPresenter
     {
-        private readonly StartMenuUIView _view;
-        private readonly CharacterPresenter _characterPresenter;
+        private readonly StartMenuUIView      _view;
+        private readonly CharacterPresenter   _characterPresenter;
+        private readonly AchievementPresenter _achievementPresenter;
+        private ShopPresenter _shopPresenter;
 
-        public StartMenuPresenter(StartMenuUIView view)
+        public StartMenuPresenter(StartMenuUIView view, GameObject shopSlotPrefab)
         {
             _view = view;
 
@@ -23,12 +26,21 @@ namespace DeepEarth.UI
             _view.OnLanguageKoClicked += HandleLanguageKo;
             _view.OnLanguageEnClicked += HandleLanguageEn;
             _view.OnCharacterMenuClicked += HandleCharacterMenuClicked;
+            _view.OnAchievementMenuClicked += HandleAchievementMenuClicked;
 
             // Setup Character selection presenter
             if (_view.CharacterPopupView != null)
             {
                 _characterPresenter = new CharacterPresenter(_view.CharacterPopupView);
             }
+
+            // Setup Achievement presenter
+            if (_view.AchievementPopupView != null)
+                _achievementPresenter = new AchievementPresenter(_view.AchievementPopupView);
+
+            // Setup Shop presenter
+            if (_view.ShopPanelView != null)
+                _shopPresenter = new ShopPresenter(_view.ShopPanelView, shopSlotPrefab);
 
             // Subscribe to model/manager events
             if (MetaProgressionManager.Instance != null)
@@ -63,9 +75,12 @@ namespace DeepEarth.UI
                 _view.OnLanguageKoClicked -= HandleLanguageKo;
                 _view.OnLanguageEnClicked -= HandleLanguageEn;
                 _view.OnCharacterMenuClicked -= HandleCharacterMenuClicked;
+                _view.OnAchievementMenuClicked -= HandleAchievementMenuClicked;
             }
 
             _characterPresenter?.Dispose();
+            _achievementPresenter?.Dispose();
+            _shopPresenter?.Dispose();
 
             if (MetaProgressionManager.Instance != null)
             {
@@ -92,6 +107,8 @@ namespace DeepEarth.UI
         private void HandleShopMenu()
         {
             _view.ShowShopMenu();
+            _shopPresenter?.Refresh();
+            _view.Localize();
         }
 
         private void HandleSettingsMenu()
@@ -136,15 +153,19 @@ namespace DeepEarth.UI
         {
             _view.Localize();
             if (LocalizationManager.Instance != null)
-            {
                 _view.UpdateLanguageVisuals(LocalizationManager.Instance.CurrentLanguageCode);
-            }
+            _shopPresenter?.Localize();
             RefreshUpgradeUI();
         }
 
         private void HandleCharacterMenuClicked()
         {
             _characterPresenter?.OpenPopup();
+        }
+
+        private void HandleAchievementMenuClicked()
+        {
+            _achievementPresenter?.Open();
         }
 
         private void RefreshUpgradeUI()

@@ -42,7 +42,16 @@ namespace DeepEarth.Core
 
         public async UniTask InitializeAsync()
         {
-            _currentPickaxeData = await ResourceManager.Instance.LoadAssetAsync<PickaxeData>(AddressableKeys.PickaxeDefault);
+            // Prefer PickaxeManager's equipped pickaxe (already initialized before this)
+            if (PickaxeManager.Instance?.EquippedPickaxeData != null)
+            {
+                _currentPickaxeData = PickaxeManager.Instance.EquippedPickaxeData;
+            }
+            else
+            {
+                _currentPickaxeData = await ResourceManager.Instance.LoadAssetAsync<PickaxeData>(AddressableKeys.PickaxeDefault);
+            }
+
             if (_currentPickaxeData == null)
             {
                 Debug.LogWarning("[Pickaxe] PickaxeData not found. Using runtime defaults.");
@@ -63,8 +72,12 @@ namespace DeepEarth.Core
             Debug.Log($"[Pickaxe]\nInitialized\nPickaxe : {_currentPickaxeData.pickaxeID}\nBase Durability : {_currentPickaxeData.baseMaxDurability}");
         }
 
-        public void InitializeForRun(int upgradeBonus = 0, int relicBonus = 0, int eventBonus = 0)
+        public void InitializeForRun()
         {
+            // Sync equipped pickaxe from PickaxeManager
+            if (PickaxeManager.Instance?.EquippedPickaxeData != null)
+                _currentPickaxeData = PickaxeManager.Instance.EquippedPickaxeData;
+
             if (_currentPickaxeData == null)
             {
                 Debug.LogWarning("[Pickaxe] InitializeForRun called before InitializeAsync.");
@@ -73,7 +86,10 @@ namespace DeepEarth.Core
 
             ClearModel();
 
-            int maxDurability = _currentPickaxeData.baseMaxDurability + upgradeBonus + relicBonus + eventBonus;
+            int maxDurability = PickaxeManager.Instance != null
+                ? PickaxeManager.Instance.GetFinalMaxDurability(_currentPickaxeData)
+                : _currentPickaxeData.baseMaxDurability + (MetaProgressionManager.Instance?.PickaxeDurabilityLevel ?? 0) * 20;
+
             _model = new PickaxeDurabilityModel(_currentPickaxeData, maxDurability);
             _model.OnDurabilityChanged += HandleDurabilityChanged;
             _model.OnPickaxeBroken += HandlePickaxeBroken;
@@ -82,7 +98,9 @@ namespace DeepEarth.Core
 
             OnDurabilityChanged?.Invoke();
 
-            Debug.Log($"[Pickaxe]\nRun Initialized\nMax Durability : {maxDurability}\nUpgrade Bonus : {upgradeBonus}");
+            string pickaxeName = LocalizationManager.Instance?.GetTranslation(_currentPickaxeData.nameLocKey)
+                ?? _currentPickaxeData.pickaxeID;
+            Debug.Log($"[Pickaxe]\nRun Start\nPickaxe : {pickaxeName}\nDurability : {maxDurability}/{maxDurability}");
         }
 
         public void ClearForRun()
@@ -157,6 +175,7 @@ namespace DeepEarth.Core
         private void HandlePickaxeRepaired()
         {
             OnPickaxeRepaired?.Invoke();
+            DeepEarth.Common.GameEvents.FirePickaxeRepaired();
         }
 
         private void ClearModel()

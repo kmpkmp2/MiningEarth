@@ -50,6 +50,7 @@ namespace DeepEarth.UI
         [SerializeField] private TextMeshProUGUI shopTitleText;
         [SerializeField] private TextMeshProUGUI shopDescText;
         [SerializeField] private TextMeshProUGUI shopCloseLabelText;
+        [SerializeField] private ShopPanelView   shopPanelView;
 
         [Header("Menu Text Labels")]
         [SerializeField] private TextMeshProUGUI menuTitleText;
@@ -65,7 +66,15 @@ namespace DeepEarth.UI
         [SerializeField] private TextMeshProUGUI characterButtonLabel;
         [SerializeField] private CharacterPopupView characterPopupView;
 
-        public CharacterPopupView CharacterPopupView => characterPopupView;
+        [Header("Achievement UI Elements")]
+        [SerializeField] private Button achievementButton;
+        [SerializeField] private TextMeshProUGUI achievementButtonLabel;
+        [SerializeField] private AchievementPopupView achievementPopupView;
+
+        public CharacterPopupView   CharacterPopupView   => characterPopupView;
+        public AchievementPopupView AchievementPopupView => achievementPopupView;
+        public ShopPanelView        ShopPanelView        => shopPanelView;
+        public Transform            ShopPanelTransform   => shopPanel != null ? shopPanel.transform : null;
 
         // Events
         public event Action OnPlayClicked;
@@ -77,6 +86,7 @@ namespace DeepEarth.UI
         public event Action OnLanguageKoClicked;
         public event Action OnLanguageEnClicked;
         public event Action OnCharacterMenuClicked;
+        public event Action OnAchievementMenuClicked;
 
         private void Start()
         {
@@ -98,6 +108,9 @@ namespace DeepEarth.UI
 
             // Bind character menu click
             if (characterSelectionButton != null) characterSelectionButton.onClick.AddListener(() => OnCharacterMenuClicked?.Invoke());
+
+            // Bind achievement menu click
+            if (achievementButton != null) achievementButton.onClick.AddListener(() => OnAchievementMenuClicked?.Invoke());
 
             // Bind settings language buttons
             if (langKoButton != null) langKoButton.onClick.AddListener(() => OnLanguageKoClicked?.Invoke());
@@ -189,10 +202,18 @@ namespace DeepEarth.UI
             if (settingsLangLabelText != null) settingsLangLabelText.text = loc.GetTranslation("settings_lang_label");
 
             if (shopTitleText != null) shopTitleText.text = loc.GetTranslation("menu_shop");
-            if (shopDescText != null) shopDescText.text = loc.GetTranslation("menu_shop_coming_soon");
+            // Hide coming-soon text once the real shop view is present
+            if (shopDescText != null)
+            {
+                bool hasShop = shopPanelView != null
+                            || (ShopPanelTransform != null && ShopPanelTransform.Find("ShopPanelView") != null);
+                shopDescText.gameObject.SetActive(!hasShop);
+                if (!hasShop) shopDescText.text = loc.GetTranslation("menu_shop_coming_soon");
+            }
             if (shopCloseLabelText != null) shopCloseLabelText.text = backText;
 
             if (characterButtonLabel != null) characterButtonLabel.text = loc.GetTranslation("char_btn_open");
+            if (achievementButtonLabel != null) achievementButtonLabel.text = loc.GetTranslation("achievement_btn_open");
         }
 
         public void UpdateLanguageVisuals(string languageCode)
