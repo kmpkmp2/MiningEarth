@@ -16,6 +16,7 @@ namespace DeepEarth.UI
 
         private InventorySlotModel _selectedSlotModel;
         private int _currentRefreshId = 0;
+        private bool _pendingDiscardAll;
 
         public InventoryPopupPresenter(InventoryPopupView view, InventoryCollection collection)
         {
@@ -30,6 +31,7 @@ namespace DeepEarth.UI
             {
                 detailPanel.OnUseClicked += HandleUseItem;
                 detailPanel.OnDropClicked += HandleDropClick;
+                detailPanel.OnDiscardAllClicked += HandleDiscardAllClick;
                 detailPanel.OnCloseClicked += HandleCloseDetailPanel;
             }
 
@@ -46,6 +48,7 @@ namespace DeepEarth.UI
             {
                 detailPanel.OnUseClicked -= HandleUseItem;
                 detailPanel.OnDropClicked -= HandleDropClick;
+                detailPanel.OnDiscardAllClicked -= HandleDiscardAllClick;
                 detailPanel.OnCloseClicked -= HandleCloseDetailPanel;
             }
 
@@ -303,27 +306,63 @@ namespace DeepEarth.UI
         private void HandleDropClick()
         {
             if (_selectedSlotModel == null) return;
-            string translatedMsg = LocalizationManager.Instance.GetTranslation("inv_confirm_drop_title") ?? "Really Drop?";
-            _view.ShowConfirmation(translatedMsg);
+            _pendingDiscardAll = false;
+            string msg = LocalizationManager.Instance?.GetTranslation("inv_confirm_drop_title") ?? "Really Drop?";
+            _view.ShowConfirmation(msg);
+        }
+
+        private void HandleDiscardAllClick()
+        {
+            if (_selectedSlotModel == null) return;
+            _pendingDiscardAll = true;
+            string msg = LocalizationManager.Instance?.GetTranslation("inv_confirm_discard_all_title") ?? "전부 버리기?";
+            _view.ShowConfirmation(msg);
         }
 
         private void HandleConfirmOk()
         {
             if (_selectedSlotModel == null)
             {
+                _pendingDiscardAll = false;
                 _view.HideConfirmation();
                 return;
             }
 
-            string itemId = _selectedSlotModel.ItemID;
-            _collection.RemoveItem(itemId, 1);
-            _view.HideConfirmation();
-            TriggerFloatingText($"Dropped {itemId}", Color.red);
-            GameManager.Instance.TriggerStatsOrResourcesChanged();
+            if (_pendingDiscardAll)
+            {
+                string cleanName = LocalizationManager.Instance?.GetTranslation(_selectedSlotModel.Item.NameKey) ?? _selectedSlotModel.ItemID;
+                int count = _selectedSlotModel.Count;
+
+                _collection.RemoveSlot(_selectedSlotModel);
+                _view.HideConfirmation();
+
+                Debug.Log($"[Inventory]\nDiscard Stack\n{cleanName}\nCount : {count}");
+
+                _selectedSlotModel = null;
+                _pendingDiscardAll = false;
+                var detailPanel = _view.GetDetailPanel();
+                if (detailPanel != null) detailPanel.SetVisible(false);
+
+                GameManager.Instance?.TriggerStatsOrResourcesChanged();
+            }
+            else
+            {
+                string cleanName = LocalizationManager.Instance?.GetTranslation(_selectedSlotModel.Item.NameKey) ?? _selectedSlotModel.ItemID;
+
+                _collection.RemoveFromSlot(_selectedSlotModel, 1);
+                _view.HideConfirmation();
+
+                int remaining = _selectedSlotModel.Count;
+                Debug.Log($"[Inventory]\nDiscard\n{cleanName}\nRemaining : {remaining}");
+
+                TriggerFloatingText($"Dropped {cleanName}", Color.red);
+                GameManager.Instance?.TriggerStatsOrResourcesChanged();
+            }
         }
 
         private void HandleConfirmCancel()
         {
+            _pendingDiscardAll = false;
             _view.HideConfirmation();
         }
 

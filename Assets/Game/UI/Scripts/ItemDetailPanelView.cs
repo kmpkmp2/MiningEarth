@@ -15,10 +15,12 @@ namespace DeepEarth.UI
         [SerializeField] private TextMeshProUGUI itemQuantityText;
         [SerializeField] private Button useButton;
         [SerializeField] private Button dropButton;
+        [SerializeField] private Button discardAllButton;
         [SerializeField] private Button closeButton;
 
         public event Action OnUseClicked;
         public event Action OnDropClicked;
+        public event Action OnDiscardAllClicked;
         public event Action OnCloseClicked;
 
         private void Awake()
@@ -27,6 +29,8 @@ namespace DeepEarth.UI
                 useButton.onClick.AddListener(() => OnUseClicked?.Invoke());
             if (dropButton != null)
                 dropButton.onClick.AddListener(() => OnDropClicked?.Invoke());
+            if (discardAllButton != null)
+                discardAllButton.onClick.AddListener(() => OnDiscardAllClicked?.Invoke());
             if (closeButton != null)
                 closeButton.onClick.AddListener(() => OnCloseClicked?.Invoke());
         }
@@ -62,31 +66,21 @@ namespace DeepEarth.UI
             }
 
             if (itemDescriptionText != null)
-            {
                 itemDescriptionText.text = translatedDesc;
-            }
 
             if (itemQuantityText != null)
-            {
-                // string qLabel = LocalizationManager.Instance.GetTranslation("hud_quantity_label") ?? "Quantity:";
-                // itemQuantityText.text = $"{qLabel} {slotModel.Count} / {slotModel.MaxStack}";
                 itemQuantityText.text = $"{slotModel.Count}";
-            }
+
+            bool isConsumable = slotModel.Item.Type == ItemType.Consumable;
 
             if (useButton != null)
-            {
-                useButton.gameObject.SetActive(true);
-                useButton.interactable = (slotModel.Item.Type == ItemType.Consumable);
-                var btnText = useButton.GetComponentInChildren<TextMeshProUGUI>();
-                if (btnText != null)
-                    btnText.color = useButton.interactable ? Color.white : new Color(1f, 1f, 1f, 0.4f);
-            }
+                useButton.gameObject.SetActive(isConsumable);
 
             if (dropButton != null)
-            {
                 dropButton.gameObject.SetActive(true);
-                dropButton.interactable = true;
-            }
+
+            if (discardAllButton != null)
+                discardAllButton.gameObject.SetActive(true);
         }
 
         private Color GetRarityColor(ItemRarity rarity)

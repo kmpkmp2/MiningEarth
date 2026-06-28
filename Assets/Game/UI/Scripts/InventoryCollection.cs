@@ -93,6 +93,37 @@ namespace DeepEarth.UI
             return true;
         }
 
+        public bool RemoveFromSlot(InventorySlotModel slot, int count)
+        {
+            if (slot == null || count <= 0) return false;
+            int idx = Slots.IndexOf(slot);
+            if (idx < 0) return false;
+
+            int toRemove = Mathf.Min(count, slot.Count);
+            slot.Count -= toRemove;
+            if (slot.Count <= 0)
+                Slots.RemoveAt(idx);
+
+            for (int i = 0; i < Slots.Count; i++)
+                Slots[i].SlotIndex = i;
+
+            OnInventoryChanged?.Invoke();
+            return true;
+        }
+
+        public bool RemoveSlot(InventorySlotModel slot)
+        {
+            if (slot == null) return false;
+            bool removed = Slots.Remove(slot);
+            if (removed)
+            {
+                for (int i = 0; i < Slots.Count; i++)
+                    Slots[i].SlotIndex = i;
+                OnInventoryChanged?.Invoke();
+            }
+            return removed;
+        }
+
         public void Clear()
         {
             Slots.Clear();
