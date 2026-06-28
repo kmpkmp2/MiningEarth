@@ -15,14 +15,14 @@ MonoBehaviour:
   relicID: BurningHeart
   nameLocKey: relic_burning_heart_name
   descLocKey: relic_burning_heart_desc
-  iconKey: 
+  iconKey: Effect_Relic_BurningHeart
   isTombstone: 1
   burnDurationModifier: 3
   burnDamageModifier: 0
   burnImmunityChance: 0
   attackBonus: 2
+  miningPowerBonus: 0
   maxHPBonus: 0
   resourceMultiplierBonus: 0
   monsterAttackBonus: 0
-  miningPowerBonus: 0
   monsterSpawnRateBonus: 0

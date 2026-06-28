@@ -15,7 +15,7 @@ MonoBehaviour:
   relicID: relic_blood_contract
   nameLocKey: relic_blood_contract_name
   descLocKey: relic_blood_contract_desc
-  iconKey:
+  iconKey: Effect_Relic_BloodContract
   isTombstone: 0
   burnDurationModifier: 0
   burnDamageModifier: 0

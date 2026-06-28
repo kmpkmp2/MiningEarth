@@ -65,6 +65,16 @@ namespace DeepEarth.Core
             return entry;
         }
 
+        public float GetCurrentPassiveValue(CharacterID id)
+        {
+            var staticData = CharacterDatabase.Get(id);
+            if (staticData == null || staticData.PassiveLevels == null || staticData.PassiveLevels.Count == 0) return 0f;
+            int level = MetaProgressionManager.Instance?.GetPassiveLevel(id) ?? 0;
+            if (level <= 0) return 0f;
+            int idx = Mathf.Min(level - 1, staticData.PassiveLevels.Count - 1);
+            return staticData.PassiveLevels[idx].Value;
+        }
+
         public bool IsUnlocked(CharacterID id)
         {
             if (id == CharacterID.Prisoner) return true;
@@ -155,40 +165,32 @@ namespace DeepEarth.Core
         // Stats integration
         public int GetStartingAttackBonus(CharacterID id)
         {
-            var data = CharacterDatabase.Get(id);
-            return data != null ? data.StartAttackBonus : 0;
+            return CharacterDatabase.Get(id)?.BaseAttackPowerBonus ?? 0;
         }
 
         public int GetStartingMiningBonus(CharacterID id)
         {
-            var data = CharacterDatabase.Get(id);
-            return data != null ? data.StartMiningBonus : 0;
+            return CharacterDatabase.Get(id)?.BaseMiningPowerBonus ?? 0;
         }
 
         public int GetPassiveAttackBonus(CharacterID id)
         {
             var data = CharacterDatabase.Get(id);
-            if (data != null && data.Passive == PassiveType.AttackBonus)
-            {
-                return Mathf.RoundToInt(data.PassiveValue);
-            }
-            return 0;
+            if (data?.Passive != PassiveType.AttackBonus) return 0;
+            return Mathf.RoundToInt(GetCurrentPassiveValue(id));
         }
 
         public int GetPassiveMiningBonus(CharacterID id)
         {
             var data = CharacterDatabase.Get(id);
-            if (data != null && data.Passive == PassiveType.MiningBonus)
-            {
-                return Mathf.RoundToInt(data.PassiveValue);
-            }
-            return 0;
+            if (data?.Passive != PassiveType.MiningBonus) return 0;
+            return Mathf.RoundToInt(GetCurrentPassiveValue(id));
         }
 
         public bool HasGraveRobberPassive(CharacterID id)
         {
             var data = CharacterDatabase.Get(id);
-            return data != null && data.Passive == PassiveType.GraveRobberPassive;
+            return data?.Passive == PassiveType.GraveRobberPassive && GetCurrentPassiveValue(id) > 0f;
         }
     }
 }

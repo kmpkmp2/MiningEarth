@@ -35,14 +35,16 @@ namespace DeepEarth.UI
             _isActive = false;
         }
 
+        public void ClearView()
+        {
+            _view.ClearSlotRefs();
+        }
+
         public void Refresh()
         {
             if (!_isActive || PickaxeManager.Instance == null) return;
 
-            _view.Refresh(
-                PickaxeManager.Instance.AllPickaxes,
-                SaveManager.CurrentData.EquippedPickaxeID,
-                SaveManager.CurrentData);
+            _view.Refresh(PickaxeManager.Instance.AllPickaxes, SaveManager.CurrentData);
 
             _contentView.ScrollToTop();
         }
@@ -59,12 +61,7 @@ namespace DeepEarth.UI
         private void HandleItemAction(ShopItemDisplayData data)
         {
             if (data.tag is not PickaxeData pickaxeData) return;
-
-            bool isUnlocked = SaveManager.CurrentData.UnlockedPickaxeIDs?.Contains(pickaxeData.pickaxeID) ?? false;
-            if (isUnlocked || pickaxeData.isDefault)
-                PickaxeManager.Instance?.Equip(pickaxeData);
-            else
-                PickaxeManager.Instance?.Purchase(pickaxeData);
+            PickaxeManager.Instance?.Purchase(pickaxeData);
         }
     }
 }

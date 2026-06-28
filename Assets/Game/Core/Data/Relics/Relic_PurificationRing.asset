@@ -15,12 +15,14 @@ MonoBehaviour:
   relicID: PurificationRing
   nameLocKey: relic_purification_ring_name
   descLocKey: relic_purification_ring_desc
-  iconKey: 
+  iconKey: Effect_Relic_PurificationRing
   isTombstone: 0
   burnDurationModifier: 0
   burnDamageModifier: 0
   burnImmunityChance: 0.5
   attackBonus: 0
+  miningPowerBonus: 0
   maxHPBonus: 0
   resourceMultiplierBonus: 0
   monsterAttackBonus: 0
+  monsterSpawnRateBonus: 0

@@ -15,7 +15,7 @@ MonoBehaviour:
   relicID: relic_miners_gloves
   nameLocKey: relic_miners_gloves_name
   descLocKey: relic_miners_gloves_desc
-  iconKey:
+  iconKey: Effect_Relic_MinersGloves
   isTombstone: 0
   burnDurationModifier: 0
   burnDamageModifier: 0

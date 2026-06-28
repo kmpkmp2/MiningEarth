@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using DeepEarth.Common;
 using DeepEarth.Core;
 
@@ -8,58 +7,47 @@ namespace DeepEarth.UI
     public class StartMenuPresenter
     {
         private readonly StartMenuUIView      _view;
-        private readonly CharacterPresenter   _characterPresenter;
         private readonly AchievementPresenter _achievementPresenter;
-        private ShopPresenter _shopPresenter;
+        private ShopPresenter     _shopPresenter;
+        private RunSetupPresenter _runSetupPresenter;
+        private UpgradePresenter  _upgradePresenter;
 
         public StartMenuPresenter(StartMenuUIView view, GameObject shopSlotPrefab)
         {
             _view = view;
 
-            // Subscribe to UI view events
             _view.OnPlayClicked += HandlePlay;
             _view.OnUpgradeMenuClicked += HandleUpgradeMenu;
             _view.OnShopClicked += HandleShopMenu;
             _view.OnSettingsClicked += HandleSettingsMenu;
             _view.OnBackClicked += HandleBack;
-            _view.OnUpgradeStatClicked += HandleUpgradeStat;
             _view.OnLanguageKoClicked += HandleLanguageKo;
             _view.OnLanguageEnClicked += HandleLanguageEn;
             _view.OnCharacterMenuClicked += HandleCharacterMenuClicked;
             _view.OnAchievementMenuClicked += HandleAchievementMenuClicked;
 
-            // Setup Character selection presenter
-            if (_view.CharacterPopupView != null)
-            {
-                _characterPresenter = new CharacterPresenter(_view.CharacterPopupView);
-            }
-
-            // Setup Achievement presenter
             if (_view.AchievementPopupView != null)
                 _achievementPresenter = new AchievementPresenter(_view.AchievementPopupView);
 
-            // Setup Shop presenter
             if (_view.ShopPanelView != null)
                 _shopPresenter = new ShopPresenter(_view.ShopPanelView, shopSlotPrefab);
 
-            // Subscribe to model/manager events
-            if (MetaProgressionManager.Instance != null)
+            if (_view.RunSetupPanelView != null)
             {
-                MetaProgressionManager.Instance.OnMetaUpdated += RefreshUpgradeUI;
+                _runSetupPresenter = new RunSetupPresenter(_view.RunSetupPanelView);
+                _view.RunSetupPanelView.OnBackClicked += HandleBack;
             }
+
+            if (_view.UpgradePanelView != null)
+                _upgradePresenter = new UpgradePresenter(_view.UpgradePanelView);
 
             if (LocalizationManager.Instance != null)
-            {
                 LocalizationManager.Instance.OnLanguageChanged += HandleLanguageChanged;
-            }
 
-            // Initialization
             _view.ShowMainMenu();
             _view.Localize();
             if (LocalizationManager.Instance != null)
-            {
                 _view.UpdateLanguageVisuals(LocalizationManager.Instance.CurrentLanguageCode);
-            }
         }
 
         public void Dispose()
@@ -71,43 +59,37 @@ namespace DeepEarth.UI
                 _view.OnShopClicked -= HandleShopMenu;
                 _view.OnSettingsClicked -= HandleSettingsMenu;
                 _view.OnBackClicked -= HandleBack;
-                _view.OnUpgradeStatClicked -= HandleUpgradeStat;
                 _view.OnLanguageKoClicked -= HandleLanguageKo;
                 _view.OnLanguageEnClicked -= HandleLanguageEn;
                 _view.OnCharacterMenuClicked -= HandleCharacterMenuClicked;
                 _view.OnAchievementMenuClicked -= HandleAchievementMenuClicked;
             }
 
-            _characterPresenter?.Dispose();
             _achievementPresenter?.Dispose();
             _shopPresenter?.Dispose();
-
-            if (MetaProgressionManager.Instance != null)
-            {
-                MetaProgressionManager.Instance.OnMetaUpdated -= RefreshUpgradeUI;
-            }
+            _runSetupPresenter?.Dispose();
+            _upgradePresenter?.Dispose();
 
             if (LocalizationManager.Instance != null)
-            {
                 LocalizationManager.Instance.OnLanguageChanged -= HandleLanguageChanged;
-            }
         }
 
         private void HandlePlay()
         {
-            SceneManager.LoadScene("MainGameScene");
+            _view.ShowRunSetupPanel();
+            _runSetupPresenter?.Open();
         }
 
         private void HandleUpgradeMenu()
         {
             _view.ShowUpgradeMenu();
-            RefreshUpgradeUI();
+            _upgradePresenter?.Open();
         }
 
         private void HandleShopMenu()
         {
             _view.ShowShopMenu();
-            _shopPresenter?.Refresh();
+            _shopPresenter?.SelectCategory(ShopCategory.Pickaxe);
             _view.Localize();
         }
 
@@ -115,9 +97,7 @@ namespace DeepEarth.UI
         {
             _view.ShowSettingsMenu();
             if (LocalizationManager.Instance != null)
-            {
                 _view.UpdateLanguageVisuals(LocalizationManager.Instance.CurrentLanguageCode);
-            }
         }
 
         private void HandleBack()
@@ -125,28 +105,14 @@ namespace DeepEarth.UI
             _view.ShowMainMenu();
         }
 
-        private void HandleUpgradeStat(UpgradeType type)
-        {
-            if (MetaProgressionManager.Instance != null)
-            {
-                MetaProgressionManager.Instance.Upgrade(type);
-            }
-        }
-
         private void HandleLanguageKo()
         {
-            if (LocalizationManager.Instance != null)
-            {
-                LocalizationManager.Instance.SetLanguage("ko");
-            }
+            LocalizationManager.Instance?.SetLanguage("ko");
         }
 
         private void HandleLanguageEn()
         {
-            if (LocalizationManager.Instance != null)
-            {
-                LocalizationManager.Instance.SetLanguage("en");
-            }
+            LocalizationManager.Instance?.SetLanguage("en");
         }
 
         private void HandleLanguageChanged()
@@ -155,36 +121,18 @@ namespace DeepEarth.UI
             if (LocalizationManager.Instance != null)
                 _view.UpdateLanguageVisuals(LocalizationManager.Instance.CurrentLanguageCode);
             _shopPresenter?.Localize();
-            RefreshUpgradeUI();
         }
 
         private void HandleCharacterMenuClicked()
         {
-            _characterPresenter?.OpenPopup();
+            _view.ShowShopMenu();
+            _shopPresenter?.SelectCategory(ShopCategory.Character);
+            _view.Localize();
         }
 
         private void HandleAchievementMenuClicked()
         {
             _achievementPresenter?.Open();
-        }
-
-        private void RefreshUpgradeUI()
-        {
-            if (MetaProgressionManager.Instance == null) return;
-
-            var meta = MetaProgressionManager.Instance;
-            int currentWill = meta.Will;
-
-            _view.SetWill(currentWill);
-
-            int powerCost = meta.GetUpgradeCost(UpgradeType.MiningPower);
-            _view.SetUpgradeState(UpgradeType.MiningPower, meta.MiningPowerLevel, powerCost, currentWill >= powerCost);
-
-            int hpCost = meta.GetUpgradeCost(UpgradeType.MaxHP);
-            _view.SetUpgradeState(UpgradeType.MaxHP, meta.MaxHPLevel, hpCost, currentWill >= hpCost);
-
-            int invCost = meta.GetUpgradeCost(UpgradeType.InventorySize);
-            _view.SetUpgradeState(UpgradeType.InventorySize, meta.InventorySizeLevel, invCost, currentWill >= invCost);
         }
     }
 }

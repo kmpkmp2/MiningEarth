@@ -15,7 +15,7 @@ MonoBehaviour:
   relicID: relic_mining_king_helmet
   nameLocKey: relic_mining_king_helmet_name
   descLocKey: relic_mining_king_helmet_desc
-  iconKey:
+  iconKey: Effect_Relic_MiningKingHelmet
   isTombstone: 0
   burnDurationModifier: 0
   burnDamageModifier: 0

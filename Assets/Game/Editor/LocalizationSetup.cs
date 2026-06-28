@@ -16,6 +16,7 @@ namespace DeepEarth.Editor
         private const string FontPath = "Assets/Game/Common/Fonts/Pretendard-Regular.ttf";
         private const string TargetSdfPath = "Assets/Game/Common/Fonts/Pretendard-Regular SDF.asset";
         private const string CloneSdfPath = "Assets/Game/Common/Fonts/NotoSansKR SDF.asset";
+        private const string MalgunSdfPath = "Assets/Game/Common/Fonts/Malgun_SDF.asset";
         private const string PrimaryFontPath = "Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset";
 
         [MenuItem("Tools/Setup Localization and Fonts")]
@@ -58,6 +59,9 @@ namespace DeepEarth.Editor
                     Debug.LogError("Failed to load created SDF font assets!");
                     return;
                 }
+
+                EnableMultiAtlas(pretendardSdf);
+                EnableMultiAtlas(notoSansSdf);
 
                 // Rename the cloned texture/material sub-objects to keep it clean
                 RenameSubAssets(notoSansSdf, "NotoSansKR");
@@ -112,6 +116,7 @@ namespace DeepEarth.Editor
             
             fontAsset.atlasPopulationMode = AtlasPopulationMode.Dynamic;
             SetField(fontAsset, "m_ClearDynamicDataOnBuild", true);
+            SetField(fontAsset, "m_IsMultiAtlasTexturesEnabled", true);
 
             int atlasWidth = 1024;
             int atlasHeight = 1024;
@@ -171,11 +176,16 @@ namespace DeepEarth.Editor
         private static void ConfigureFallback(TMP_FontAsset pretendard, TMP_FontAsset notoSans)
         {
             TMP_FontAsset primaryFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(PrimaryFontPath);
+            TMP_FontAsset malgun = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(MalgunSdfPath);
             if (primaryFont == null)
             {
                 Debug.LogWarning($"Primary font not found at {PrimaryFontPath}. Skipping fallback setup.");
                 return;
             }
+
+            EnableMultiAtlas(pretendard);
+            EnableMultiAtlas(notoSans);
+            EnableMultiAtlas(malgun);
 
             if (primaryFont.fallbackFontAssetTable == null)
             {
@@ -186,18 +196,39 @@ namespace DeepEarth.Editor
             primaryFont.fallbackFontAssetTable.RemoveAll(f => f == null);
 
             // Add Korean fallbacks if not present
-            if (!primaryFont.fallbackFontAssetTable.Contains(pretendard))
-            {
-                primaryFont.fallbackFontAssetTable.Add(pretendard);
-            }
-            if (!primaryFont.fallbackFontAssetTable.Contains(notoSans))
-            {
-                primaryFont.fallbackFontAssetTable.Add(notoSans);
-            }
+            AddFallback(primaryFont, pretendard);
+            AddFallback(primaryFont, notoSans);
+            AddFallback(primaryFont, malgun);
 
             EditorUtility.SetDirty(primaryFont);
             AssetDatabase.SaveAssets();
-            Debug.Log($"Configured fallbacks on {primaryFont.name}: added {pretendard.name} and {notoSans.name}");
+
+            string malgunLog = malgun != null ? $", {malgun.name}" : string.Empty;
+            Debug.Log($"Configured fallbacks on {primaryFont.name}: ensured {pretendard.name}, {notoSans.name}{malgunLog}");
+        }
+
+        private static void AddFallback(TMP_FontAsset primaryFont, TMP_FontAsset fallback)
+        {
+            if (primaryFont == null || fallback == null)
+            {
+                return;
+            }
+
+            if (!primaryFont.fallbackFontAssetTable.Contains(fallback))
+            {
+                primaryFont.fallbackFontAssetTable.Add(fallback);
+            }
+        }
+
+        private static void EnableMultiAtlas(TMP_FontAsset fontAsset)
+        {
+            if (fontAsset == null)
+            {
+                return;
+            }
+
+            SetField(fontAsset, "m_IsMultiAtlasTexturesEnabled", true);
+            EditorUtility.SetDirty(fontAsset);
         }
 
         private static void RegisterAddressable(string assetPath, string key, string groupName = "Common")

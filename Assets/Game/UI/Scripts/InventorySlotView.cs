@@ -25,55 +25,39 @@ namespace DeepEarth.UI
             }
         }
 
-        public void SetData(InventorySlotData slotData, Sprite iconSprite)
+        public void SetData(InventorySlotModel slotModel, Sprite iconSprite)
         {
             gameObject.SetActive(true);
 
-            if (slotData == null)
+            if (slotModel == null)
             {
-                if (itemIcon != null)
-                {
-                    itemIcon.gameObject.SetActive(false);
-                }
-                if (quantityText != null)
-                {
-                    quantityText.gameObject.SetActive(false);
-                }
-                if (itemNameText != null)
-                {
-                    itemNameText.text = "";
-                }
-                if (borderOutline != null)
-                {
-                    borderOutline.color = GetRarityColor(ItemRarity.Common);
-                }
+                if (itemIcon != null) itemIcon.gameObject.SetActive(false);
+                if (quantityText != null) quantityText.gameObject.SetActive(false);
+                if (itemNameText != null) itemNameText.text = "";
+                if (borderOutline != null) borderOutline.color = GetRarityColor(ItemRarity.Common);
                 return;
             }
 
-            // Icon
             if (itemIcon != null)
             {
                 itemIcon.sprite = iconSprite;
                 itemIcon.gameObject.SetActive(iconSprite != null);
             }
 
-            // Quantity
             if (quantityText != null)
             {
-                quantityText.text = $"x{slotData.Quantity}";
-                quantityText.gameObject.SetActive(slotData.Quantity > 0);
+                quantityText.text = $"x{slotModel.Count}";
+                quantityText.gameObject.SetActive(slotModel.Count > 0);
             }
 
-            // Name
             if (itemNameText != null)
             {
-                itemNameText.text = LocalizationManager.Instance.GetTranslation(slotData.Item.NameKey) ?? slotData.Item.Id;
+                itemNameText.text = LocalizationManager.Instance.GetTranslation(slotModel.Item.NameKey) ?? slotModel.ItemID;
             }
 
-            // Rarity Border Color
             if (borderOutline != null)
             {
-                borderOutline.color = GetRarityColor(slotData.Item.Rarity);
+                borderOutline.color = GetRarityColor(slotModel.Item.Rarity);
             }
         }
 
@@ -81,15 +65,10 @@ namespace DeepEarth.UI
         {
             switch (rarity)
             {
-                case ItemRarity.Rare:
-                    return new Color(0.12f, 0.45f, 0.85f, 1f); // Blue
-                case ItemRarity.Epic:
-                    return new Color(0.6f, 0.15f, 0.75f, 1f); // Purple
-                case ItemRarity.Legendary:
-                    return new Color(1.0f, 0.8f, 0.15f, 1f); // Gold
-                case ItemRarity.Common:
-                default:
-                    return new Color(0.4f, 0.42f, 0.45f, 1f); // Default Slate grey
+                case ItemRarity.Rare:      return new Color(0.12f, 0.45f, 0.85f, 1f);
+                case ItemRarity.Epic:      return new Color(0.6f,  0.15f, 0.75f, 1f);
+                case ItemRarity.Legendary: return new Color(1.0f,  0.8f,  0.15f, 1f);
+                default:                   return new Color(0.4f,  0.42f, 0.45f, 1f);
             }
         }
     }

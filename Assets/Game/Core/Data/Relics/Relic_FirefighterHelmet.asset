@@ -15,12 +15,14 @@ MonoBehaviour:
   relicID: FirefighterHelmet
   nameLocKey: relic_firefighter_helmet_name
   descLocKey: relic_firefighter_helmet_desc
-  iconKey: 
+  iconKey: Effect_Relic_FirefighterHelmet
   isTombstone: 0
   burnDurationModifier: -2
   burnDamageModifier: -1
   burnImmunityChance: 0
   attackBonus: 0
+  miningPowerBonus: 0
   maxHPBonus: 0
   resourceMultiplierBonus: 0
   monsterAttackBonus: 0
+  monsterSpawnRateBonus: 0

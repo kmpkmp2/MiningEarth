@@ -208,6 +208,10 @@ namespace DeepEarth.Core
                 { "item_diamond_desc", "Brilliant diamond gem." },
                 { "item_potion_name", "Health Potion" },
                 { "item_potion_desc", "Restores 5 HP." },
+                { "item_burn_cure_name", "Burn Cure" },
+                { "item_burn_cure_desc", "Cures Burn immediately." },
+                { "item_burn_cure_used", "Burn cured!" },
+                { "item_burn_cure_no_burn", "You are not burned." },
                 { "item_key_name", "Chest Key" },
                 { "item_key_desc", "Looks like it can open locked chests." },
                 { "item_chest_name", "Treasure Box" },
@@ -393,7 +397,33 @@ namespace DeepEarth.Core
                 { "relic_cursed_mining_gloves_name", "Cursed Mining Gloves" },
                 { "relic_cursed_mining_gloves_desc", "Mining Power +1, Max HP -3" },
                 { "relic_blood_rune_name", "Blood Rune" },
-                { "relic_blood_rune_desc", "Attack Power +1, Burn Duration +2 turns" }
+                { "relic_blood_rune_desc", "Attack Power +1, Burn Duration +2 turns" },
+
+                // Run Setup
+                { "run_setup_title",  "Run Setup" },
+                { "run_setup_start",  "Start Run!" },
+
+                // Loading steps
+                { "loading_init",               "Initializing..." },
+                { "loading_assets",             "Loading assets..." },
+                { "loading_save",               "Loading save data..." },
+                { "loading_preparing",          "Preparing..." },
+                { "loading_ready",              "Ready!" },
+                { "loading_step_playerdata",    "Loading player data..." },
+                { "loading_step_rundata",       "Preparing run..." },
+                { "loading_step_character",     "Applying character..." },
+                { "loading_step_pickaxe",       "Equipping pickaxe..." },
+                { "loading_step_items",         "Preparing starting items..." },
+                { "loading_step_passive",       "Applying passives..." },
+                { "loading_step_stats",         "Calculating stats..." },
+                { "loading_step_runreset",      "Initializing run state..." },
+                { "loading_step_assets",        "Loading assets..." },
+                { "loading_step_pools",         "Setting up pools..." },
+                { "loading_step_locale",        "Loading localization..." },
+                { "loading_step_sound",         "Loading sounds..." },
+                { "loading_step_verify",        "Verifying data..." },
+                { "loading_step_enter",         "Entering the mine..." },
+                { "loading_tip_cave",           "The deeper you go, the stronger the monsters..." }
             };
 
             // Korean translations
@@ -561,6 +591,10 @@ namespace DeepEarth.Core
                 { "item_diamond_desc", "눈부시게 빛나는 다이아몬드이다." },
                 { "item_potion_name", "회복약" },
                 { "item_potion_desc", "체력을 5 회복한다." },
+                { "item_burn_cure_name", "화상 치료제" },
+                { "item_burn_cure_desc", "화상 상태를 즉시 치료합니다." },
+                { "item_burn_cure_used", "화상이 치료되었습니다." },
+                { "item_burn_cure_no_burn", "현재 화상 상태가 아닙니다." },
                 { "item_key_name", "열쇠" },
                 { "item_key_desc", "굳게 닫힌 상자를 열 수 있을 것 같다." },
                 { "item_chest_name", "보물상자" },
@@ -746,7 +780,33 @@ namespace DeepEarth.Core
                 { "relic_cursed_mining_gloves_name", "저주받은 채굴 장갑" },
                 { "relic_cursed_mining_gloves_desc", "채굴력 +1, 최대 체력 -3" },
                 { "relic_blood_rune_name", "피의 룬" },
-                { "relic_blood_rune_desc", "공격력 +1, 화상 지속 시간 +2턴" }
+                { "relic_blood_rune_desc", "공격력 +1, 화상 지속 시간 +2턴" },
+
+                // Run Setup
+                { "run_setup_title",  "탐험 준비" },
+                { "run_setup_start",  "탐험 시작!" },
+
+                // Loading steps
+                { "loading_init",               "초기화 중..." },
+                { "loading_assets",             "에셋 로드 중..." },
+                { "loading_save",               "저장 데이터 로드 중..." },
+                { "loading_preparing",          "준비 중..." },
+                { "loading_ready",              "준비 완료!" },
+                { "loading_step_playerdata",    "플레이어 데이터 로드 중..." },
+                { "loading_step_rundata",       "런 데이터 생성 중..." },
+                { "loading_step_character",     "캐릭터 적용 중..." },
+                { "loading_step_pickaxe",       "곡괭이 장착 중..." },
+                { "loading_step_items",         "시작 아이템 지급 중..." },
+                { "loading_step_passive",       "패시브 적용 중..." },
+                { "loading_step_stats",         "기본 스탯 계산 중..." },
+                { "loading_step_runreset",      "런 상태 초기화 중..." },
+                { "loading_step_assets",        "게임 에셋 로드 중..." },
+                { "loading_step_pools",         "오브젝트 풀 초기화 중..." },
+                { "loading_step_locale",        "번역 데이터 로드 중..." },
+                { "loading_step_sound",         "사운드 로드 중..." },
+                { "loading_step_verify",        "데이터 검증 중..." },
+                { "loading_step_enter",         "지하 세계로 입장 중..." },
+                { "loading_tip_cave",           "깊이 내려갈수록 몬스터가 강해집니다..." }
             };
 
             _translations["en"] = en;

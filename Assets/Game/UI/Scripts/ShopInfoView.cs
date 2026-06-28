@@ -29,14 +29,9 @@ namespace DeepEarth.UI
 
             if (statusText)
             {
-                if (data.isEquipped)
+                if (data.isUnlocked)
                 {
-                    statusText.text  = loc?.GetTranslation("shop_pickaxe_equipped") ?? "EQUIPPED";
-                    statusText.color = new Color(0.3f, 0.9f, 0.5f);
-                }
-                else if (data.isUnlocked)
-                {
-                    statusText.text  = loc?.GetTranslation("shop_owned") ?? "OWNED";
+                    statusText.text  = loc?.GetTranslation("shop_owned") ?? "보유중";
                     statusText.color = new Color(0.5f, 0.8f, 0.5f);
                 }
                 else
@@ -55,6 +50,11 @@ namespace DeepEarth.UI
             if (stat2Text)  stat2Text.text  = "";
             if (costText)   costText.text   = "";
             if (statusText) statusText.text = "";
+        }
+
+        private static string GetLabel(string value, string fallback)
+        {
+            return string.IsNullOrEmpty(value) ? fallback : value;
         }
     }
 }

@@ -21,11 +21,8 @@ namespace DeepEarth.UI
 
         private static readonly Color LockedBg    = new Color(0.10f, 0.10f, 0.14f, 0.95f);
         private static readonly Color UnlockedBg  = new Color(0.10f, 0.18f, 0.10f, 0.95f);
-        private static readonly Color EquippedBg  = new Color(0.08f, 0.22f, 0.08f, 0.97f);
         private static readonly Color BtnBuy      = new Color(0.12f, 0.26f, 0.52f, 1f);
         private static readonly Color BtnDisabled = new Color(0.20f, 0.20f, 0.25f, 1f);
-        private static readonly Color BtnEquip    = new Color(0.13f, 0.42f, 0.13f, 1f);
-        private static readonly Color BtnEquipped = new Color(0.22f, 0.22f, 0.28f, 1f);
 
         public event Action<ShopItemSlotView> OnSelected;
         public event Action<ShopItemSlotView> OnActionClicked;
@@ -49,9 +46,7 @@ namespace DeepEarth.UI
             if (costText)  costText.text  = data.isUnlocked ? "" : data.costText;
 
             if (background)
-                background.color = data.isEquipped ? EquippedBg
-                                 : data.isUnlocked  ? UnlockedBg
-                                 : LockedBg;
+                background.color = data.isUnlocked ? UnlockedBg : LockedBg;
 
             if (selectionHighlight) selectionHighlight.gameObject.SetActive(false);
 
@@ -59,24 +54,18 @@ namespace DeepEarth.UI
 
             actionButton.onClick.RemoveAllListeners();
             var loc = LocalizationManager.Instance;
+            var buttonImage = actionButton.GetComponent<Image>();
 
-            if (data.isEquipped)
+            if (data.isUnlocked)
             {
-                actionLabel.text = loc?.GetTranslation("shop_pickaxe_equipped") ?? "EQUIPPED";
-                actionButton.GetComponent<Image>().color = BtnEquipped;
+                actionLabel.text = loc?.GetTranslation("shop_owned") ?? "보유중";
+                if (buttonImage != null) buttonImage.color = BtnDisabled;
                 actionButton.interactable = false;
-            }
-            else if (data.isUnlocked)
-            {
-                actionLabel.text = loc?.GetTranslation("shop_pickaxe_equip") ?? "EQUIP";
-                actionButton.GetComponent<Image>().color = BtnEquip;
-                actionButton.interactable = true;
-                actionButton.onClick.AddListener(() => OnActionClicked?.Invoke(this));
             }
             else
             {
-                actionLabel.text = loc?.GetTranslation("shop_pickaxe_buy") ?? "BUY";
-                actionButton.GetComponent<Image>().color = data.canAfford ? BtnBuy : BtnDisabled;
+                actionLabel.text = GetLabel(data.lockedActionText, loc?.GetTranslation("shop_pickaxe_buy") ?? "BUY");
+                if (buttonImage != null) buttonImage.color = data.canAfford ? BtnBuy : BtnDisabled;
                 actionButton.interactable = data.canAfford;
                 if (data.canAfford)
                     actionButton.onClick.AddListener(() => OnActionClicked?.Invoke(this));
@@ -86,6 +75,11 @@ namespace DeepEarth.UI
         public void SetSelected(bool selected)
         {
             if (selectionHighlight) selectionHighlight.gameObject.SetActive(selected);
+        }
+
+        private static string GetLabel(string value, string fallback)
+        {
+            return string.IsNullOrEmpty(value) ? fallback : value;
         }
     }
 }

@@ -23,8 +23,9 @@ namespace DeepEarth.UI
         public ItemType Type;
         public ItemRarity Rarity;
         public string IconKey;
+        public int MaxStack;
 
-        public InventoryItemData(string id, string nameKey, string descriptionKey, ItemType type, ItemRarity rarity, string iconKey)
+        public InventoryItemData(string id, string nameKey, string descriptionKey, ItemType type, ItemRarity rarity, string iconKey, int maxStack = 1)
         {
             Id = id;
             NameKey = nameKey;
@@ -32,6 +33,7 @@ namespace DeepEarth.UI
             Type = type;
             Rarity = rarity;
             IconKey = iconKey;
+            MaxStack = maxStack;
         }
     }
 }

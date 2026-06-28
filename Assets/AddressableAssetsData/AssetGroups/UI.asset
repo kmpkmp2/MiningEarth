@@ -75,8 +75,23 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 249b9c942b37eee4b99b1d164c4fa815
+    m_Address: Effect_Relic_MadnessSword
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2511f3af1c0d82e4fb866f9b1b416953
+    m_Address: Effect_Relic_MinersGloves
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 26383aef4eb14ac40bc838d87cd2b17a
     m_Address: Effect_BossReward_BossDamage
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 28952d16872fa0448945dcbe5d2ab626
+    m_Address: Effect_Relic_CursedAsh
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -110,8 +125,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 37911308b562ea04dbbbc3a7b392a8f8
+    m_Address: Effect_Relic_OreDetector
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 38520718afcd1ff48be15204e5a3291a
     m_Address: UI_Panel_Settings
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 397d5a59fdc6b2b43a20d96d524f388d
+    m_Address: Effect_Relic_BurningHeart
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -145,6 +170,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 58d026ea7eb168a46b25a45fc9b15961
+    m_Address: Effect_Relic_PurificationRing
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5ac1c9a014528b842b13c4af89f26146
     m_Address: Effect_Debuff_Attack
     m_ReadOnly: 0
@@ -160,6 +190,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6963e6a43cb3fb64dafc8f6e1a600cd9
+    m_Address: Effect_Relic_MercenaryMedal
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6e2ebcbcc0067f047968fa9165ea2bd6
     m_Address: Item_Special
     m_ReadOnly: 0
@@ -167,6 +202,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 77a077074bd955946913d7fa589849d0
     m_Address: UI_Panel_BossRoom
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 77be10eb555c7924785eaaa49a7c892d
+    m_Address: Effect_Relic_MiningKingHelmet
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -180,6 +220,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7ce291476a1a12445bb41e6539987450
+    m_Address: Effect_Relic_CursedMiningGloves
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 82bf49ea600110f4fa62f972202d7c9e
     m_Address: Effect_Buff_MonsterDecrease
     m_ReadOnly: 0
@@ -187,6 +232,26 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 84cc7505ac56e104689d7b672fc1af79
     m_Address: Effect_CharacterPassive_GraveRobber
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 86e33166741bc0542981d350682eeb83
+    m_Address: Effect_Relic_FrozenCrystal
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 88cab1cf5bca1744ebcf698f01d94c14
+    m_Address: Effect_Relic_HuntersEye
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 970aea5412f20884996c3ecc27cbe6b9
+    m_Address: Effect_Relic_FirefighterHelmet
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 97fe5694ca3e1bb4b8f14ea1f297a93c
+    m_Address: Effect_Relic_FireCultMask
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -200,8 +265,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b67fcefe7a842a4e8f9d3a47bc1e201
+    m_Address: Effect_Buff_Mining
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a3437aece77db0344ab81d5c9f90dc29
     m_Address: Effect_BossReward_SpawnDecrease
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a4e9f7b1c3d24f3e91a6c8b0d5e7f209
+    m_Address: Effect_Debuff_Mining
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -217,6 +292,21 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b998f63ae6af5a648b750b22251faea1
     m_Address: Effect_BossReward_MiningPower
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: be2ad0cc7ffe2594bac84050b20c1921
+    m_Address: Effect_Relic_LavaContract
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c048aaa968100224e84567eb25ce70e4
+    m_Address: Effect_Relic_CursedPickaxe
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c932fe1932d29764ea7cb20fc4eb00d2
+    m_Address: Effect_Relic_WarriorsRing
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -245,6 +335,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ec48c59ad0709654081262ce97f2f0bb
+    m_Address: Effect_Relic_HeatResistantCharm
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ecea9cbc7b866234b841620e1ad4087e
     m_Address: Effect_BossReward_MaxHP
     m_ReadOnly: 0
@@ -252,6 +347,21 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f222473d9290aca43b30ed410732e0bc
     m_Address: Item_Chest
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f4a136ed354e2ac4e945af46f4b7dff7
+    m_Address: Effect_Relic_BloodContract
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f62d5e96e625f5449840caf3eb1c1fee
+    m_Address: Effect_Relic_BrokenDrill
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f6daed59b59342642bd9cd132f33b626
+    m_Address: Effect_Relic_BloodRune
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

@@ -24,17 +24,11 @@ namespace DeepEarth.UI
         private void Awake()
         {
             if (useButton != null)
-            {
                 useButton.onClick.AddListener(() => OnUseClicked?.Invoke());
-            }
             if (dropButton != null)
-            {
                 dropButton.onClick.AddListener(() => OnDropClicked?.Invoke());
-            }
             if (closeButton != null)
-            {
                 closeButton.onClick.AddListener(() => OnCloseClicked?.Invoke());
-            }
         }
 
         public void SetVisible(bool visible)
@@ -42,9 +36,9 @@ namespace DeepEarth.UI
             gameObject.SetActive(visible);
         }
 
-        public void SetItem(InventorySlotData slotData, Sprite iconSprite)
+        public void SetItem(InventorySlotModel slotModel, Sprite iconSprite)
         {
-            if (slotData == null)
+            if (slotModel == null)
             {
                 SetVisible(false);
                 return;
@@ -52,21 +46,19 @@ namespace DeepEarth.UI
 
             SetVisible(true);
 
-            // Icon
             if (itemIcon != null)
             {
                 itemIcon.sprite = iconSprite;
                 itemIcon.gameObject.SetActive(iconSprite != null);
             }
 
-            // Translation support
-            string translatedName = LocalizationManager.Instance.GetTranslation(slotData.Item.NameKey);
-            string translatedDesc = LocalizationManager.Instance.GetTranslation(slotData.Item.DescriptionKey);
+            string translatedName = LocalizationManager.Instance.GetTranslation(slotModel.Item.NameKey);
+            string translatedDesc = LocalizationManager.Instance.GetTranslation(slotModel.Item.DescriptionKey);
 
             if (itemNameText != null)
             {
                 itemNameText.text = translatedName;
-                itemNameText.color = GetRarityColor(slotData.Item.Rarity);
+                itemNameText.color = GetRarityColor(slotModel.Item.Rarity);
             }
 
             if (itemDescriptionText != null)
@@ -76,24 +68,20 @@ namespace DeepEarth.UI
 
             if (itemQuantityText != null)
             {
-                // Format quantity string
-                itemQuantityText.text = $"{LocalizationManager.Instance.GetTranslation("hud_quantity_label") ?? "Quantity:"} {slotData.Quantity}";
+                // string qLabel = LocalizationManager.Instance.GetTranslation("hud_quantity_label") ?? "Quantity:";
+                // itemQuantityText.text = $"{qLabel} {slotModel.Count} / {slotModel.MaxStack}";
+                itemQuantityText.text = $"{slotModel.Count}";
             }
 
-            // Enable/Disable UseButton based on ItemType
             if (useButton != null)
             {
                 useButton.gameObject.SetActive(true);
-                useButton.interactable = (slotData.Item.Type == ItemType.Consumable);
-                // Adjust text or transparency to denote disabled state clearly
+                useButton.interactable = (slotModel.Item.Type == ItemType.Consumable);
                 var btnText = useButton.GetComponentInChildren<TextMeshProUGUI>();
                 if (btnText != null)
-                {
                     btnText.color = useButton.interactable ? Color.white : new Color(1f, 1f, 1f, 0.4f);
-                }
             }
 
-            // DropButton is always interactable for items (per drop requirements, unless special?)
             if (dropButton != null)
             {
                 dropButton.gameObject.SetActive(true);
@@ -105,15 +93,10 @@ namespace DeepEarth.UI
         {
             switch (rarity)
             {
-                case ItemRarity.Rare:
-                    return new Color(0.2f, 0.6f, 1.0f); // Bright blue
-                case ItemRarity.Epic:
-                    return new Color(0.75f, 0.25f, 0.9f); // Bright purple
-                case ItemRarity.Legendary:
-                    return new Color(1.0f, 0.85f, 0.2f); // Golden yellow
-                case ItemRarity.Common:
-                default:
-                    return Color.white;
+                case ItemRarity.Rare:      return new Color(0.2f, 0.6f,  1.0f);
+                case ItemRarity.Epic:      return new Color(0.75f, 0.25f, 0.9f);
+                case ItemRarity.Legendary: return new Color(1.0f, 0.85f, 0.2f);
+                default:                   return Color.white;
             }
         }
     }

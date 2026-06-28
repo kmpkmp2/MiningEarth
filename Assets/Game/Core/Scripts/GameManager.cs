@@ -85,6 +85,8 @@ namespace DeepEarth.Core
             }
         }
 
+        private DepthRewardTable _depthRewardTable;
+
         private void Start()
         {
             // Register resource reward
@@ -95,6 +97,16 @@ namespace DeepEarth.Core
 
             // Register HP death hook
             StatManager.Instance.OnHPChanged += CheckPlayerDeath;
+
+            // Load DepthRewardTable via Addressables
+            LoadDepthRewardTableAsync().Forget();
+        }
+
+        private async Cysharp.Threading.Tasks.UniTaskVoid LoadDepthRewardTableAsync()
+        {
+            _depthRewardTable = await ResourceManager.Instance.LoadAssetAsync<DepthRewardTable>(AddressableKeys.DepthRewardTable);
+            if (_depthRewardTable == null)
+                Debug.LogWarning("[GameManager] DepthRewardTable not found. Depth bonuses will be 0.");
         }
 
         private void OnDestroy()
@@ -367,41 +379,51 @@ namespace DeepEarth.Core
 
         private void HandleResourceMined(BlockType type, int amount)
         {
-            // Apply Boss run-local resource multiplier (e.g. +20% or +50%)
+            int depth = CurrentDepth;
+            int baseAmount = 1;
+            int depthBonus = _depthRewardTable != null ? _depthRewardTable.GetDepthBonus(type, depth) : 0;
+            amount = baseAmount + depthBonus;
+
+            // Boss run-local resource multiplier
             float bossMult = 1.0f + StatManager.Instance.BossResourceModifier;
             amount = Mathf.RoundToInt(amount * bossMult);
             if (amount < 1) amount = 1;
 
-            // Apply Grave Robber passive: 10% chance for +10% extra yield (minimum +1)
+            // Grave Robber passive: level-based chance for +10% extra yield (minimum +1)
             var selectedChar = CharacterManager.Instance.SelectedCharacterID;
             if (CharacterManager.Instance.HasGraveRobberPassive(selectedChar))
             {
-                if (UnityEngine.Random.value < 0.1f)
+                float passiveChance = CharacterManager.Instance.GetCurrentPassiveValue(selectedChar);
+                if (UnityEngine.Random.value < passiveChance)
                 {
                     int extra = Mathf.Max(1, Mathf.RoundToInt(amount * 0.1f));
                     amount += extra;
-                    Debug.Log($"Grave Robber Passive Triggered: +{extra} {type} added!");
+                    Debug.Log($"[Reward]\nGrave Robber Passive : +{extra} {type}");
                 }
             }
 
-            string itemId = "";
-            switch (type)
-            {
-                case BlockType.Dirt: itemId = "Item_Stone"; break;
-                case BlockType.Stone: itemId = "Item_Stone"; break;
-                case BlockType.Root: itemId = "Item_Wood"; break;
-                case BlockType.Iron: itemId = "Item_Iron"; break;
-                case BlockType.Silver: itemId = "Item_Silver"; break;
-                case BlockType.Gold: itemId = "Item_Gold"; break;
-                case BlockType.Diamond: itemId = "Item_Diamond"; break;
-            }
-
+            string itemId = BlockTypeToItemId(type);
             if (!string.IsNullOrEmpty(itemId))
             {
+                Debug.Log($"[Reward]\n{type}\nBase : {baseAmount}\nDepth Bonus : +{depthBonus}\nFinal : {amount}");
                 InventoryManager.Instance.AddItem(itemId, amount);
             }
 
             OnGameDataChanged?.Invoke();
+        }
+
+        private string BlockTypeToItemId(BlockType type)
+        {
+            switch (type)
+            {
+                case BlockType.Stone:   return "Item_Stone";
+                case BlockType.Root:    return "Item_Wood";
+                case BlockType.Iron:    return "Item_Iron";
+                case BlockType.Silver:  return "Item_Silver";
+                case BlockType.Gold:    return "Item_Gold";
+                case BlockType.Diamond: return "Item_Diamond";
+                default:                return "";
+            }
         }
 
         public void TriggerStatsOrResourcesChanged()
@@ -597,17 +619,21 @@ namespace DeepEarth.Core
                 SaveManager.Save();
                 Debug.Log("[Save]\nSave Complete");
 
-                // Step 5: Transition scene if popup was skipped (Fallback)
+                // Step 5: 런 데이터 정리
+                RunSetupContext.Reset();
+                RunDataModel.Clear();
+
+                // Step 6: Transition scene if popup was skipped (Fallback)
                 if (!popupSuccess)
                 {
                     try
                     {
-                        Debug.Log("[Scene]\nLoad MainMenuScene");
-                        UnityEngine.SceneManagement.SceneManager.LoadScene("StartMenuScene");
+                        Debug.Log("[Scene]\nLoad StartMenuScene");
+                        UnityEngine.SceneManagement.SceneManager.LoadScene(DeepEarth.Common.SceneNames.StartMenu);
                     }
                     catch (Exception sceneEx)
                     {
-                        Debug.LogError($"[Scene Error] Failed to load MainMenuScene: {sceneEx.Message}\n{sceneEx.StackTrace}");
+                        Debug.LogError($"[Scene Error] Failed to load StartMenuScene: {sceneEx.Message}\n{sceneEx.StackTrace}");
                     }
                 }
 
@@ -626,27 +652,12 @@ namespace DeepEarth.Core
 
         public void RestartGame()
         {
+            // 새 런은 반드시 RunSetupPanel → LoadingScene 경로를 거쳐야 한다.
+            RunSetupContext.Reset();
+            RunDataModel.Clear();
             DisposePresenters();
-            
-            // Re-instantiate/Re-bind UI Presenters
-            if (_hudObject != null && _gameOverObject != null && _eventObject != null && _settingsObject != null && _relicPopupObject != null && _inventoryPopupObject != null)
-            {
-                var hudView = _hudObject.GetComponent<GameUIView>();
-                var gameOverView = _gameOverObject.GetComponent<GameOverUIView>();
-                var eventView = _eventObject.GetComponent<EventUIView>();
-                var settingsView = _settingsObject.GetComponent<SettingsUIView>();
-                var relicPopupView = _relicPopupObject.GetComponent<RelicPopupView>();
-                var inventoryPopupView = _inventoryPopupObject.GetComponent<InventoryPopupView>();
-
-                _hudPresenter = new GameUIPresenter(hudView, this);
-                _gameOverPresenter = new GameOverUIPresenter(gameOverView, this);
-                _eventPresenter = new EventUIPresenter(eventView);
-                _settingsPresenter = new SettingsUIPresenter(settingsView, this);
-                _relicPopupPresenter = new RelicPopupPresenter(relicPopupView, this);
-                _inventoryPopupPresenter = new InventoryPresenter(inventoryPopupView, this);
-            }
-            
-            StartGame();
+            Destroy(gameObject);
+            UnityEngine.SceneManagement.SceneManager.LoadScene(DeepEarth.Common.SceneNames.StartMenu);
         }
 
         private float GetMonsterSpawnChance(int depth)

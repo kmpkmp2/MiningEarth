@@ -15,7 +15,7 @@ MonoBehaviour:
   relicID: relic_mercenary_medal
   nameLocKey: relic_mercenary_medal_name
   descLocKey: relic_mercenary_medal_desc
-  iconKey:
+  iconKey: Effect_Relic_MercenaryMedal
   isTombstone: 0
   burnDurationModifier: 0
   burnDamageModifier: 0

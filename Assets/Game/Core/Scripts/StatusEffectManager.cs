@@ -76,6 +76,25 @@ namespace DeepEarth.Core
             Debug.Log($"[Status]\nBurn Applied\nDuration : {model.RemainingTurns}\nDamage : {model.DamagePerTurn}");
         }
 
+        public bool HasBurn()
+        {
+            EnsureBurnData();
+            return _activeEffects.Exists(e => e.EffectID == _burnData.effectID);
+        }
+
+        public bool CureBurn()
+        {
+            EnsureBurnData();
+
+            var existing = _activeEffects.Find(e => e.EffectID == _burnData.effectID);
+            if (existing == null) return false;
+
+            _activeEffects.Remove(existing);
+            EffectManager.Instance?.RemoveEffect(_burnData.effectID);
+            Debug.Log("[Status]\nBurn Cured");
+            return true;
+        }
+
         // Call once per action turn (block destroyed / monster killed / event chosen).
         public void ProcessActionTurn()
         {

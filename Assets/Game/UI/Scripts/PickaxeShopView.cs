@@ -5,7 +5,6 @@ using DeepEarth.Core;
 
 namespace DeepEarth.UI
 {
-    // Plain C# class — ShopItemSlot 프리팹을 Instantiate해서 Content에 배치
     public class PickaxeShopView
     {
         private readonly Transform              _contentParent;
@@ -21,7 +20,7 @@ namespace DeepEarth.UI
             _slotPrefab    = slotPrefab;
         }
 
-        public void Refresh(IReadOnlyList<PickaxeData> pickaxes, string equippedID, SaveData saveData)
+        public void Refresh(IReadOnlyList<PickaxeData> pickaxes, SaveData saveData)
         {
             if (_slotPrefab == null)
             {
@@ -29,10 +28,8 @@ namespace DeepEarth.UI
                 return;
             }
 
-            // 파괴된 슬롯 정리
             _slots.RemoveAll(s => s == null);
 
-            // 초과 슬롯 제거
             while (_slots.Count > pickaxes.Count)
             {
                 var last = _slots[_slots.Count - 1];
@@ -40,7 +37,6 @@ namespace DeepEarth.UI
                 if (last != null) UnityEngine.Object.Destroy(last.gameObject);
             }
 
-            // 부족한 슬롯 생성
             while (_slots.Count < pickaxes.Count)
             {
                 var go   = UnityEngine.Object.Instantiate(_slotPrefab, _contentParent);
@@ -50,29 +46,27 @@ namespace DeepEarth.UI
                 _slots.Add(slot);
             }
 
-            // 각 슬롯에 데이터 설정
             var loc = LocalizationManager.Instance;
             for (int i = 0; i < pickaxes.Count; i++)
             {
-                var data       = pickaxes[i];
+                var data        = pickaxes[i];
                 bool isUnlocked = (saveData.UnlockedPickaxeIDs?.Contains(data.pickaxeID) ?? false) || data.isDefault;
-                bool isEquipped = data.pickaxeID == equippedID;
                 bool canAfford  = PickaxeManager.Instance?.CanAfford(data) ?? false;
 
                 _slots[i].SetData(new ShopItemDisplayData
                 {
-                    name        = loc?.GetTranslation(data.nameLocKey) ?? data.nameLocKey,
-                    description = loc?.GetTranslation(data.descLocKey) ?? data.descLocKey,
-                    iconKey     = data.iconKey,
-                    stat1Text   = loc?.GetFormatted("shop_pickaxe_mining_power", data.miningPower)
-                                  ?? $"⛏ {data.miningPower}",
-                    stat2Text   = loc?.GetFormatted("shop_pickaxe_durability", data.baseMaxDurability)
-                                  ?? $"♦ {data.baseMaxDurability}",
-                    costText    = BuildCostString(data, loc),
-                    isUnlocked  = isUnlocked,
-                    isEquipped  = isEquipped,
-                    canAfford   = canAfford,
-                    tag         = data,
+                    name             = loc?.GetTranslation(data.nameLocKey) ?? data.nameLocKey,
+                    description      = loc?.GetTranslation(data.descLocKey) ?? data.descLocKey,
+                    iconKey          = data.iconKey,
+                    stat1Text        = loc?.GetFormatted("shop_pickaxe_mining_power", data.miningPower)
+                                       ?? $"⛏ {data.miningPower}",
+                    stat2Text        = loc?.GetFormatted("shop_pickaxe_durability", data.baseMaxDurability)
+                                       ?? $"♦ {data.baseMaxDurability}",
+                    costText         = BuildCostString(data, loc),
+                    lockedActionText = loc?.GetTranslation("shop_pickaxe_buy") ?? "BUY",
+                    isUnlocked       = isUnlocked,
+                    canAfford        = canAfford,
+                    tag              = data,
                 });
             }
         }

@@ -167,19 +167,21 @@ namespace DeepEarth.UI
 
         private static void ComputeAndStoreStats(RunDataModel runData)
         {
-            var meta    = MetaProgressionManager.Instance;
-            var charMgr = CharacterManager.Instance;
-            var pkxMgr  = PickaxeManager.Instance;
-            var charID  = RunSetupContext.SelectedCharacter;
+            var meta       = MetaProgressionManager.Instance;
+            var pkxMgr     = PickaxeManager.Instance;
+            var charID     = RunSetupContext.SelectedCharacter;
+            var staticData = CharacterDatabase.Get(charID);
 
-            int maxHP  = 10 + (meta != null ? (meta.MaxHPLevel - 1) * 2 : 0);
-            int atk    = 1 + (meta != null ? meta.AttackLevel - 1 : 0)
-                           + (charMgr?.GetStartingAttackBonus(charID) ?? 0);
-            int min    = (pkxMgr?.GetEquippedMiningPower() ?? 1)
-                           + (meta != null ? meta.MiningPowerLevel - 1 : 0)
-                           + (charMgr?.GetStartingMiningBonus(charID) ?? 0);
-            int invSz  = 24 + (meta != null ? meta.InventorySizeLevel * 4 : 0);
-            int dur    = pkxMgr != null ? pkxMgr.GetFinalMaxDurability(pkxMgr.EquippedPickaxeData) : 100;
+            int baseHPBonus  = staticData?.BaseHPBonus ?? 0;
+            int baseAtkBonus = staticData?.BaseAttackPowerBonus ?? 0;
+            int baseMinBonus = staticData?.BaseMiningPowerBonus ?? 0;
+
+            int maxHP = 10 + (meta != null ? (meta.MaxHPLevel - 1) * 2 : 0) + baseHPBonus;
+            int atk   = 1 + (meta != null ? meta.AttackLevel - 1 : 0) + baseAtkBonus;
+            int min   = (pkxMgr?.GetEquippedMiningPower() ?? 1)
+                          + (meta != null ? meta.MiningPowerLevel - 1 : 0) + baseMinBonus;
+            int invSz = 24 + (meta != null ? meta.InventorySizeLevel * 4 : 0);
+            int dur   = pkxMgr != null ? pkxMgr.GetFinalMaxDurability(pkxMgr.EquippedPickaxeData) : 100;
 
             runData.ApplyStats(maxHP, min, atk, dur, invSz);
         }

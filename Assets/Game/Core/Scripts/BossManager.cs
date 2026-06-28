@@ -157,6 +157,7 @@ namespace DeepEarth.Core
             {
                 monsterView = _spawnedBossObject.AddComponent<MonsterView>();
             }
+            monsterView.InitializeSpawn(0);
 
             // Screen visual alarm
             EffectSystem.Instance.FlashScreen(new Color(1f, 0f, 0f, 0.4f), 0.4f);

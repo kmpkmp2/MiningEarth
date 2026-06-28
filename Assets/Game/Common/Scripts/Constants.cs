@@ -34,7 +34,10 @@ namespace DeepEarth.Common
         MaxHP,
         Attack,
         InventorySize,
-        PickaxeDurability
+        PickaxeDurability,
+        RepairEfficiency,
+        Luck,
+        EventRate
     }
 
     public static class AddressableKeys
@@ -80,6 +83,7 @@ namespace DeepEarth.Common
         public const string ItemGold = "Item_Gold";
         public const string ItemDiamond = "Item_Diamond";
         public const string ItemPotion = "Item_Potion";
+        public const string ItemBurnCure = "Item_BurnCure";
         public const string ItemKey = "Item_Key";
         public const string ItemChest = "Item_Chest";
         public const string ItemSpecial = "Item_Special";
@@ -103,6 +107,9 @@ namespace DeepEarth.Common
         public const string FontMalgunSDF = "Font_Malgun_SDF";
         public const string FontDefault = "Font_Default";
         public const string FontNotoSansKR = "Font_NotoSansKR";
+
+        // Mining Data
+        public const string DepthRewardTable = "Mining_DepthRewardTable";
 
         // Map & Themes
         public const string MapWallSegment = "Map_Wall_Segment";

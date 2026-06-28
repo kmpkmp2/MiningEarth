@@ -15,7 +15,7 @@ MonoBehaviour:
   relicID: relic_madness_sword
   nameLocKey: relic_madness_sword_name
   descLocKey: relic_madness_sword_desc
-  iconKey:
+  iconKey: Effect_Relic_MadnessSword
   isTombstone: 1
   burnDurationModifier: 0
   burnDamageModifier: 0

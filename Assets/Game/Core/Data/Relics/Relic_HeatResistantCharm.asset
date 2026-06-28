@@ -15,12 +15,14 @@ MonoBehaviour:
   relicID: HeatResistantCharm
   nameLocKey: relic_heat_resistant_charm_name
   descLocKey: relic_heat_resistant_charm_desc
-  iconKey: 
+  iconKey: Effect_Relic_HeatResistantCharm
   isTombstone: 0
   burnDurationModifier: -3
   burnDamageModifier: 0
   burnImmunityChance: 0
   attackBonus: 0
+  miningPowerBonus: 0
   maxHPBonus: 0
   resourceMultiplierBonus: 0
   monsterAttackBonus: 0
+  monsterSpawnRateBonus: 0

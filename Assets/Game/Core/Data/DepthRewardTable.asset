@@ -1,0 +1,90 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd0792f588ac71d4ca9fe15b44fec870, type: 3}
+  m_Name: DepthRewardTable
+  m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.Core.DepthRewardTable
+  tiers:
+  - minDepth: 1
+    maxDepth: 49
+    bonuses:
+    - blockType: 0
+      bonus: 0
+    - blockType: 1
+      bonus: 0
+    - blockType: 3
+      bonus: 0
+    - blockType: 4
+      bonus: 0
+    - blockType: 5
+      bonus: 0
+    - blockType: 6
+      bonus: 0
+  - minDepth: 50
+    maxDepth: 99
+    bonuses:
+    - blockType: 0
+      bonus: 1
+    - blockType: 1
+      bonus: 1
+    - blockType: 3
+      bonus: 1
+    - blockType: 4
+      bonus: 0
+    - blockType: 5
+      bonus: 0
+    - blockType: 6
+      bonus: 0
+  - minDepth: 100
+    maxDepth: 149
+    bonuses:
+    - blockType: 0
+      bonus: 2
+    - blockType: 1
+      bonus: 2
+    - blockType: 3
+      bonus: 1
+    - blockType: 4
+      bonus: 1
+    - blockType: 5
+      bonus: 0
+    - blockType: 6
+      bonus: 0
+  - minDepth: 150
+    maxDepth: 199
+    bonuses:
+    - blockType: 0
+      bonus: 3
+    - blockType: 1
+      bonus: 2
+    - blockType: 3
+      bonus: 2
+    - blockType: 4
+      bonus: 1
+    - blockType: 5
+      bonus: 1
+    - blockType: 6
+      bonus: 0
+  - minDepth: 200
+    maxDepth: -1
+    bonuses:
+    - blockType: 0
+      bonus: 4
+    - blockType: 1
+      bonus: 3
+    - blockType: 3
+      bonus: 2
+    - blockType: 4
+      bonus: 2
+    - blockType: 5
+      bonus: 1
+    - blockType: 6
+      bonus: 1

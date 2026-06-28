@@ -13,6 +13,26 @@ namespace DeepEarth.Core
     }
 
     [Serializable]
+    public class GlobalUpgradeData
+    {
+        public int MiningPowerLevel = 1;
+        public int MaxHPLevel = 1;
+        public int AttackLevel = 1;
+        public int InventorySizeLevel = 0;
+        public int PickaxeDurabilityLevel = 0;
+        public int RepairEfficiencyLevel = 0;
+        public int LuckLevel = 0;
+        public int EventRateLevel = 0;
+    }
+
+    [Serializable]
+    public class CharacterPassiveSaveEntry
+    {
+        public CharacterID ID;
+        public int PassiveLevel;
+    }
+
+    [Serializable]
     public class SaveData
     {
         public int Will;
@@ -20,7 +40,7 @@ namespace DeepEarth.Core
         public System.Collections.Generic.List<string> UnlockedCharacters = new System.Collections.Generic.List<string>();
         public int BestDepth;
 
-        // Character Selection and Progression
+        // Character Selection
         public CharacterID SelectedCharacterID;
         public int PersistentStone;
         public int PersistentWood;
@@ -28,7 +48,16 @@ namespace DeepEarth.Core
         public int PersistentSilver;
         public int PersistentGold;
         public int PersistentDiamond;
+
+        // Character unlock tracking only (no per-character upgrade data)
         public System.Collections.Generic.List<CharacterSaveEntry> CharacterProgress = new System.Collections.Generic.List<CharacterSaveEntry>();
+
+        // Global upgrades shared by all characters
+        public GlobalUpgradeData GlobalUpgrade = new GlobalUpgradeData();
+
+        // Per-character passive levels
+        public System.Collections.Generic.List<CharacterPassiveSaveEntry> CharacterPassiveLevels = new System.Collections.Generic.List<CharacterPassiveSaveEntry>();
+
         public System.Collections.Generic.List<AchievementSaveEntry> AchievementProgress = new System.Collections.Generic.List<AchievementSaveEntry>();
 
         // Pickaxe Shop
@@ -38,7 +67,7 @@ namespace DeepEarth.Core
         public void InitializeDefault()
         {
             Will = 0;
-            Language =(Application.systemLanguage == SystemLanguage.Korean) ? "ko" : "en";
+            Language = (Application.systemLanguage == SystemLanguage.Korean) ? "ko" : "en";
             UnlockedCharacters = new System.Collections.Generic.List<string> { "Prisoner" };
             BestDepth = 0;
 
@@ -58,6 +87,8 @@ namespace DeepEarth.Core
                 new CharacterSaveEntry { ID = CharacterID.GraveRobber, IsUnlocked = false }
             };
 
+            GlobalUpgrade = new GlobalUpgradeData();
+            CharacterPassiveLevels = new System.Collections.Generic.List<CharacterPassiveSaveEntry>();
             AchievementProgress = new System.Collections.Generic.List<AchievementSaveEntry>();
 
             EquippedPickaxeID = "pickaxe_wood";
@@ -90,7 +121,7 @@ namespace DeepEarth.Core
                 {
                     string json = File.ReadAllText(SaveFilePath);
                     _cachedData = JsonUtility.FromJson<SaveData>(json);
-                    
+
                     if (_cachedData == null)
                     {
                         Debug.LogWarning("Save file corrupted, initializing default data.");
@@ -98,28 +129,7 @@ namespace DeepEarth.Core
                     }
                     else
                     {
-                        // Ensure compatibility for existing older saves
-                        if (_cachedData.AchievementProgress == null)
-                            _cachedData.AchievementProgress = new System.Collections.Generic.List<AchievementSaveEntry>();
-
-                        if (_cachedData.UnlockedPickaxeIDs == null || _cachedData.UnlockedPickaxeIDs.Count == 0)
-                        {
-                            _cachedData.UnlockedPickaxeIDs = new System.Collections.Generic.List<string> { "pickaxe_wood" };
-                            if (string.IsNullOrEmpty(_cachedData.EquippedPickaxeID))
-                                _cachedData.EquippedPickaxeID = "pickaxe_wood";
-                        }
-
-                    if (_cachedData.CharacterProgress == null || _cachedData.CharacterProgress.Count == 0)
-                        {
-                            _cachedData.SelectedCharacterID = CharacterID.Prisoner;
-                            _cachedData.CharacterProgress = new System.Collections.Generic.List<CharacterSaveEntry>
-                            {
-                                new CharacterSaveEntry { ID = CharacterID.Prisoner, IsUnlocked = true },
-                                new CharacterSaveEntry { ID = CharacterID.Mercenary, IsUnlocked = false },
-                                new CharacterSaveEntry { ID = CharacterID.Miner, IsUnlocked = false },
-                                new CharacterSaveEntry { ID = CharacterID.GraveRobber, IsUnlocked = false }
-                            };
-                        }
+                        MigrateIfNeeded();
                     }
                 }
                 else
@@ -133,6 +143,39 @@ namespace DeepEarth.Core
                 Debug.LogError($"Failed to load save data: {ex.Message}. Resetting to default.");
                 ResetToDefault();
             }
+        }
+
+        private static void MigrateIfNeeded()
+        {
+            if (_cachedData.AchievementProgress == null)
+                _cachedData.AchievementProgress = new System.Collections.Generic.List<AchievementSaveEntry>();
+
+            if (_cachedData.UnlockedPickaxeIDs == null || _cachedData.UnlockedPickaxeIDs.Count == 0)
+            {
+                _cachedData.UnlockedPickaxeIDs = new System.Collections.Generic.List<string> { "pickaxe_wood" };
+                if (string.IsNullOrEmpty(_cachedData.EquippedPickaxeID))
+                    _cachedData.EquippedPickaxeID = "pickaxe_wood";
+            }
+
+            if (_cachedData.CharacterProgress == null || _cachedData.CharacterProgress.Count == 0)
+            {
+                _cachedData.SelectedCharacterID = CharacterID.Prisoner;
+                _cachedData.CharacterProgress = new System.Collections.Generic.List<CharacterSaveEntry>
+                {
+                    new CharacterSaveEntry { ID = CharacterID.Prisoner, IsUnlocked = true },
+                    new CharacterSaveEntry { ID = CharacterID.Mercenary, IsUnlocked = false },
+                    new CharacterSaveEntry { ID = CharacterID.Miner, IsUnlocked = false },
+                    new CharacterSaveEntry { ID = CharacterID.GraveRobber, IsUnlocked = false }
+                };
+            }
+
+            // Migration: GlobalUpgrade (replaces per-character UpgradeData)
+            if (_cachedData.GlobalUpgrade == null)
+                _cachedData.GlobalUpgrade = new GlobalUpgradeData();
+
+            // Migration: CharacterPassiveLevels
+            if (_cachedData.CharacterPassiveLevels == null)
+                _cachedData.CharacterPassiveLevels = new System.Collections.Generic.List<CharacterPassiveSaveEntry>();
         }
 
         public static void Save()

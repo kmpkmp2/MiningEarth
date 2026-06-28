@@ -15,7 +15,7 @@ MonoBehaviour:
   relicID: relic_ore_detector
   nameLocKey: relic_ore_detector_name
   descLocKey: relic_ore_detector_desc
-  iconKey:
+  iconKey: Effect_Relic_OreDetector
   isTombstone: 0
   burnDurationModifier: 0
   burnDamageModifier: 0

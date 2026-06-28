@@ -6,8 +6,9 @@ namespace DeepEarth.UI
 {
     public class ShopPresenter
     {
-        private readonly ShopPanelView        _panelView;
+        private readonly ShopPanelView _panelView;
         private readonly PickaxeShopPresenter _pickaxePresenter;
+        private readonly CharacterShopPresenter _characterPresenter;
         private ShopCategory _currentCategory = ShopCategory.Pickaxe;
 
         public ShopPresenter(ShopPanelView panelView, GameObject slotPrefab)
@@ -17,19 +18,27 @@ namespace DeepEarth.UI
 
             _pickaxePresenter = new PickaxeShopPresenter(_panelView.ContentView, slotPrefab);
             _pickaxePresenter.OnItemSelected += HandleItemSelected;
+            _characterPresenter = new CharacterShopPresenter(_panelView.ContentView, slotPrefab);
+            _characterPresenter.OnItemSelected += HandleItemSelected;
 
             if (LocalizationManager.Instance != null)
                 LocalizationManager.Instance.OnLanguageChanged += HandleLanguageChanged;
 
-            _panelView.SetActiveTab(ShopCategory.Pickaxe);
-            _panelView.InfoView.ShowPlaceholder();
+            SelectCategory(ShopCategory.Pickaxe);
         }
 
         // 상점이 열릴 때 호출 — 현재 탭의 아이템 리스트만 갱신
         public void Refresh()
         {
-            if (_currentCategory == ShopCategory.Pickaxe)
-                _pickaxePresenter.Activate();
+            switch (_currentCategory)
+            {
+                case ShopCategory.Pickaxe:
+                    _pickaxePresenter.Activate();
+                    break;
+                case ShopCategory.Character:
+                    _characterPresenter.Activate();
+                    break;
+            }
         }
 
         // 언어 변경 시 탭 라벨 + 슬롯 텍스트 갱신
@@ -49,24 +58,43 @@ namespace DeepEarth.UI
 
             _pickaxePresenter.OnItemSelected -= HandleItemSelected;
             _pickaxePresenter.Dispose();
+            _characterPresenter.OnItemSelected -= HandleItemSelected;
+            _characterPresenter.Dispose();
+        }
+
+        public void SelectCategory(ShopCategory category)
+        {
+            SetCategory(category, true);
         }
 
         private void HandleCategorySelected(ShopCategory category)
         {
-            if (_currentCategory == category) return;
+            SetCategory(category, false);
+        }
+
+        private void SetCategory(ShopCategory category, bool forceRefresh)
+        {
+            if (!forceRefresh && _currentCategory == category) return;
             _currentCategory = category;
 
             _panelView.ContentView.Clear();
+            _pickaxePresenter.ClearView();
+            _characterPresenter.ClearView();
             _panelView.InfoView.ShowPlaceholder();
             _panelView.SetActiveTab(category);
+            _pickaxePresenter.Deactivate();
+            _characterPresenter.Deactivate();
 
             if (category == ShopCategory.Pickaxe)
             {
                 _pickaxePresenter.Activate();
             }
+            else if (category == ShopCategory.Character)
+            {
+                _characterPresenter.Activate();
+            }
             else
             {
-                _pickaxePresenter.Deactivate();
                 ShowComingSoon();
             }
         }
@@ -79,8 +107,7 @@ namespace DeepEarth.UI
         private void HandleLanguageChanged()
         {
             _panelView.LocalizeTabs();
-            if (_currentCategory == ShopCategory.Pickaxe)
-                _pickaxePresenter.Refresh();
+            Refresh();
         }
 
         private void ShowComingSoon()

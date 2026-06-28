@@ -1,66 +1,26 @@
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using UnityEngine.AddressableAssets;
-using TMPro;
 using Cysharp.Threading.Tasks;
+using DeepEarth.UI;
 
 namespace DeepEarth.Core
 {
+    /// <summary>
+    /// LoadingScene의 MonoBehaviour 진입점.
+    /// LoadingPresenter에 뷰를 주입하고 ExecuteAsync()를 실행한다.
+    /// </summary>
     public class LoadingSceneController : MonoBehaviour
     {
-        [Header("UI References")]
-        [SerializeField] private Slider progressSlider;
-        [SerializeField] private TextMeshProUGUI progressText;
+        [SerializeField] private LoadingPanelView panelView;
 
         private void Start()
         {
-            StartLoadingAsync().Forget();
+            RunAsync().Forget();
         }
 
-        private async UniTaskVoid StartLoadingAsync()
+        private async UniTaskVoid RunAsync()
         {
-            SetProgress(0f, "Initializing systems...");
-
-            // Initialize global managers
-            var meta = MetaProgressionManager.Instance;
-            var loc = LocalizationManager.Instance;
-            
-            await UniTask.Delay(300);
-            SetProgress(0.2f, "Initializing Addressables...");
-
-            // Initialize Addressables
-            var initHandle = Addressables.InitializeAsync();
-            await initHandle.ToUniTask();
-
-            await UniTask.Delay(300);
-            SetProgress(0.5f, "Loading save data...");
-
-            // SaveManager.Load is already done by MetaProgressionManager, but let's be explicit
-            SaveManager.Load();
-
-            await UniTask.Delay(300);
-            SetProgress(0.8f, "Loading game assets...");
-
-            // Simulate loading visual assets
-            await UniTask.Delay(400);
-            SetProgress(1.0f, "Ready!");
-            await UniTask.Delay(200);
-
-            // Load Start Menu Scene
-            SceneManager.LoadScene("StartMenuScene");
-        }
-
-        private void SetProgress(float value, string statusText)
-        {
-            if (progressSlider != null)
-            {
-                progressSlider.value = value;
-            }
-            if (progressText != null)
-            {
-                progressText.text = statusText;
-            }
+            var presenter = new LoadingPresenter(panelView);
+            await presenter.ExecuteAsync();
         }
     }
 }

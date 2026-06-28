@@ -203,7 +203,9 @@ namespace DeepEarth.Editor
                 "Effect_Buff_Inventory",
                 "Effect_Buff_MonsterDecrease",
                 "Effect_Buff_HazardDecrease",
+                "Effect_Buff_Mining",
                 "Effect_Debuff_Attack",
+                "Effect_Debuff_Mining",
                 "Effect_Debuff_MaxHP",
                 "Effect_Debuff_MonsterEncounter",
                 "Effect_Debuff_HazardEncounter",
@@ -1382,6 +1384,9 @@ namespace DeepEarth.Editor
                 ( $"{RootPath}/Map/Materials/Material_Theme_Iron.mat", AddressableKeys.ThemeIron, "Mining" ),
                 ( $"{RootPath}/Map/Materials/Material_Theme_Gold.mat", AddressableKeys.ThemeGold, "Mining" ),
                 ( $"{RootPath}/Map/Materials/Material_Theme_Crystal.mat", AddressableKeys.ThemeCrystal, "Mining" ),
+                // Mining Data
+                ( $"{RootPath}/Core/Data/DepthRewardTable.asset", AddressableKeys.DepthRewardTable, "Mining" ),
+
                 // Fonts
                 ( $"{RootPath}/Common/Fonts/Pretendard-Regular SDF.asset", AddressableKeys.FontDefault, "Common" ),
                 ( $"{RootPath}/Common/Fonts/NotoSansKR SDF.asset", AddressableKeys.FontNotoSansKR, "Common" )
@@ -1398,7 +1403,9 @@ namespace DeepEarth.Editor
                 "Effect_Buff_Inventory",
                 "Effect_Buff_MonsterDecrease",
                 "Effect_Buff_HazardDecrease",
+                "Effect_Buff_Mining",
                 "Effect_Debuff_Attack",
+                "Effect_Debuff_Mining",
                 "Effect_Debuff_MaxHP",
                 "Effect_Debuff_MonsterEncounter",
                 "Effect_Debuff_HazardEncounter",
@@ -1419,6 +1426,35 @@ namespace DeepEarth.Editor
             foreach (var ek in effectKeys)
             {
                 assetsToRegister.Add( ($"{RootPath}/UI/Textures/{ek}.png", ek, "UI") );
+            }
+
+            var relicEffectIconKeys = new string[]
+            {
+                "Effect_Relic_BloodContract",
+                "Effect_Relic_BloodRune",
+                "Effect_Relic_BrokenDrill",
+                "Effect_Relic_BurningHeart",
+                "Effect_Relic_CursedAsh",
+                "Effect_Relic_CursedMiningGloves",
+                "Effect_Relic_CursedPickaxe",
+                "Effect_Relic_FireCultMask",
+                "Effect_Relic_FirefighterHelmet",
+                "Effect_Relic_FrozenCrystal",
+                "Effect_Relic_HeatResistantCharm",
+                "Effect_Relic_HuntersEye",
+                "Effect_Relic_LavaContract",
+                "Effect_Relic_MadnessSword",
+                "Effect_Relic_MercenaryMedal",
+                "Effect_Relic_MinersGloves",
+                "Effect_Relic_MiningKingHelmet",
+                "Effect_Relic_OreDetector",
+                "Effect_Relic_PurificationRing",
+                "Effect_Relic_WarriorsRing"
+            };
+
+            foreach (var rik in relicEffectIconKeys)
+            {
+                assetsToRegister.Add( ($"{RootPath}/UI/Textures/{rik}.png", rik, "UI") );
             }
 
             var itemKeys = new string[]

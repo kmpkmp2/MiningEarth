@@ -15,7 +15,7 @@ MonoBehaviour:
   relicID: relic_hunters_eye
   nameLocKey: relic_hunters_eye_name
   descLocKey: relic_hunters_eye_desc
-  iconKey:
+  iconKey: Effect_Relic_HuntersEye
   isTombstone: 0
   burnDurationModifier: 0
   burnDamageModifier: 0

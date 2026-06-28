@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using DeepEarth.Common;
 using DeepEarth.Core;
 
 namespace DeepEarth.UI
@@ -14,6 +13,7 @@ namespace DeepEarth.UI
         [SerializeField] private GameObject upgradePanel;
         [SerializeField] private GameObject shopPanel;
         [SerializeField] private GameObject settingsPanel;
+        [SerializeField] private GameObject runSetupPanel;
 
         [Header("Menu Buttons")]
         [SerializeField] private Button playButton;
@@ -26,18 +26,8 @@ namespace DeepEarth.UI
         [SerializeField] private Button shopBackButton;
         [SerializeField] private Button settingsBackButton;
 
-        [Header("Upgrade UI Elements")]
-        [SerializeField] private TextMeshProUGUI willText;
-        [SerializeField] private TextMeshProUGUI topRightGoldText;
-        [SerializeField] private TextMeshProUGUI miningPowerLevelText;
-        [SerializeField] private TextMeshProUGUI miningPowerCostText;
-        [SerializeField] private Button miningPowerButton;
-        [SerializeField] private TextMeshProUGUI maxHPLevelText;
-        [SerializeField] private TextMeshProUGUI maxHPCostText;
-        [SerializeField] private Button maxHPButton;
-        [SerializeField] private TextMeshProUGUI inventoryLevelText;
-        [SerializeField] private TextMeshProUGUI inventoryCostText;
-        [SerializeField] private Button inventoryButton;
+        [Header("Upgrade Panel")]
+        [SerializeField] private UpgradePanelView upgradePanelView;
 
         [Header("Settings UI Elements")]
         [SerializeField] private Button langKoButton;
@@ -45,6 +35,9 @@ namespace DeepEarth.UI
         [SerializeField] private TextMeshProUGUI settingsTitleText;
         [SerializeField] private TextMeshProUGUI settingsLangLabelText;
         [SerializeField] private TextMeshProUGUI settingsCloseLabelText;
+
+        [Header("RunSetup UI Elements")]
+        [SerializeField] private RunSetupPanelView runSetupPanelView;
 
         [Header("Shop UI Elements")]
         [SerializeField] private TextMeshProUGUI shopTitleText;
@@ -71,9 +64,11 @@ namespace DeepEarth.UI
         [SerializeField] private TextMeshProUGUI achievementButtonLabel;
         [SerializeField] private AchievementPopupView achievementPopupView;
 
+        public UpgradePanelView     UpgradePanelView     => upgradePanelView;
         public CharacterPopupView   CharacterPopupView   => characterPopupView;
         public AchievementPopupView AchievementPopupView => achievementPopupView;
         public ShopPanelView        ShopPanelView        => shopPanelView;
+        public RunSetupPanelView    RunSetupPanelView    => runSetupPanelView;
         public Transform            ShopPanelTransform   => shopPanel != null ? shopPanel.transform : null;
 
         // Events
@@ -82,7 +77,6 @@ namespace DeepEarth.UI
         public event Action OnShopClicked;
         public event Action OnSettingsClicked;
         public event Action OnBackClicked;
-        public event Action<UpgradeType> OnUpgradeStatClicked;
         public event Action OnLanguageKoClicked;
         public event Action OnLanguageEnClicked;
         public event Action OnCharacterMenuClicked;
@@ -90,119 +84,57 @@ namespace DeepEarth.UI
 
         private void Start()
         {
-            // Bind core menu buttons
-            if (playButton != null) playButton.onClick.AddListener(() => OnPlayClicked?.Invoke());
-            if (upgradeButton != null) upgradeButton.onClick.AddListener(() => OnUpgradeMenuClicked?.Invoke());
-            if (shopButton != null) shopButton.onClick.AddListener(() => OnShopClicked?.Invoke());
+            if (playButton     != null) playButton.onClick.AddListener(()     => OnPlayClicked?.Invoke());
+            if (upgradeButton  != null) upgradeButton.onClick.AddListener(()  => OnUpgradeMenuClicked?.Invoke());
+            if (shopButton     != null) shopButton.onClick.AddListener(()     => OnShopClicked?.Invoke());
             if (settingsButton != null) settingsButton.onClick.AddListener(() => OnSettingsClicked?.Invoke());
 
-            // Bind back buttons
-            if (upgradeBackButton != null) upgradeBackButton.onClick.AddListener(() => OnBackClicked?.Invoke());
-            if (shopBackButton != null) shopBackButton.onClick.AddListener(() => OnBackClicked?.Invoke());
+            if (upgradeBackButton  != null) upgradeBackButton.onClick.AddListener(()  => OnBackClicked?.Invoke());
+            if (shopBackButton     != null) shopBackButton.onClick.AddListener(()     => OnBackClicked?.Invoke());
             if (settingsBackButton != null) settingsBackButton.onClick.AddListener(() => OnBackClicked?.Invoke());
 
-            // Bind upgrade stat buttons
-            if (miningPowerButton != null) miningPowerButton.onClick.AddListener(() => OnUpgradeStatClicked?.Invoke(UpgradeType.MiningPower));
-            if (maxHPButton != null) maxHPButton.onClick.AddListener(() => OnUpgradeStatClicked?.Invoke(UpgradeType.MaxHP));
-            if (inventoryButton != null) inventoryButton.onClick.AddListener(() => OnUpgradeStatClicked?.Invoke(UpgradeType.InventorySize));
-
-            // Bind character menu click
             if (characterSelectionButton != null) characterSelectionButton.onClick.AddListener(() => OnCharacterMenuClicked?.Invoke());
+            if (achievementButton        != null) achievementButton.onClick.AddListener(()        => OnAchievementMenuClicked?.Invoke());
 
-            // Bind achievement menu click
-            if (achievementButton != null) achievementButton.onClick.AddListener(() => OnAchievementMenuClicked?.Invoke());
-
-            // Bind settings language buttons
             if (langKoButton != null) langKoButton.onClick.AddListener(() => OnLanguageKoClicked?.Invoke());
             if (langEnButton != null) langEnButton.onClick.AddListener(() => OnLanguageEnClicked?.Invoke());
         }
 
         public void ShowPanel(GameObject panelToShow)
         {
-            if (menuPanel != null) menuPanel.SetActive(menuPanel == panelToShow);
+            if (menuPanel    != null) menuPanel.SetActive(menuPanel     == panelToShow);
             if (upgradePanel != null) upgradePanel.SetActive(upgradePanel == panelToShow);
-            if (shopPanel != null) shopPanel.SetActive(shopPanel == panelToShow);
-            if (settingsPanel != null) settingsPanel.SetActive(settingsPanel == panelToShow);
+            if (shopPanel    != null) shopPanel.SetActive(shopPanel     == panelToShow);
+            if (settingsPanel!= null) settingsPanel.SetActive(settingsPanel == panelToShow);
+            if (runSetupPanel!= null) runSetupPanel.SetActive(runSetupPanel == panelToShow);
         }
 
-        public void ShowMainMenu() => ShowPanel(menuPanel);
-        public void ShowUpgradeMenu() => ShowPanel(upgradePanel);
-        public void ShowShopMenu() => ShowPanel(shopPanel);
+        public void ShowMainMenu()     => ShowPanel(menuPanel);
+        public void ShowUpgradeMenu()  => ShowPanel(upgradePanel);
+        public void ShowShopMenu()     => ShowPanel(shopPanel);
         public void ShowSettingsMenu() => ShowPanel(settingsPanel);
-
-        public void SetWill(int will)
-        {
-            if (willText != null && LocalizationManager.Instance != null)
-            {
-                willText.text = LocalizationManager.Instance.GetFormatted("menu_will", will);
-            }
-            if (topRightGoldText != null && LocalizationManager.Instance != null)
-            {
-                topRightGoldText.text = LocalizationManager.Instance.GetFormatted("menu_gold_topright", will);
-            }
-        }
-
-        public void SetUpgradeState(UpgradeType type, int level, int cost, bool canAfford)
-        {
-            if (LocalizationManager.Instance == null) return;
-
-            string levelStr = LocalizationManager.Instance.GetFormatted(
-                type == UpgradeType.MiningPower ? "menu_upgrade_power" :
-                type == UpgradeType.MaxHP ? "menu_upgrade_hp" :
-                type == UpgradeType.InventorySize ? "menu_upgrade_inventory" : "menu_upgrade_attack", level);
-            string costStr = cost == int.MaxValue ? "MAX" : LocalizationManager.Instance.GetFormatted("go_will_cost", cost);
-
-            switch (type)
-            {
-                case UpgradeType.MiningPower:
-                    if (miningPowerLevelText != null) miningPowerLevelText.text = levelStr;
-                    if (miningPowerCostText != null) miningPowerCostText.text = costStr;
-                    if (miningPowerButton != null) miningPowerButton.interactable = canAfford;
-                    break;
-                case UpgradeType.MaxHP:
-                    if (maxHPLevelText != null) maxHPLevelText.text = levelStr;
-                    if (maxHPCostText != null) maxHPCostText.text = costStr;
-                    if (maxHPButton != null) maxHPButton.interactable = canAfford;
-                    break;
-                case UpgradeType.InventorySize:
-                    if (inventoryLevelText != null) inventoryLevelText.text = levelStr;
-                    if (inventoryCostText != null) inventoryCostText.text = costStr;
-                    if (inventoryButton != null) inventoryButton.interactable = cost != int.MaxValue && canAfford;
-                    break;
-            }
-        }
+        public void ShowRunSetupPanel()=> ShowPanel(runSetupPanel);
 
         public void Localize()
         {
             if (LocalizationManager.Instance == null) return;
-
             var loc = LocalizationManager.Instance;
 
-            if (topRightGoldText != null && MetaProgressionManager.Instance != null)
-            {
-                topRightGoldText.text = loc.GetFormatted("menu_gold_topright", MetaProgressionManager.Instance.Will);
-            }
-            if (willText != null && MetaProgressionManager.Instance != null)
-            {
-                willText.text = loc.GetFormatted("menu_will", MetaProgressionManager.Instance.Will);
-            }
-
-            if (menuTitleText != null) menuTitleText.text = loc.GetTranslation("menu_title");
-            if (playButtonLabel != null) playButtonLabel.text = loc.GetTranslation("menu_play");
+            if (menuTitleText      != null) menuTitleText.text      = loc.GetTranslation("menu_title");
+            if (playButtonLabel    != null) playButtonLabel.text    = loc.GetTranslation("menu_play");
             if (upgradeButtonLabel != null) upgradeButtonLabel.text = loc.GetTranslation("menu_upgrade");
-            if (shopButtonLabel != null) shopButtonLabel.text = loc.GetTranslation("menu_shop");
-            if (settingsButtonLabel != null) settingsButtonLabel.text = loc.GetTranslation("menu_settings");
+            if (shopButtonLabel    != null) shopButtonLabel.text    = loc.GetTranslation("menu_shop");
+            if (settingsButtonLabel!= null) settingsButtonLabel.text= loc.GetTranslation("menu_settings");
 
             string backText = loc.GetTranslation("menu_back");
             if (upgradeBackButtonLabel != null) upgradeBackButtonLabel.text = backText;
-            if (shopBackButtonLabel != null) shopBackButtonLabel.text = backText;
+            if (shopBackButtonLabel    != null) shopBackButtonLabel.text    = backText;
             if (settingsCloseLabelText != null) settingsCloseLabelText.text = backText;
 
-            if (settingsTitleText != null) settingsTitleText.text = loc.GetTranslation("settings_title");
-            if (settingsLangLabelText != null) settingsLangLabelText.text = loc.GetTranslation("settings_lang_label");
+            if (settingsTitleText    != null) settingsTitleText.text    = loc.GetTranslation("settings_title");
+            if (settingsLangLabelText!= null) settingsLangLabelText.text= loc.GetTranslation("settings_lang_label");
 
             if (shopTitleText != null) shopTitleText.text = loc.GetTranslation("menu_shop");
-            // Hide coming-soon text once the real shop view is present
             if (shopDescText != null)
             {
                 bool hasShop = shopPanelView != null
@@ -212,20 +144,16 @@ namespace DeepEarth.UI
             }
             if (shopCloseLabelText != null) shopCloseLabelText.text = backText;
 
-            if (characterButtonLabel != null) characterButtonLabel.text = loc.GetTranslation("char_btn_open");
-            if (achievementButtonLabel != null) achievementButtonLabel.text = loc.GetTranslation("achievement_btn_open");
+            if (characterButtonLabel  != null) characterButtonLabel.text  = loc.GetTranslation("char_btn_open");
+            if (achievementButtonLabel!= null) achievementButtonLabel.text= loc.GetTranslation("achievement_btn_open");
         }
 
         public void UpdateLanguageVisuals(string languageCode)
         {
             if (langKoButton != null)
-            {
                 langKoButton.GetComponent<Image>().color = (languageCode == "ko") ? Color.green : new Color(0.2f, 0.22f, 0.25f);
-            }
             if (langEnButton != null)
-            {
                 langEnButton.GetComponent<Image>().color = (languageCode == "en") ? Color.green : new Color(0.2f, 0.22f, 0.25f);
-            }
         }
     }
 }

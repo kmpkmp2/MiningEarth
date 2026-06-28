@@ -15,7 +15,7 @@ MonoBehaviour:
   relicID: relic_cursed_pickaxe
   nameLocKey: relic_cursed_pickaxe_name
   descLocKey: relic_cursed_pickaxe_desc
-  iconKey:
+  iconKey: Effect_Relic_CursedPickaxe
   isTombstone: 1
   burnDurationModifier: 0
   burnDamageModifier: 1

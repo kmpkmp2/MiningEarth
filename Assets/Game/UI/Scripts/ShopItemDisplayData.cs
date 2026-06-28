@@ -8,9 +8,9 @@ namespace DeepEarth.UI
         public string stat1Text;
         public string stat2Text;
         public string costText;
+        public string lockedActionText;
         public bool   isUnlocked;
-        public bool   isEquipped;
         public bool   canAfford;
-        public object tag; // PickaxeData, CharacterData, etc. — opaque to View
+        public object tag;
     }
 }

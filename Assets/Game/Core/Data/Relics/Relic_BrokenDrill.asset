@@ -15,7 +15,7 @@ MonoBehaviour:
   relicID: relic_broken_drill
   nameLocKey: relic_broken_drill_name
   descLocKey: relic_broken_drill_desc
-  iconKey:
+  iconKey: Effect_Relic_BrokenDrill
   isTombstone: 0
   burnDurationModifier: 0
   burnDamageModifier: 0

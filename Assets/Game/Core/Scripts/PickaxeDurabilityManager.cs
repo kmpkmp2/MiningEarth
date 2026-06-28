@@ -88,7 +88,7 @@ namespace DeepEarth.Core
 
             int maxDurability = PickaxeManager.Instance != null
                 ? PickaxeManager.Instance.GetFinalMaxDurability(_currentPickaxeData)
-                : _currentPickaxeData.baseMaxDurability + (MetaProgressionManager.Instance?.PickaxeDurabilityLevel ?? 0) * 20;
+                : CalculateFallbackMaxDurability(_currentPickaxeData);
 
             _model = new PickaxeDurabilityModel(_currentPickaxeData, maxDurability);
             _model.OnDurabilityChanged += HandleDurabilityChanged;
@@ -187,6 +187,15 @@ namespace DeepEarth.Core
                 _model.OnPickaxeRepaired -= HandlePickaxeRepaired;
                 _model = null;
             }
+        }
+
+        private static int CalculateFallbackMaxDurability(PickaxeData data)
+        {
+            if (data == null) return 50;
+
+            int level = MetaProgressionManager.Instance?.PickaxeDurabilityLevel ?? 0;
+            float multiplier = 1.0f + level * 0.1f;
+            return Mathf.Max(1, Mathf.RoundToInt(data.baseMaxDurability * multiplier));
         }
 
         private static PickaxeConfigData BuildDefaultConfig()

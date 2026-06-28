@@ -15,7 +15,7 @@ MonoBehaviour:
   relicID: relic_warriors_ring
   nameLocKey: relic_warriors_ring_name
   descLocKey: relic_warriors_ring_desc
-  iconKey:
+  iconKey: Effect_Relic_WarriorsRing
   isTombstone: 0
   burnDurationModifier: 0
   burnDamageModifier: 0

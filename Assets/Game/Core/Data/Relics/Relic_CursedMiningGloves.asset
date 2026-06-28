@@ -15,7 +15,7 @@ MonoBehaviour:
   relicID: relic_cursed_mining_gloves
   nameLocKey: relic_cursed_mining_gloves_name
   descLocKey: relic_cursed_mining_gloves_desc
-  iconKey:
+  iconKey: Effect_Relic_CursedMiningGloves
   isTombstone: 1
   burnDurationModifier: 0
   burnDamageModifier: 0

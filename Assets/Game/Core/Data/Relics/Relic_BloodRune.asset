@@ -15,7 +15,7 @@ MonoBehaviour:
   relicID: relic_blood_rune
   nameLocKey: relic_blood_rune_name
   descLocKey: relic_blood_rune_desc
-  iconKey:
+  iconKey: Effect_Relic_BloodRune
   isTombstone: 1
   burnDurationModifier: 2
   burnDamageModifier: 0

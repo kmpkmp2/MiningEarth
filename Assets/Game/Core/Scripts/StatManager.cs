@@ -101,14 +101,15 @@ namespace DeepEarth.Core
             RelicMonsterAttackBonus = 0;
             RelicMiningModifier = 0;
 
-            // Apply Meta Upgrades and Character stats
+            // Apply GlobalUpgrade and Character base stats
             var meta = MetaProgressionManager.Instance;
             var selectedChar = CharacterManager.Instance.SelectedCharacterID;
-            
-            BaseMaxHP = 10 + (meta.MaxHPLevel - 1) * 2;
-            BaseAttackDamage = 1 + (meta.AttackLevel - 1) + CharacterManager.Instance.GetStartingAttackBonus(selectedChar);
+            var staticData = CharacterDatabase.Get(selectedChar);
+
+            BaseMaxHP = 10 + (meta.MaxHPLevel - 1) * 2 + (staticData?.BaseHPBonus ?? 0);
+            BaseAttackDamage = 1 + (meta.AttackLevel - 1) + (staticData?.BaseAttackPowerBonus ?? 0);
             int pickaxeMiningPower = PickaxeManager.Instance?.GetEquippedMiningPower() ?? 1;
-            BaseMiningPower = pickaxeMiningPower + (meta.MiningPowerLevel - 1) + CharacterManager.Instance.GetStartingMiningBonus(selectedChar);
+            BaseMiningPower = pickaxeMiningPower + (meta.MiningPowerLevel - 1) + (staticData?.BaseMiningPowerBonus ?? 0);
             BaseInventorySize = 24; // Base Capacity is 24
 
             int upgradeBonus = meta.InventorySizeLevel * 4;

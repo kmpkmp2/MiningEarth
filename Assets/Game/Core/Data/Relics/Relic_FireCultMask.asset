@@ -15,14 +15,14 @@ MonoBehaviour:
   relicID: FireCultMask
   nameLocKey: relic_fire_cult_mask_name
   descLocKey: relic_fire_cult_mask_desc
-  iconKey: 
+  iconKey: Effect_Relic_FireCultMask
   isTombstone: 1
   burnDurationModifier: 0
   burnDamageModifier: 2
   burnImmunityChance: 0
   attackBonus: 0
+  miningPowerBonus: 0
   maxHPBonus: 0
   resourceMultiplierBonus: 0
   monsterAttackBonus: 2
-  miningPowerBonus: 0
   monsterSpawnRateBonus: 0

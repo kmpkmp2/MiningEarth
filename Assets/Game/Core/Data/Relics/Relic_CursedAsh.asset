@@ -15,14 +15,14 @@ MonoBehaviour:
   relicID: CursedAsh
   nameLocKey: relic_cursed_ash_name
   descLocKey: relic_cursed_ash_desc
-  iconKey: 
+  iconKey: Effect_Relic_CursedAsh
   isTombstone: 1
   burnDurationModifier: 5
   burnDamageModifier: 0
   burnImmunityChance: 0
   attackBonus: 0
+  miningPowerBonus: 0
   maxHPBonus: 5
   resourceMultiplierBonus: 0
   monsterAttackBonus: 0
-  miningPowerBonus: 0
   monsterSpawnRateBonus: 0
