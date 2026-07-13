@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: BossPrefabs
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: BossPrefabs
+  m_GUID: 98587cfe167449e4d98875e5b6ffde92
+  m_SerializeEntries:
+  - m_GUID: 08f8d2b8578745349a1bf62fffc12ded
+    m_Address: Combat_Boss_MotherCaveSpider
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5a2ddec267c1e63439160f32e9eeefdf
+    m_Address: Combat_Boss_AllMetalColossus
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9eb761ddadc274d4d9d0b110861ff4de
+    m_Address: Combat_Boss_SkeletonWarlord
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a48e73bbc2046c44289d9f6dae1d9a01
+    m_Address: Combat_Boss_StoneGolem
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: bf53922257c85cf45b1d5828a500e7b9, type: 2}
+  m_SchemaSet:
+    m_Schemas: []

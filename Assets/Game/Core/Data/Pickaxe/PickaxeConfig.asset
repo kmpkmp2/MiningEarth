@@ -12,28 +12,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f61e97e7b164404eab6468deb79d824, type: 3}
   m_Name: PickaxeConfig
   m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.Core.PickaxeConfigData
+  depthBonusInterval: 100
   oreEntries:
   - blockType: 0
     durabilityLoss: 0
     brokenDamage: 0
+    durabilityLossPerHit: 0
   - blockType: 2
     durabilityLoss: 1
     brokenDamage: 1
+    durabilityLossPerHit: 0
   - blockType: 1
     durabilityLoss: 1
     brokenDamage: 1
+    durabilityLossPerHit: 0
   - blockType: 3
     durabilityLoss: 1
     brokenDamage: 1
+    durabilityLossPerHit: 1
   - blockType: 4
     durabilityLoss: 2
     brokenDamage: 2
+    durabilityLossPerHit: 1
   - blockType: 5
     durabilityLoss: 2
     brokenDamage: 2
+    durabilityLossPerHit: 1
   - blockType: 6
     durabilityLoss: 3
     brokenDamage: 3
+    durabilityLossPerHit: 1
   repairRecipes:
   - itemID: Item_Stone
     itemNameLocKey: item_stone_name

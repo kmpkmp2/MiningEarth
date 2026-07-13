@@ -106,10 +106,10 @@ namespace DeepEarth.Core
             var selectedChar = CharacterManager.Instance.SelectedCharacterID;
             var staticData = CharacterDatabase.Get(selectedChar);
 
-            BaseMaxHP = 10 + (meta.MaxHPLevel - 1) * 2 + (staticData?.BaseHPBonus ?? 0);
-            BaseAttackDamage = 1 + (meta.AttackLevel - 1) + (staticData?.BaseAttackPowerBonus ?? 0);
+            BaseMaxHP = 10 + (meta.MaxHPLevel - 1) * 2;
+            BaseAttackDamage = 1 + (meta.AttackLevel - 1);
             int pickaxeMiningPower = PickaxeManager.Instance?.GetEquippedMiningPower() ?? 1;
-            BaseMiningPower = pickaxeMiningPower + (meta.MiningPowerLevel - 1) + (staticData?.BaseMiningPowerBonus ?? 0);
+            BaseMiningPower = pickaxeMiningPower + (meta.MiningPowerLevel - 1);
             BaseInventorySize = 24; // Base Capacity is 24
 
             int upgradeBonus = meta.InventorySizeLevel * 4;
@@ -299,11 +299,14 @@ namespace DeepEarth.Core
 
         public int GetMiningPower()
         {
-            var selectedChar = CharacterManager.Instance.SelectedCharacterID;
-            int passiveBonus = CharacterManager.Instance.GetPassiveMiningBonus(selectedChar);
-            int buffModifier = GetEffectStack(EffectType.BuffMiningPower) * 1;
+            var selectedChar  = CharacterManager.Instance.SelectedCharacterID;
+            int passiveBonus  = CharacterManager.Instance.GetPassiveMiningBonus(selectedChar);
+            int buffModifier  = GetEffectStack(EffectType.BuffMiningPower) * 1;
             int curseModifier = GetEffectStack(EffectType.CurseMiningPower) * 1;
-            return Mathf.Max(1, BaseMiningPower + passiveBonus + buffModifier - curseModifier + BossMiningModifier + RelicMiningModifier);
+            int baseResult    = BaseMiningPower + passiveBonus + buffModifier - curseModifier + BossMiningModifier + RelicMiningModifier;
+            float statusMod   = StatusEffectManager.Instance?.GetTotalMiningModifier() ?? 0f;
+            int statusAdjust  = Mathf.RoundToInt(baseResult * statusMod);
+            return Mathf.Max(1, baseResult + statusAdjust);
         }
 
         public int GetInventorySize()

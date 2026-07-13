@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using DeepEarth.Common;
 using DeepEarth.Core;
@@ -101,7 +102,7 @@ namespace DeepEarth.UI
             var charID  = _unlockedChars[_charIndex];
             var loc     = LocalizationManager.Instance;
             string name = loc?.GetTranslation($"char_{charID.ToString().ToLower()}_name") ?? charID.ToString();
-            string desc = loc?.GetTranslation($"char_{charID.ToString().ToLower()}_desc") ?? "";
+            string desc = BuildCharDesc(charID, loc);
 
             string label = _unlockedChars.Count > 1
                 ? $"{name}  [{_charIndex + 1}/{_unlockedChars.Count}]"
@@ -122,6 +123,40 @@ namespace DeepEarth.UI
                 ? $"{pkxID}  [{_pickaxeIndex + 1}/{_unlockedPickaxes.Count}]"
                 : pkxID;
             _view.SetPickaxe(label, $"Mining Power: {power}");
+        }
+
+        private string BuildCharDesc(CharacterID charID, LocalizationManager loc)
+        {
+            if (loc == null) return charID.ToString();
+
+            string flavor = loc.GetTranslation($"char_{charID.ToString().ToLower()}_flavor");
+
+            var staticData = CharacterDatabase.Get(charID);
+            if (staticData == null || staticData.PassiveLevels == null
+                || staticData.PassiveLevels.Count == 0)
+                return flavor;
+
+            int level    = MetaProgressionManager.Instance?.GetPassiveLevel(charID) ?? 0;
+            int maxLevel = staticData.PassiveLevels.Count;
+
+            if (level <= 0) return flavor;
+
+            int   idx    = Mathf.Clamp(level - 1, 0, maxLevel - 1);
+            float value  = staticData.PassiveLevels[idx].Value;
+            string label = loc.GetTranslation("run_setup_passive_label");
+
+            string passiveLine = staticData.Passive switch
+            {
+                PassiveType.AttackBonus =>
+                    $"{label} Lv{level} / {maxLevel} : {loc.GetTranslation("effect_passive_mercenary_desc").Replace("1", ((int)value).ToString())}",
+                PassiveType.MiningBonus =>
+                    $"{label} Lv{level} / {maxLevel} : {loc.GetTranslation("effect_passive_miner_desc").Replace("1", ((int)value).ToString())}",
+                PassiveType.GraveRobberPassive =>
+                    $"{label} Lv{level} / {maxLevel} : {loc.GetTranslation("effect_passive_graverobber_desc")}",
+                _ => string.Empty
+            };
+
+            return string.IsNullOrEmpty(passiveLine) ? flavor : $"{flavor}\n{passiveLine}";
         }
 
         private void NavigateChar(int delta)

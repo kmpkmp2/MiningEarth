@@ -43,9 +43,6 @@ namespace DeepEarth.Core
         public string DescKey;
         public PassiveType Passive;
         public string PassiveNameKey;
-        public int BaseHPBonus;
-        public int BaseMiningPowerBonus;
-        public int BaseAttackPowerBonus;
         public List<PassiveLevelEffect> PassiveLevels = new List<PassiveLevelEffect>();
         public Dictionary<BlockType, int> UnlockCost = new Dictionary<BlockType, int>();
     }
@@ -61,9 +58,6 @@ namespace DeepEarth.Core
                 DescKey = "char_prisoner_desc",
                 Passive = PassiveType.None,
                 PassiveNameKey = "",
-                BaseHPBonus = 0,
-                BaseMiningPowerBonus = 0,
-                BaseAttackPowerBonus = 0,
                 PassiveLevels = new List<PassiveLevelEffect>(),
                 UnlockCost = new Dictionary<BlockType, int>()
             },
@@ -74,9 +68,6 @@ namespace DeepEarth.Core
                 DescKey = "char_mercenary_desc",
                 Passive = PassiveType.AttackBonus,
                 PassiveNameKey = "passive_mercenary_name",
-                BaseHPBonus = 0,
-                BaseMiningPowerBonus = 0,
-                BaseAttackPowerBonus = 0,
                 PassiveLevels = new List<PassiveLevelEffect>
                 {
                     new PassiveLevelEffect { Level = 1, DescKey = "passive_mercenary_lv1_desc", Value = 1f, WillCost = 20 },
@@ -98,9 +89,6 @@ namespace DeepEarth.Core
                 DescKey = "char_miner_desc",
                 Passive = PassiveType.MiningBonus,
                 PassiveNameKey = "passive_miner_name",
-                BaseHPBonus = 0,
-                BaseMiningPowerBonus = 0,
-                BaseAttackPowerBonus = 0,
                 PassiveLevels = new List<PassiveLevelEffect>
                 {
                     new PassiveLevelEffect { Level = 1, DescKey = "passive_miner_lv1_desc", Value = 1f, WillCost = 20 },
@@ -123,9 +111,6 @@ namespace DeepEarth.Core
                 DescKey = "char_graverobber_desc",
                 Passive = PassiveType.GraveRobberPassive,
                 PassiveNameKey = "passive_graverobber_name",
-                BaseHPBonus = 0,
-                BaseMiningPowerBonus = 0,
-                BaseAttackPowerBonus = 0,
                 PassiveLevels = new List<PassiveLevelEffect>
                 {
                     new PassiveLevelEffect { Level = 1, DescKey = "passive_graverobber_lv1_desc", Value = 0.10f, WillCost = 20 },
@@ -136,9 +121,9 @@ namespace DeepEarth.Core
                 },
                 UnlockCost = new Dictionary<BlockType, int>
                 {
-                    { BlockType.Silver, 50 },
-                    { BlockType.Gold, 50 },
-                    { BlockType.Diamond, 50 }
+                    { BlockType.Silver, 30 },
+                    { BlockType.Gold, 30 },
+                    { BlockType.Diamond, 12 }
                 }
             }
         };

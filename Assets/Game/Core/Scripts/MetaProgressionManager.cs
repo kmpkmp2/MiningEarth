@@ -69,9 +69,9 @@ namespace DeepEarth.Core
         {
             switch (type)
             {
-                case UpgradeType.MiningPower:    return MiningPowerLevel * 10;
-                case UpgradeType.MaxHP:          return MaxHPLevel * 8;
-                case UpgradeType.Attack:         return AttackLevel * 5;
+                case UpgradeType.MiningPower:    return (MiningPowerLevel + 1) * 10;
+                case UpgradeType.MaxHP:          return (MaxHPLevel + 1) * 8;
+                case UpgradeType.Attack:         return (AttackLevel + 1) * 5;
                 case UpgradeType.InventorySize:
                     if (InventorySizeLevel >= 5) return int.MaxValue;
                     return (InventorySizeLevel + 1) * 6;
@@ -114,6 +114,15 @@ namespace DeepEarth.Core
         }
 
         // ── Passive Level Management ──────────────────────────────────
+
+        public void InitializePassiveOnUnlock(CharacterID id)
+        {
+            var staticData = CharacterDatabase.Get(id);
+            if (staticData == null || staticData.PassiveLevels == null
+                || staticData.PassiveLevels.Count == 0) return;
+            if (GetPassiveLevel(id) == 0)
+                SetPassiveLevel(id, 1);
+        }
 
         public int GetPassiveLevel(CharacterID id)
         {

@@ -22,6 +22,6 @@ MonoBehaviour:
   isDefault: 0
   unlockCost:
   - resourceType: 5
-    amount: 50
+    amount: 30
   - resourceType: 6
-    amount: 20
+    amount: 10

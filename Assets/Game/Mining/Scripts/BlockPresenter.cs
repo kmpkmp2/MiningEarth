@@ -63,6 +63,7 @@ namespace DeepEarth.Mining
 
             int damage = StatManager.Instance.GetMiningPower();
             Model.TakeHit(damage);
+            PickaxeDurabilityManager.Instance?.OnOreHit(Model.Type, GameManager.Instance?.CurrentDepth ?? 0);
 
             EffectSystem.Instance.ShakeCamera(0.15f, 0.06f);
             EffectSystem.Instance.SpawnHitParticles(View.transform.position, View.GetBlockColor());

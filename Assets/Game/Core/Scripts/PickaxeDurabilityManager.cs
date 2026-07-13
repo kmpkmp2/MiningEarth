@@ -109,6 +109,15 @@ namespace DeepEarth.Core
             _brokenAlertShown = false;
         }
 
+        public void OnOreHit(BlockType type, int depth)
+        {
+            if (_model == null || _configData == null || _model.IsBroken) return;
+            int loss = _configData.GetPerHitDurabilityLoss(type, depth);
+            if (loss <= 0) return;
+            _model.LoseDurability(loss);
+            Debug.Log($"[Pickaxe]\nHit Durability Loss\nOre : {type}\nDepth : {depth}\nLoss : {loss}\nCurrent : {_model.CurrentDurability}/{_model.MaxDurability}");
+        }
+
         public void OnOreDestroyed(BlockType type)
         {
             if (_model == null || _configData == null) return;
@@ -121,15 +130,6 @@ namespace DeepEarth.Core
                     StatManager.Instance.TakeDamage(damage);
                     EffectSystem.Instance?.FlashScreen(new Color(1f, 0.3f, 0f, 0.2f), 0.15f);
                     Debug.Log($"[Pickaxe]\nBroken Mining Damage\nOre : {type}\nHP Loss : {damage}\nCurrent HP : {StatManager.Instance.CurrentHP}");
-                }
-            }
-            else
-            {
-                int loss = _configData.GetDurabilityLoss(type);
-                if (loss > 0)
-                {
-                    _model.LoseDurability(loss);
-                    Debug.Log($"[Pickaxe]\nDurability Loss\nOre : {type}\nLoss : {loss}\nCurrent : {_model.CurrentDurability} / {_model.MaxDurability}");
                 }
             }
         }

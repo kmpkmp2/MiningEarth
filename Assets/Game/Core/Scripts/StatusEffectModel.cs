@@ -9,6 +9,7 @@ namespace DeepEarth.Core
         public int DamagePerTurn { get; }
         public StatusEffectData Data { get; }
 
+        public float MiningPowerModifier => Data.miningPowerModifier;
         public bool IsExpired => RemainingTurns <= 0;
 
         public StatusEffectModel(StatusEffectData data)

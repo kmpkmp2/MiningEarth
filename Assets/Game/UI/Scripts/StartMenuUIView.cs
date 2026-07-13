@@ -36,6 +36,11 @@ namespace DeepEarth.UI
         [SerializeField] private TextMeshProUGUI settingsLangLabelText;
         [SerializeField] private TextMeshProUGUI settingsCloseLabelText;
 
+        [Header("Volume Sliders")]
+        [SerializeField] private Slider masterVolumeSlider;
+        [SerializeField] private Slider bgmVolumeSlider;
+        [SerializeField] private Slider sfxVolumeSlider;
+
         [Header("RunSetup UI Elements")]
         [SerializeField] private RunSetupPanelView runSetupPanelView;
 
@@ -82,6 +87,10 @@ namespace DeepEarth.UI
         public event Action OnCharacterMenuClicked;
         public event Action OnAchievementMenuClicked;
 
+        public event Action<float> OnMasterVolumeChanged;
+        public event Action<float> OnBGMVolumeChanged;
+        public event Action<float> OnSFXVolumeChanged;
+
         private void Start()
         {
             if (playButton     != null) playButton.onClick.AddListener(()     => OnPlayClicked?.Invoke());
@@ -98,6 +107,20 @@ namespace DeepEarth.UI
 
             if (langKoButton != null) langKoButton.onClick.AddListener(() => OnLanguageKoClicked?.Invoke());
             if (langEnButton != null) langEnButton.onClick.AddListener(() => OnLanguageEnClicked?.Invoke());
+
+            if (masterVolumeSlider != null)
+                masterVolumeSlider.onValueChanged.AddListener(v => OnMasterVolumeChanged?.Invoke(v));
+            if (bgmVolumeSlider != null)
+                bgmVolumeSlider.onValueChanged.AddListener(v => OnBGMVolumeChanged?.Invoke(v));
+            if (sfxVolumeSlider != null)
+                sfxVolumeSlider.onValueChanged.AddListener(v => OnSFXVolumeChanged?.Invoke(v));
+        }
+
+        public void InitSliders(float master, float bgm, float sfx)
+        {
+            if (masterVolumeSlider != null) masterVolumeSlider.SetValueWithoutNotify(master);
+            if (bgmVolumeSlider != null)    bgmVolumeSlider.SetValueWithoutNotify(bgm);
+            if (sfxVolumeSlider != null)    sfxVolumeSlider.SetValueWithoutNotify(sfx);
         }
 
         public void ShowPanel(GameObject panelToShow)

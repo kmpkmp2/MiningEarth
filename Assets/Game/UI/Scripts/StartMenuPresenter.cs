@@ -1,4 +1,5 @@
 using UnityEngine;
+using DeepEarth.Audio;
 using DeepEarth.Common;
 using DeepEarth.Core;
 
@@ -25,6 +26,12 @@ namespace DeepEarth.UI
             _view.OnLanguageEnClicked += HandleLanguageEn;
             _view.OnCharacterMenuClicked += HandleCharacterMenuClicked;
             _view.OnAchievementMenuClicked += HandleAchievementMenuClicked;
+            _view.OnMasterVolumeChanged += v => AudioManager.Instance?.SetMasterVolume(v);
+            _view.OnBGMVolumeChanged    += v => AudioManager.Instance?.SetBGMVolume(v);
+            _view.OnSFXVolumeChanged    += v => AudioManager.Instance?.SetSFXVolume(v);
+
+            var audioSettings = SaveManager.CurrentData.AudioSettings;
+            _view.InitSliders(audioSettings.MasterVolume, audioSettings.BGMVolume, audioSettings.SFXVolume);
 
             if (_view.AchievementPopupView != null)
                 _achievementPresenter = new AchievementPresenter(_view.AchievementPopupView);

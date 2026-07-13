@@ -33,6 +33,15 @@ namespace DeepEarth.Core
     }
 
     [Serializable]
+    public class AudioSettingsData
+    {
+        public float MasterVolume = 1f;
+        public float BGMVolume    = 0.8f;
+        public float SFXVolume    = 1f;
+        public bool  IsMuted      = false;
+    }
+
+    [Serializable]
     public class SaveData
     {
         public int Will;
@@ -63,6 +72,9 @@ namespace DeepEarth.Core
         // Pickaxe Shop
         public string EquippedPickaxeID = "pickaxe_wood";
         public System.Collections.Generic.List<string> UnlockedPickaxeIDs = new System.Collections.Generic.List<string>();
+
+        // Audio
+        public AudioSettingsData AudioSettings = new AudioSettingsData();
 
         public void InitializeDefault()
         {
@@ -176,6 +188,31 @@ namespace DeepEarth.Core
             // Migration: CharacterPassiveLevels
             if (_cachedData.CharacterPassiveLevels == null)
                 _cachedData.CharacterPassiveLevels = new System.Collections.Generic.List<CharacterPassiveSaveEntry>();
+
+            // Migration: AudioSettings
+            if (_cachedData.AudioSettings == null)
+                _cachedData.AudioSettings = new AudioSettingsData();
+
+            // Migration: 기존 해금 캐릭터의 PassiveLevel 0 → 1
+            if (_cachedData.CharacterProgress != null)
+            {
+                if (_cachedData.CharacterPassiveLevels == null)
+                    _cachedData.CharacterPassiveLevels = new System.Collections.Generic.List<CharacterPassiveSaveEntry>();
+                foreach (var charEntry in _cachedData.CharacterProgress)
+                {
+                    if (!charEntry.IsUnlocked) continue;
+                    var staticData = CharacterDatabase.Get(charEntry.ID);
+                    if (staticData?.PassiveLevels == null || staticData.PassiveLevels.Count == 0) continue;
+                    var passiveEntry = _cachedData.CharacterPassiveLevels.Find(p => p.ID == charEntry.ID);
+                    if (passiveEntry == null)
+                    {
+                        passiveEntry = new CharacterPassiveSaveEntry { ID = charEntry.ID };
+                        _cachedData.CharacterPassiveLevels.Add(passiveEntry);
+                    }
+                    if (passiveEntry.PassiveLevel == 0)
+                        passiveEntry.PassiveLevel = 1;
+                }
+            }
         }
 
         public static void Save()

@@ -15,36 +15,46 @@ namespace DeepEarth.Combat
 
         [SerializeField] private Transform spawnPoint;
 
-        private readonly List<MonsterPresenter> _activePresenters = new List<MonsterPresenter>();
-        private readonly List<GameObject> _activeMonsterObjects = new List<GameObject>();
+        private readonly List<MonsterPresenter> _activePresenters    = new List<MonsterPresenter>();
+        private readonly List<GameObject>        _activeMonsterObjects = new List<GameObject>();
+        private readonly Dictionary<MonsterType, MonsterData>          _monsterDataCache = new Dictionary<MonsterType, MonsterData>();
+        private readonly Dictionary<MonsterPresenter, Action<MonsterPresenter>> _killHandlers = new Dictionary<MonsterPresenter, Action<MonsterPresenter>>();
 
         private UniTaskCompletionSource _combatTcs;
+        private MonsterSpawnTable _spawnTable;
         private int _spawnCounter;
+        private int _pendingSpawns;
+        private bool _dataLoaded;
 
         private void Awake()
         {
-            if (_instance == null)
-            {
-                _instance = this;
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            if (_instance == null) _instance = this;
+            else Destroy(gameObject);
         }
 
         public void Initialize(Transform monsterSpawnPoint)
         {
             spawnPoint = monsterSpawnPoint;
+            EnsureDataLoadedAsync().Forget();
+        }
+
+        // ── Public API ───────────────────────────────────────────────────
+
+        public MonsterType PickMonsterForDepth(int depth)
+        {
+            return _spawnTable != null ? _spawnTable.PickMonster(depth) : MonsterType.CaveRat;
         }
 
         public async UniTask StartCombatAsync(MonsterType type, int depth)
         {
-            ClearActiveMonsters();
-            _combatTcs = new UniTaskCompletionSource();
-            _spawnCounter = 0;
+            await EnsureDataLoadedAsync();
 
-            // Apply CurseInstantDamageOnEncounter if any
+            ClearActiveMonsters();
+            _combatTcs    = new UniTaskCompletionSource();
+            _spawnCounter = 0;
+            _pendingSpawns = 0;
+
+            // Instant damage on encounter (CurseInstantDamageOnEncounter)
             int instantDmg = StatManager.Instance.GetEncounterInstantDamage();
             if (instantDmg > 0)
             {
@@ -55,33 +65,44 @@ namespace DeepEarth.Combat
                 EffectSystem.Instance.SpawnDamageText(Camera.main.transform.position + Camera.main.transform.forward * 1.5f, msg, Color.red);
             }
 
-            if (type == MonsterType.CaveRat)
+            if (!_monsterDataCache.TryGetValue(type, out var data))
             {
-                await SpawnMonsterInstanceAsync(MonsterType.CaveRat, Vector3.zero, depth);
-            }
-            else if (type == MonsterType.CaveSpider)
-            {
-                // Spawn 3 CaveSpiders simultaneously
-                await UniTask.WhenAll(
-                    SpawnMonsterInstanceAsync(MonsterType.CaveSpider, new Vector3(-1.0f, 0f, 0.5f), depth),
-                    SpawnMonsterInstanceAsync(MonsterType.CaveSpider, new Vector3(0f, 0f, 0f), depth),
-                    SpawnMonsterInstanceAsync(MonsterType.CaveSpider, new Vector3(1.0f, 0f, 0.5f), depth)
-                );
+                Debug.LogError($"[CombatSystem] MonsterData not found for {type}. Completing combat.");
+                _combatTcs.TrySetResult();
+                goto PostCombat;
             }
 
-            // Wait until all monsters are dead
+            // Spawn based on MonsterData.spawnCount
+            if (data.spawnCount <= 1)
+            {
+                await SpawnMonsterInstanceAsync(data, Vector3.zero, depth);
+            }
+            else
+            {
+                var spawnTasks = new List<UniTask>();
+                for (int i = 0; i < data.spawnCount; i++)
+                {
+                    Vector3 offset = (data.spawnOffsets != null && i < data.spawnOffsets.Length)
+                        ? data.spawnOffsets[i]
+                        : new Vector3((i - data.spawnCount / 2f + 0.5f) * 1.0f, 0f, 0f);
+                    spawnTasks.Add(SpawnMonsterInstanceAsync(data, offset, depth));
+                }
+                await UniTask.WhenAll(spawnTasks.ToArray());
+            }
+
             await _combatTcs.Task;
 
-            // Combat finished
+            PostCombat:
             ClearActiveMonsters();
 
-            // Healing item drop chance (35%)
+            // Healing item drop (35%)
             if (UnityEngine.Random.value < 0.35f)
             {
                 InventoryManager.Instance.AddItem("Item_Potion", 1);
                 EffectSystem.Instance.SpawnDamageText(spawnPoint.position + Vector3.up, "+1 Potion", Color.green);
             }
 
+            // Burn Cure drop (5%)
             if (UnityEngine.Random.value < 0.05f)
             {
                 bool added = InventoryManager.Instance.AddItem(AddressableKeys.ItemBurnCure, 1);
@@ -92,86 +113,214 @@ namespace DeepEarth.Combat
                 }
             }
 
-            Debug.Log("Combat finished!");
+            Debug.Log("[Battle]\nCombat Finished");
         }
 
-        private async UniTask SpawnMonsterInstanceAsync(MonsterType type, Vector3 localOffset, int depth)
-        {
-            string key = (type == MonsterType.CaveRat) ? AddressableKeys.MonsterRat : AddressableKeys.MonsterSpider;
-            GameObject mGo = await PoolSystem.Instance.GetAsync(key, spawnPoint);
+        // ── Internal Spawn ───────────────────────────────────────────────
 
+        private async UniTask SpawnMonsterInstanceAsync(MonsterData data, Vector3 localOffset, int depth)
+        {
+            Vector3 worldPos = spawnPoint.position + spawnPoint.TransformDirection(localOffset);
+            await SpawnMonsterAtWorldPosAsync(data, worldPos, depth);
+        }
+
+        private async UniTask SpawnMonsterAtWorldPosAsync(MonsterData data, Vector3 worldPos, int depth)
+        {
+            GameObject mGo = await PoolSystem.Instance.GetAsync(data.addressableKey, spawnPoint);
             if (mGo == null)
             {
-                Debug.LogError($"Failed to spawn monster: {key}");
+                Debug.LogError($"[CombatSystem] Failed to spawn: {data.addressableKey}");
+                CheckCombatEnd();
                 return;
             }
 
-            Vector3 worldPos = spawnPoint.position + spawnPoint.TransformDirection(localOffset);
             mGo.transform.position = worldPos;
             mGo.transform.rotation = spawnPoint.rotation;
             _activeMonsterObjects.Add(mGo);
 
             var view = mGo.GetComponent<MonsterView>();
-            if (view == null)
-            {
-                view = mGo.AddComponent<MonsterView>();
-            }
+            if (view == null) view = mGo.AddComponent<MonsterView>();
 
             int spawnIdx = _spawnCounter++;
             view.InitializeSpawn(spawnIdx);
-            Debug.Log($"[Battle]\nSpawn Monster\nIndex : {spawnIdx}\nPosition : {worldPos.x:F2},{worldPos.y:F2},{worldPos.z:F2}");
+            Debug.Log($"[Battle]\nSpawn Monster\nType : {data.monsterType}\nIndex : {spawnIdx}\nPosition : {worldPos.x:F2},{worldPos.y:F2},{worldPos.z:F2}");
 
-            var model = new MonsterModel(type, depth);
+            var model     = new MonsterModel(data, depth);
             var presenter = new MonsterPresenter(model, view);
             _activePresenters.Add(presenter);
 
-            presenter.OnMonsterKilled += HandleMonsterKilled;
+            Action<MonsterPresenter> handler = p => HandleMonsterKilled(p, data, depth);
+            _killHandlers[presenter] = handler;
+            presenter.OnMonsterKilled += handler;
         }
 
-        private void HandleMonsterKilled(MonsterPresenter presenter)
+        // ── Kill Handler ─────────────────────────────────────────────────
+
+        private void HandleMonsterKilled(MonsterPresenter presenter, MonsterData data, int depth)
         {
-            presenter.OnMonsterKilled -= HandleMonsterKilled;
+            if (_killHandlers.TryGetValue(presenter, out var handler))
+            {
+                presenter.OnMonsterKilled -= handler;
+                _killHandlers.Remove(presenter);
+            }
 
-            Debug.Log($"[Battle]\nMonster Dead\nSpawnIndex : {presenter.View.SpawnIndex}");
+            Debug.Log($"[Battle]\nMonster Dead\nType : {data.monsterType}\nSpawnIndex : {presenter.View.SpawnIndex}");
 
-            // Visual feedback on death
             EffectSystem.Instance.SpawnHitParticles(presenter.View.transform.position, presenter.View.GetMonsterColor());
             EffectSystem.Instance.ShakeCamera(0.2f, 0.08f);
 
-            // Return object to pool
-            GameObject go = presenter.View.gameObject;
+            GameObject go      = presenter.View.gameObject;
+            Vector3    deathPos = go.transform.position;
             _activeMonsterObjects.Remove(go);
             PoolSystem.Instance.Return(go);
-
             _activePresenters.Remove(presenter);
             presenter.Dispose();
 
-            // Action turn: 1 monster kill = 1 turn (triggers status effect ticks)
             StatusEffectManager.Instance?.ProcessActionTurn();
+            GameEvents.FireMonsterKilled();
 
-            // Achievement event
-            DeepEarth.Common.GameEvents.FireMonsterKilled();
-
-            // If all monsters are killed, complete combat
-            if (_activePresenters.Count == 0)
+            // Slime split
+            if (data.canSplit)
             {
-                _combatTcs?.TrySetResult();
+                var splitData = GetMonsterData(data.splitIntoType);
+                if (splitData != null)
+                    SpawnSplitsAsync(splitData, deathPos, depth, data.splitCount).Forget();
+            }
+
+            // Skeleton death debuff
+            if (data.hasDeathDebuff && data.deathDebuffEffect != null)
+            {
+                if (UnityEngine.Random.value < data.deathDebuffChance)
+                {
+                    StatusEffectManager.Instance?.ApplyMiningPowerDown();
+                    Debug.Log("[Battle]\nSkeleton Death Debuff\nMiningPowerDown Applied");
+                }
+            }
+
+            // Mimic death reward
+            if (data.hasDeathReward && data.rewardTable != null)
+            {
+                var reward = data.rewardTable.PickReward(depth);
+                if (reward != null) ApplyMimicReward(reward);
+            }
+
+            CheckCombatEnd();
+        }
+
+        private async UniTaskVoid SpawnSplitsAsync(MonsterData splitData, Vector3 basePos, int depth, int count)
+        {
+            _pendingSpawns++;
+            try
+            {
+                var tasks = new List<UniTask>();
+                for (int i = 0; i < count; i++)
+                {
+                    float xOff    = (i - count / 2f + 0.5f) * 0.6f;
+                    Vector3 world = basePos + new Vector3(xOff, 0f, 0f);
+                    tasks.Add(SpawnMonsterAtWorldPosAsync(splitData, world, depth));
+                }
+                await UniTask.WhenAll(tasks.ToArray());
+                Debug.Log($"[Battle]\nSlime Split\n{splitData.monsterType} x{count} Spawned");
+            }
+            finally
+            {
+                _pendingSpawns--;
+                CheckCombatEnd();
             }
         }
+
+        private void CheckCombatEnd()
+        {
+            if (_activePresenters.Count == 0 && _pendingSpawns == 0)
+                _combatTcs?.TrySetResult();
+        }
+
+        // ── Mimic Reward ─────────────────────────────────────────────────
+
+        private void ApplyMimicReward(MimicRewardEntry reward)
+        {
+            switch (reward.rewardType)
+            {
+                case MimicRewardType.Iron:
+                    InventoryManager.Instance?.AddItem(AddressableKeys.ItemIron, reward.amount);
+                    EffectSystem.Instance.SpawnDamageText(spawnPoint.position + Vector3.up, $"+{reward.amount} 철광석", new Color(0.6f, 0.6f, 0.7f));
+                    break;
+                case MimicRewardType.Silver:
+                    InventoryManager.Instance?.AddItem(AddressableKeys.ItemSilver, reward.amount);
+                    EffectSystem.Instance.SpawnDamageText(spawnPoint.position + Vector3.up, $"+{reward.amount} 은", new Color(0.8f, 0.8f, 1f));
+                    break;
+                case MimicRewardType.Gold:
+                    InventoryManager.Instance?.AddItem(AddressableKeys.ItemGold, reward.amount);
+                    EffectSystem.Instance.SpawnDamageText(spawnPoint.position + Vector3.up, $"+{reward.amount} 금", new Color(1f, 0.85f, 0.1f));
+                    break;
+                case MimicRewardType.Diamond:
+                    InventoryManager.Instance?.AddItem(AddressableKeys.ItemDiamond, reward.amount);
+                    EffectSystem.Instance.SpawnDamageText(spawnPoint.position + Vector3.up, $"+{reward.amount} 다이아", new Color(0.2f, 0.9f, 1f));
+                    break;
+                case MimicRewardType.Potion:
+                    InventoryManager.Instance?.AddItem(AddressableKeys.ItemPotion, reward.amount);
+                    EffectSystem.Instance.SpawnDamageText(spawnPoint.position + Vector3.up, $"+{reward.amount} 포션", Color.green);
+                    break;
+                case MimicRewardType.MiningPowerUp:
+                    StatusEffectManager.Instance?.ApplyMiningPowerUp();
+                    EffectSystem.Instance.SpawnDamageText(spawnPoint.position + Vector3.up, "채굴력 증가!", new Color(0.4f, 1f, 0.4f));
+                    break;
+            }
+            Debug.Log($"[Battle]\nMimic Reward\nType : {reward.rewardType}\nAmount : {reward.amount}");
+        }
+
+        // ── Data Loading ─────────────────────────────────────────────────
+
+        private async UniTask EnsureDataLoadedAsync()
+        {
+            if (_dataLoaded) return;
+            _dataLoaded = true;
+
+            _spawnTable = await ResourceManager.Instance.LoadAssetAsync<MonsterSpawnTable>(AddressableKeys.MonsterSpawnTableKey);
+            if (_spawnTable == null)
+                Debug.LogWarning("[CombatSystem] MonsterSpawnTable not found in Addressables.");
+
+            var allData = await ResourceManager.Instance.LoadAllByLabelAsync<MonsterData>(AddressableKeys.LabelMonsterData);
+            if (allData != null)
+            {
+                foreach (var d in allData)
+                    if (d != null) _monsterDataCache[d.monsterType] = d;
+            }
+
+            Debug.Log($"[CombatSystem]\nData Loaded\nMonster Types : {_monsterDataCache.Count}\nSpawnTable : {(_spawnTable != null ? "OK" : "MISSING")}");
+        }
+
+        public string GetMonsterNameLocKey(MonsterType type)
+        {
+            return _monsterDataCache.TryGetValue(type, out var data) ? data.nameLocKey : string.Empty;
+        }
+
+        private MonsterData GetMonsterData(MonsterType type)
+        {
+            return _monsterDataCache.TryGetValue(type, out var data) ? data : null;
+        }
+
+        // ── Cleanup ──────────────────────────────────────────────────────
 
         private void ClearActiveMonsters()
         {
             foreach (var pres in _activePresenters)
             {
+                if (_killHandlers.TryGetValue(pres, out var h))
+                {
+                    pres.OnMonsterKilled -= h;
+                    _killHandlers.Remove(pres);
+                }
                 pres.Dispose();
             }
             _activePresenters.Clear();
+            _killHandlers.Clear();
 
             foreach (var obj in _activeMonsterObjects)
-            {
                 if (obj != null) PoolSystem.Instance.Return(obj);
-            }
             _activeMonsterObjects.Clear();
+
+            _pendingSpawns = 0;
         }
     }
 }

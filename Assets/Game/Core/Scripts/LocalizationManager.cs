@@ -70,6 +70,7 @@ namespace DeepEarth.Core
                 { "go_upgrade_btn", "UPGRADE" },
                 { "go_restart_btn", "MAIN MENU" },
                 { "combat_monster_encounter", "Monster Encountered!" },
+                { "combat_monster_encounter_fmt", "{0} Appeared!" },
                 { "combat_lava", "LAVA! -{0} HP" },
                 { "combat_water", "WATER LOG! -{0} HP" },
                 { "combat_miss", "MISS" },
@@ -116,12 +117,17 @@ namespace DeepEarth.Core
                 { "char_prisoner_name", "Prisoner" },
                 { "char_prisoner_desc", "Starting point of all growth. No special passive ability." },
                 { "char_mercenary_name", "Mercenary" },
-                { "char_mercenary_desc", "Specialized in combat.\nPassive: Attack Power +1\nStarting: Attack Power +1" },
+                { "char_mercenary_desc", "Specialized in combat.\nPassive: Attack Power +1 (up to +5)" },
                 { "char_miner_name", "Miner" },
-                { "char_miner_desc", "Specialized in block breaking.\nPassive: Mining Power +1\nStarting: Mining Power +1" },
+                { "char_miner_desc", "Specialized in block breaking.\nPassive: Mining Power +1 (up to +5)" },
                 { "char_graverobber_name", "Grave Robber" },
                 { "char_graverobber_desc", "Specialized in rare resource farming.\nPassive: 10% chance to yield +10% extra Iron/Silver/Gold/Diamond (min +1)." },
-                
+                { "char_prisoner_flavor",    "Starting point of all growth." },
+                { "char_mercenary_flavor",   "Specialized in combat." },
+                { "char_miner_flavor",       "Specialized in block breaking." },
+                { "char_graverobber_flavor", "Specialized in rare resource farming." },
+                { "run_setup_passive_label", "Passive" },
+
                 // Event titles
                 { "event_chest_title", "Treasure Chest" },
                 { "event_tomb_title", "Ancient Tombstone" },
@@ -157,6 +163,10 @@ namespace DeepEarth.Core
                 { "boss_golem_name", "Rock Golem" },
                 { "boss_worm_name", "Lava Worm" },
                 { "boss_titan_name", "Crystal Titan" },
+                { "boss_stone_golem_name", "Stone Golem" },
+                { "boss_mother_cave_spider_name", "Mother Cave Spider" },
+                { "boss_skeleton_warlord_name", "Skeleton Warlord" },
+                { "boss_all_metal_colossus_name", "All Metal Colossus" },
                 { "boss_reward_title", "BOSS DEFEATED" },
                 { "boss_reward_subtitle", "Select one powerful run-local buff:" },
                 { "boss_buff_atk", "Attack Power +2" },
@@ -319,6 +329,18 @@ namespace DeepEarth.Core
                 { "status_burn_name", "Burn" },
                 { "status_burn_desc", "Takes burn damage each action turn" },
 
+                { "status_mining_down_name", "Mining Power Down" },
+                { "status_mining_down_desc", "Mining power is reduced for a few turns." },
+                { "status_mining_up_name", "Mining Power Up" },
+                { "status_mining_up_desc", "Mining power is boosted for a few turns." },
+
+                { "reveal_monster_slime", "Slime Appears!" },
+                { "monster_slime_name", "Slime" },
+                { "monster_small_slime_name", "Small Slime" },
+                { "monster_skeleton_name", "Skeleton" },
+                { "monster_armored_skeleton_name", "Armored Skeleton" },
+                { "monster_mimic_name", "Mimic" },
+
                 { "relic_heat_resistant_charm_name", "Heat Resistant Charm" },
                 { "relic_heat_resistant_charm_desc", "Burn duration -3 turns" },
                 { "relic_frozen_crystal_name", "Frozen Crystal" },
@@ -423,7 +445,13 @@ namespace DeepEarth.Core
                 { "loading_step_sound",         "Loading sounds..." },
                 { "loading_step_verify",        "Verifying data..." },
                 { "loading_step_enter",         "Entering the mine..." },
-                { "loading_tip_cave",           "The deeper you go, the stronger the monsters..." }
+                { "loading_tip_cave",           "The deeper you go, the stronger the monsters..." },
+
+                // Exit Run
+                { "exit_run_btn",         "Give Up Run" },
+                { "exit_run_confirm_msg", "Are you sure you want to give up this run?\nAll current run progress will be lost." },
+                { "exit_run_cancel_btn",  "Cancel" },
+                { "exit_run_confirm_btn", "Give Up Run" }
             };
 
             // Korean translations
@@ -453,6 +481,7 @@ namespace DeepEarth.Core
                 { "go_upgrade_btn", "업그레이드" },
                 { "go_restart_btn", "메인 메뉴로" },
                 { "combat_monster_encounter", "몬스터 출현!" },
+                { "combat_monster_encounter_fmt", "{0} 출현!" },
                 { "combat_lava", "용암! -{0} 체력" },
                 { "combat_water", "침수! -{0} 체력" },
                 { "combat_miss", "빗나감" },
@@ -499,12 +528,17 @@ namespace DeepEarth.Core
                 { "char_prisoner_name", "죄인" },
                 { "char_prisoner_desc", "모든 성장의 시작점. 특별한 고유 능력이 없습니다." },
                 { "char_mercenary_name", "용병" },
-                { "char_mercenary_desc", "전투에 특화된 캐릭터.\n패시브: 기본 공격력 +1\n시작 능력: 기본 공격력 +1" },
+                { "char_mercenary_desc", "전투에 특화된 캐릭터.\n패시브: 기본 공격력 +1 (최대 +5)" },
                 { "char_miner_name", "광부" },
-                { "char_miner_desc", "블록 파괴에 특화된 캐릭터.\n패시브: 추가 채굴력 +1\n시작 능력: 채굴력 +1" },
+                { "char_miner_desc", "블록 파괴에 특화된 캐릭터.\n패시브: 추가 채굴력 +1 (최대 +5)" },
                 { "char_graverobber_name", "도굴꾼" },
                 { "char_graverobber_desc", "희귀 자원 수급에 특화된 캐릭터.\n패시브: 철/은/금/다이아 획득 시 10% 확률로 10% 추가 획득 (최소 +1)." },
-                
+                { "char_prisoner_flavor",    "모든 성장의 시작점." },
+                { "char_mercenary_flavor",   "전투에 특화된 캐릭터." },
+                { "char_miner_flavor",       "블록 파괴에 특화된 캐릭터." },
+                { "char_graverobber_flavor", "희귀 자원 수급에 특화된 캐릭터." },
+                { "run_setup_passive_label", "패시브" },
+
                 // Event titles
                 { "event_chest_title", "보물 상자" },
                 { "event_tomb_title", "고대의 무덤" },
@@ -540,6 +574,10 @@ namespace DeepEarth.Core
                 { "boss_golem_name", "암석 골렘" },
                 { "boss_worm_name", "용암 벌레" },
                 { "boss_titan_name", "수정 거신" },
+                { "boss_stone_golem_name", "돌 골렘" },
+                { "boss_mother_cave_spider_name", "어미 동굴거미" },
+                { "boss_skeleton_warlord_name", "해골 군주" },
+                { "boss_all_metal_colossus_name", "전금속 거신" },
                 { "boss_reward_title", "보스 처치 완료" },
                 { "boss_reward_subtitle", "이번 런 동안 유지될 강력한 버프 1개를 선택하세요:" },
                 { "boss_buff_atk", "공격력 +2" },
@@ -702,6 +740,18 @@ namespace DeepEarth.Core
                 { "status_burn_name", "화상" },
                 { "status_burn_desc", "행동 시 화상 피해를 입는 지속 상태이상" },
 
+                { "status_mining_down_name", "채굴력 감소" },
+                { "status_mining_down_desc", "채굴력이 감소합니다." },
+                { "status_mining_up_name", "채굴력 증가" },
+                { "status_mining_up_desc", "채굴력이 증가합니다." },
+
+                { "reveal_monster_slime", "슬라임 발견!" },
+                { "monster_slime_name", "슬라임" },
+                { "monster_small_slime_name", "작은 슬라임" },
+                { "monster_skeleton_name", "스켈레톤" },
+                { "monster_armored_skeleton_name", "갑옷 스켈레톤" },
+                { "monster_mimic_name", "미믹" },
+
                 { "relic_heat_resistant_charm_name", "내열 부적" },
                 { "relic_heat_resistant_charm_desc", "화상 지속 시간 3턴 감소" },
                 { "relic_frozen_crystal_name", "냉동 수정" },
@@ -806,7 +856,13 @@ namespace DeepEarth.Core
                 { "loading_step_sound",         "사운드 로드 중..." },
                 { "loading_step_verify",        "데이터 검증 중..." },
                 { "loading_step_enter",         "지하 세계로 입장 중..." },
-                { "loading_tip_cave",           "깊이 내려갈수록 몬스터가 강해집니다..." }
+                { "loading_tip_cave",           "깊이 내려갈수록 몬스터가 강해집니다..." },
+
+                // 런 종료
+                { "exit_run_btn",         "런 종료" },
+                { "exit_run_confirm_msg", "현재 진행 중인 런을 종료하시겠습니까?\n획득한 모든 런 진행 정보는 사라집니다." },
+                { "exit_run_cancel_btn",  "취소" },
+                { "exit_run_confirm_btn", "런 종료" }
             };
 
             _translations["en"] = en;

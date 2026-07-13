@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -13,6 +12,8 @@ namespace DeepEarth.Core
 
         private readonly List<StatusEffectModel> _activeEffects = new List<StatusEffectModel>();
         private StatusEffectData _burnData;
+        private StatusEffectData _miningPowerDownData;
+        private StatusEffectData _miningPowerUpData;
 
         private void Awake()
         {
@@ -32,23 +33,37 @@ namespace DeepEarth.Core
             _burnData = await ResourceManager.Instance.LoadAssetAsync<StatusEffectData>(AddressableKeys.StatusEffectBurn);
             if (_burnData == null)
             {
-                Debug.LogWarning("StatusEffectManager: StatusEffect_Burn not found in Addressables. Using defaults.");
+                Debug.LogWarning("StatusEffectManager: StatusEffect_Burn not found. Using defaults.");
                 _burnData = ScriptableObject.CreateInstance<StatusEffectData>();
             }
+
+            _miningPowerDownData = await ResourceManager.Instance.LoadAssetAsync<StatusEffectData>(AddressableKeys.StatusEffectMiningDown);
+            if (_miningPowerDownData == null)
+            {
+                Debug.LogWarning("StatusEffectManager: StatusEffect_MiningPowerDown not found. Using defaults.");
+                _miningPowerDownData = CreateDefaultMiningData(StatusEffectID.MiningPowerDown, "MiningPowerDown", -0.15f, 10);
+            }
+
+            _miningPowerUpData = await ResourceManager.Instance.LoadAssetAsync<StatusEffectData>(AddressableKeys.StatusEffectMiningUp);
+            if (_miningPowerUpData == null)
+            {
+                Debug.LogWarning("StatusEffectManager: StatusEffect_MiningPowerUp not found. Using defaults.");
+                _miningPowerUpData = CreateDefaultMiningData(StatusEffectID.MiningPowerUp, "MiningPowerUp", 0.20f, 10);
+            }
         }
+
+        // ── Burn ────────────────────────────────────────────────────────
 
         public void ApplyBurn()
         {
             EnsureBurnData();
 
-            // PurificationRing 등 면역 유물 체크
             if (RelicManager.Instance != null && RelicManager.Instance.CheckBurnImmunity())
             {
                 Debug.Log("[Burn]\nImmunity Triggered\nBurn Blocked");
                 return;
             }
 
-            // Remove existing burn — no stacking from the same source
             var existing = _activeEffects.Find(e => e.EffectID == _burnData.effectID);
             if (existing != null)
             {
@@ -56,13 +71,12 @@ namespace DeepEarth.Core
                 EffectManager.Instance?.RemoveEffect(_burnData.effectID);
             }
 
-            // 유물 수치 계산
             int baseDuration = _burnData.baseDuration;
-            int baseDamage = _burnData.damagePerTurn;
-            int durationMod = RelicManager.Instance?.GetBurnDurationModifier() ?? 0;
-            int damageMod = RelicManager.Instance?.GetBurnDamageModifier() ?? 0;
+            int baseDamage   = _burnData.damagePerTurn;
+            int durationMod  = RelicManager.Instance?.GetBurnDurationModifier() ?? 0;
+            int damageMod    = RelicManager.Instance?.GetBurnDamageModifier() ?? 0;
             int finalDuration = Mathf.Max(1, baseDuration + durationMod);
-            int finalDamage = Mathf.Max(0, baseDamage + damageMod);
+            int finalDamage   = Mathf.Max(0, baseDamage + damageMod);
 
             Debug.Log($"[Burn]\nBase Duration : {baseDuration}\nBase Damage : {baseDamage}");
             RelicManager.Instance?.LogBurnContributions();
@@ -70,7 +84,6 @@ namespace DeepEarth.Core
 
             var model = new StatusEffectModel(_burnData, finalDuration, finalDamage);
             _activeEffects.Add(model);
-
             RegisterInEffectManager(model);
 
             Debug.Log($"[Status]\nBurn Applied\nDuration : {model.RemainingTurns}\nDamage : {model.DamagePerTurn}");
@@ -85,17 +98,68 @@ namespace DeepEarth.Core
         public bool CureBurn()
         {
             EnsureBurnData();
-
             var existing = _activeEffects.Find(e => e.EffectID == _burnData.effectID);
             if (existing == null) return false;
-
             _activeEffects.Remove(existing);
             EffectManager.Instance?.RemoveEffect(_burnData.effectID);
             Debug.Log("[Status]\nBurn Cured");
             return true;
         }
 
-        // Call once per action turn (block destroyed / monster killed / event chosen).
+        // ── Mining Power Effects ─────────────────────────────────────────
+
+        public void ApplyMiningPowerDown(int durationOverride = -1)
+        {
+            if (_miningPowerDownData == null) return;
+
+            var existing = _activeEffects.Find(e => e.EffectID == _miningPowerDownData.effectID);
+            if (existing != null)
+            {
+                _activeEffects.Remove(existing);
+                EffectManager.Instance?.RemoveEffect(_miningPowerDownData.effectID);
+            }
+
+            int duration = durationOverride > 0 ? durationOverride : _miningPowerDownData.baseDuration;
+            var model = new StatusEffectModel(_miningPowerDownData, duration, 0);
+            _activeEffects.Add(model);
+            RegisterInEffectManager(model);
+
+            Debug.Log($"[Status]\nMiningPowerDown Applied\nDuration : {duration}\nModifier : {_miningPowerDownData.miningPowerModifier}");
+        }
+
+        public void ApplyMiningPowerUp(int durationOverride = -1)
+        {
+            if (_miningPowerUpData == null) return;
+
+            var existing = _activeEffects.Find(e => e.EffectID == _miningPowerUpData.effectID);
+            if (existing != null)
+            {
+                _activeEffects.Remove(existing);
+                EffectManager.Instance?.RemoveEffect(_miningPowerUpData.effectID);
+            }
+
+            int duration = durationOverride > 0 ? durationOverride : _miningPowerUpData.baseDuration;
+            var model = new StatusEffectModel(_miningPowerUpData, duration, 0);
+            _activeEffects.Add(model);
+            RegisterInEffectManager(model);
+
+            Debug.Log($"[Status]\nMiningPowerUp Applied\nDuration : {duration}\nModifier : {_miningPowerUpData.miningPowerModifier}");
+        }
+
+        public float GetTotalMiningModifier()
+        {
+            float total = 0f;
+            foreach (var effect in _activeEffects)
+            {
+                if (effect.Data.effectType == StatusEffectID.MiningPowerDown ||
+                    effect.Data.effectType == StatusEffectID.MiningPowerUp)
+                    total += effect.MiningPowerModifier;
+            }
+            return total;
+        }
+
+        // ── Action Turn ──────────────────────────────────────────────────
+
         public void ProcessActionTurn()
         {
             if (_activeEffects.Count == 0) return;
@@ -121,25 +185,20 @@ namespace DeepEarth.Core
                         EffectSystem.Instance.SpawnDamageText(pos, $"-{dmg} 화상", new Color(1f, 0.4f, 0f));
                     }
 
-                    Debug.Log($"[Status]\nBurn Tick\nRemaining Turn : {effect.RemainingTurns}\nDamage : {dmg}\nCurrent HP : {StatManager.Instance.CurrentHP}");
+                    Debug.Log($"[Status]\n{effect.Data.effectID} Tick\nRemaining Turn : {effect.RemainingTurns}\nDamage : {dmg}\nCurrent HP : {StatManager.Instance.CurrentHP}");
                 }
 
                 if (effect.IsExpired)
                     toRemove.Add(effect);
                 else
-                {
-                    string tickDisplay = effect.DamagePerTurn > 0
-                        ? $"{effect.RemainingTurns}턴 (-{effect.DamagePerTurn})"
-                        : $"{effect.RemainingTurns}턴 (무피해)";
-                    EffectManager.Instance?.UpdateEffectDisplay(effect.EffectID, tickDisplay, effect.RemainingTurns);
-                }
+                    EffectManager.Instance?.UpdateEffectDisplay(effect.EffectID, BuildDisplayString(effect), effect.RemainingTurns);
             }
 
             foreach (var effect in toRemove)
             {
                 _activeEffects.Remove(effect);
                 EffectManager.Instance?.RemoveEffect(effect.EffectID);
-                Debug.Log("[Status]\nBurn End");
+                Debug.Log($"[Status]\n{effect.Data.effectID} End");
             }
         }
 
@@ -147,32 +206,58 @@ namespace DeepEarth.Core
         {
             foreach (var effect in _activeEffects)
                 EffectManager.Instance?.RemoveEffect(effect.EffectID);
-
             _activeEffects.Clear();
         }
 
+        // ── Helpers ──────────────────────────────────────────────────────
+
         private void RegisterInEffectManager(StatusEffectModel model)
         {
-            string display = model.DamagePerTurn > 0
-                ? $"{model.RemainingTurns}턴 (-{model.DamagePerTurn})"
-                : $"{model.RemainingTurns}턴 (무피해)";
+            string display  = BuildDisplayString(model);
+            string src      = string.IsNullOrEmpty(model.Data.source) ? "Status Effect" : model.Data.source;
 
             EffectManager.Instance?.RegisterEffect(
                 model.EffectID,
                 model.Data.nameLocKey,
                 model.Data.descLocKey,
-                EffectSystemType.StatusEffect,
+                model.Data.systemType,
                 model.RemainingTurns,
                 display,
-                "Lava Event",
+                src,
                 model.Data.iconKey
             );
+        }
+
+        private string BuildDisplayString(StatusEffectModel model)
+        {
+            if (model.DamagePerTurn > 0)
+                return $"{model.RemainingTurns}턴 (-{model.DamagePerTurn})";
+            if (model.MiningPowerModifier < 0)
+                return $"{model.RemainingTurns}턴 ({(int)(model.MiningPowerModifier * 100)}%)";
+            if (model.MiningPowerModifier > 0)
+                return $"{model.RemainingTurns}턴 (+{(int)(model.MiningPowerModifier * 100)}%)";
+            return $"{model.RemainingTurns}턴";
         }
 
         private void EnsureBurnData()
         {
             if (_burnData == null)
                 _burnData = ScriptableObject.CreateInstance<StatusEffectData>();
+        }
+
+        private StatusEffectData CreateDefaultMiningData(StatusEffectID id, string effectID, float modifier, int duration)
+        {
+            var data = ScriptableObject.CreateInstance<StatusEffectData>();
+            data.effectType          = id;
+            data.effectID            = effectID;
+            data.nameLocKey          = id == StatusEffectID.MiningPowerDown ? "status_mining_down_name" : "status_mining_up_name";
+            data.descLocKey          = id == StatusEffectID.MiningPowerDown ? "status_mining_down_desc" : "status_mining_up_desc";
+            data.damagePerTurn       = 0;
+            data.miningPowerModifier = modifier;
+            data.baseDuration        = duration;
+            data.systemType          = EffectSystemType.StatusEffect;
+            data.source              = id == StatusEffectID.MiningPowerDown ? "Skeleton" : "Mimic";
+            return data;
         }
     }
 }

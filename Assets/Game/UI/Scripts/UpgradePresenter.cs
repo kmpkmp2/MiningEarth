@@ -61,6 +61,9 @@ namespace DeepEarth.UI
             int invCost = meta.GetUpgradeCost(UpgradeType.InventorySize);
             _view.SetUpgradeState(UpgradeType.InventorySize, meta.InventorySizeLevel, invCost, will >= invCost);
 
+            int attackCost = meta.GetUpgradeCost(UpgradeType.Attack);
+            _view.SetUpgradeState(UpgradeType.Attack, meta.AttackLevel, attackCost, will >= attackCost);
+
             _selectorPresenter?.Refresh();
             _passivePresenter?.Refresh();
         }

@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: MonsterPrefabs
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: MonsterPrefabs
+  m_GUID: ee5f91c9c53260140b3866a21769e515
+  m_SerializeEntries:
+  - m_GUID: 41f2a8ead7a541e42bf1e61ef9ca0d22
+    m_Address: Combat_Monster_Mimic
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6cea3dd2d2163b4458166645bad315a1
+    m_Address: Combat_Monster_ArmoredSkeleton
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 92acb688cab8d5d44872274ef15c7531
+    m_Address: Combat_Monster_Skeleton
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b52b6d84483eaac4f8a00f61cd0796ed
+    m_Address: Combat_Monster_SmallSlime
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d6330f25932ec3f49a7c09482a0737f5
+    m_Address: Combat_Monster_Slime
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: bf53922257c85cf45b1d5828a500e7b9, type: 2}
+  m_SchemaSet:
+    m_Schemas: []

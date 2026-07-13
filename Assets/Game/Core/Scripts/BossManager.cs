@@ -74,20 +74,21 @@ namespace DeepEarth.Core
             var onGameDataChanged = (Action)typeof(GameManager).GetField("OnGameDataChanged", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.GetValue(gameMgr);
             onGameDataChanged?.Invoke();
 
-            // Determine Boss type
-            int tier = depth / 50;
-            int cycleIndex = (tier - 1) % 5;
-            BossID bossId = (BossID)cycleIndex;
+            // Determine Boss type: 50=StoneGolem, 100=MotherCaveSpider, 150=SkeletonWarlord, 200+=AllMetalColossus
+            BossID bossId;
+            if      (depth == 50)  bossId = BossID.StoneGolem;
+            else if (depth == 100) bossId = BossID.MotherCaveSpider;
+            else if (depth == 150) bossId = BossID.SkeletonWarlord;
+            else                   bossId = BossID.AllMetalColossus;
 
             // Addressable Key
             string bossKey = bossId switch
             {
-                BossID.CaveRat => AddressableKeys.MonsterBossRat,
-                BossID.QueenSpider => AddressableKeys.MonsterBossSpider,
-                BossID.RockGolem => AddressableKeys.MonsterBossGolem,
-                BossID.LavaWorm => AddressableKeys.MonsterBossWorm,
-                BossID.CrystalTitan => AddressableKeys.MonsterBossTitan,
-                _ => AddressableKeys.MonsterBossRat
+                BossID.StoneGolem       => AddressableKeys.MonsterBossStoneGolem,
+                BossID.MotherCaveSpider => AddressableKeys.MonsterBossMotherSpider,
+                BossID.SkeletonWarlord  => AddressableKeys.MonsterBossSkeletonWarlord,
+                BossID.AllMetalColossus => AddressableKeys.MonsterBossAllMetalColossus,
+                _                       => AddressableKeys.MonsterBossStoneGolem
             };
 
             // Retrieve Spawn Point via reflection
@@ -132,22 +133,13 @@ namespace DeepEarth.Core
                 _spawnedBossObject.transform.position = spawnPoint.position;
                 _spawnedBossObject.transform.rotation = spawnPoint.rotation;
 
-                // Scale 안전장치: 프리팹 또는 풀 재사용으로 인한 비정상 Scale 보정
-                Vector3 scale = _spawnedBossObject.transform.localScale;
-                if (scale != Vector3.one)
-                {
-                    Debug.Log($"[Boss]\nInvalid Scale Detected\nBefore : {scale}\nAfter : (1,1,1)");
-                    _spawnedBossObject.transform.localScale = Vector3.one;
-                }
-
                 string bossDisplayName = bossId switch
                 {
-                    BossID.CaveRat      => "Cave Rat King",
-                    BossID.QueenSpider  => "Queen Spider",
-                    BossID.RockGolem    => "Rock Golem",
-                    BossID.LavaWorm     => "Lava Worm",
-                    BossID.CrystalTitan => "Crystal Titan",
-                    _                   => bossId.ToString()
+                    BossID.StoneGolem       => "Stone Golem",
+                    BossID.MotherCaveSpider => "Mother Cave Spider",
+                    BossID.SkeletonWarlord  => "Skeleton Warlord",
+                    BossID.AllMetalColossus => "All Metal Colossus",
+                    _                       => bossId.ToString()
                 };
                 Debug.Log($"[Boss]\nSpawned\nBoss : {bossDisplayName}\nScale : (1,1,1)");
             }
@@ -193,6 +185,14 @@ namespace DeepEarth.Core
             // Visual feedback on defeat
             EffectSystem.Instance.FlashScreen(new Color(0f, 0.8f, 1f, 0.3f), 0.3f);
             EffectSystem.Instance.ShakeCamera(0.3f, 0.1f);
+
+            // Stone Golem: guaranteed Iron ×3 drop
+            if (bossId == BossID.StoneGolem)
+            {
+                InventoryManager.Instance.AddItem("Item_Iron", 3);
+                EffectSystem.Instance.SpawnDamageText(spawnPoint.position + Vector3.up * 0.5f, "Iron ×3", new Color(0.7f, 0.7f, 0.75f));
+                Debug.Log("[Boss]\nStone Golem Drop\nIron : 3");
+            }
 
             // Defeat heal reward (35% + drop chance modifier)
             float healChance = 0.35f + StatManager.Instance.BossHealDropChanceModifier;

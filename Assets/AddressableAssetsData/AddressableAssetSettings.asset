@@ -65,8 +65,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 124358cc4bfc6ca42b58fddc7e4b4057, type: 2}
   - {fileID: 11400000, guid: 3b06339c25b1acd47981fdfde072d688, type: 2}
   - {fileID: 11400000, guid: 1e392ae1d382a8b4a8634b644d014c0c, type: 2}
+  - {fileID: 11400000, guid: d43a0a9a055006b4c853cecdad1c70c9, type: 2}
+  - {fileID: 11400000, guid: efb8cc4e6f9c1b846a4f3300c7733f3a, type: 2}
   - {fileID: 11400000, guid: 2e87d955e1f014241995f3ca14a44e35, type: 2}
   - {fileID: 11400000, guid: e587ab2b7e6f2284cbbad1f45ff2a2e6, type: 2}
+  - {fileID: 11400000, guid: 0a3efff92b588e14a8acadcfb595e008, type: 2}
+  - {fileID: 11400000, guid: bc39e148772890a418b11efd80ae3eb6, type: 2}
   m_BuildSettings:
     m_LogResourceManagerExceptions: 1
     m_BundleBuildPath: Temp/com.unity.addressables/AssetBundles
@@ -110,6 +114,7 @@ MonoBehaviour:
     - Relic_Tombstone
     - Achievement
     - Pickaxe
+    - MonsterData
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 128d54ee930ac6f46a387c24186080be, type: 2}

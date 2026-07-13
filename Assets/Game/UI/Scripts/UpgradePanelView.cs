@@ -28,6 +28,11 @@ namespace DeepEarth.UI
         [SerializeField] private TextMeshProUGUI inventoryCostText;
         [SerializeField] private Button inventoryButton;
 
+        [Header("Attack Row")]
+        [SerializeField] private TextMeshProUGUI attackLevelText;
+        [SerializeField] private TextMeshProUGUI attackCostText;
+        [SerializeField] private Button attackButton;
+
         [Header("Sub Views")]
         [SerializeField] public CharacterSelectorView characterSelectorView;
         [SerializeField] public CharacterPassiveRowView characterPassiveRowView;
@@ -42,6 +47,8 @@ namespace DeepEarth.UI
                 maxHPButton.onClick.AddListener(() => OnUpgradeClicked?.Invoke(UpgradeType.MaxHP));
             if (inventoryButton != null)
                 inventoryButton.onClick.AddListener(() => OnUpgradeClicked?.Invoke(UpgradeType.InventorySize));
+            if (attackButton != null)
+                attackButton.onClick.AddListener(() => OnUpgradeClicked?.Invoke(UpgradeType.Attack));
         }
 
         public void SetWill(int will)
@@ -59,10 +66,11 @@ namespace DeepEarth.UI
 
             string levelKey = type switch
             {
-                UpgradeType.MiningPower  => "menu_upgrade_power",
-                UpgradeType.MaxHP        => "menu_upgrade_hp",
+                UpgradeType.MiningPower   => "menu_upgrade_power",
+                UpgradeType.MaxHP         => "menu_upgrade_hp",
                 UpgradeType.InventorySize => "menu_upgrade_inventory",
-                _                        => "menu_upgrade_attack"
+                UpgradeType.Attack        => "menu_upgrade_attack",
+                _                         => "menu_upgrade_attack"
             };
 
             string levelStr = LocalizationManager.Instance.GetFormatted(levelKey, level);
@@ -84,6 +92,11 @@ namespace DeepEarth.UI
                     if (inventoryLevelText != null) inventoryLevelText.text = levelStr;
                     if (inventoryCostText  != null) inventoryCostText.text  = costStr;
                     if (inventoryButton    != null) inventoryButton.interactable = cost != int.MaxValue && canAfford;
+                    break;
+                case UpgradeType.Attack:
+                    if (attackLevelText != null) attackLevelText.text = levelStr;
+                    if (attackCostText  != null) attackCostText.text  = costStr;
+                    if (attackButton    != null) attackButton.interactable = canAfford;
                     break;
             }
         }

@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5648d8bb4210b594cbd0f17f6ad51fdf, type: 3}
+  m_Name: MonsterSpawnTable
+  m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.Core.MonsterSpawnTable
+  tiers:
+  - minDepth: 0
+    maxDepth: 49
+    entries:
+    - monsterType: 0
+      weight: 50
+    - monsterType: 1
+      weight: 30
+    - monsterType: 2
+      weight: 20
+  - minDepth: 50
+    maxDepth: 99
+    entries:
+    - monsterType: 0
+      weight: 25
+    - monsterType: 1
+      weight: 25
+    - monsterType: 2
+      weight: 30
+    - monsterType: 4
+      weight: 20
+  - minDepth: 100
+    maxDepth: 199
+    entries:
+    - monsterType: 1
+      weight: 15
+    - monsterType: 2
+      weight: 20
+    - monsterType: 4
+      weight: 30
+    - monsterType: 5
+      weight: 25
+    - monsterType: 6
+      weight: 10
+  - minDepth: 200
+    maxDepth: -1
+    entries:
+    - monsterType: 2
+      weight: 10
+    - monsterType: 4
+      weight: 20
+    - monsterType: 5
+      weight: 35
+    - monsterType: 6
+      weight: 20
+    - monsterType: 1
+      weight: 15

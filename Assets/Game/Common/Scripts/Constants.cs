@@ -14,7 +14,12 @@ namespace DeepEarth.Common
     public enum MonsterType
     {
         CaveRat,
-        CaveSpider
+        CaveSpider,
+        Slime,
+        SmallSlime,
+        Skeleton,
+        ArmoredSkeleton,
+        Mimic
     }
 
     public enum GameState
@@ -60,6 +65,12 @@ namespace DeepEarth.Common
         public const string MonsterBossWorm = "Combat_Boss_Worm";
         public const string MonsterBossTitan = "Combat_Boss_Titan";
 
+        // New Boss Prefabs
+        public const string MonsterBossStoneGolem       = "Combat_Boss_StoneGolem";
+        public const string MonsterBossMotherSpider     = "Combat_Boss_MotherCaveSpider";
+        public const string MonsterBossSkeletonWarlord  = "Combat_Boss_SkeletonWarlord";
+        public const string MonsterBossAllMetalColossus = "Combat_Boss_AllMetalColossus";
+
         // UI Panels
         public const string ShopItemSlot = "UI_Prefab_ShopItemSlot";
         public const string UIPanelHUD = "UI_Panel_HUD";
@@ -88,7 +99,21 @@ namespace DeepEarth.Common
         public const string ItemChest = "Item_Chest";
         public const string ItemSpecial = "Item_Special";
 
-        public const string StatusEffectBurn = "StatusEffect_Burn";
+        public const string StatusEffectBurn       = "StatusEffect_Burn";
+        public const string StatusEffectMiningDown = "StatusEffect_MiningPowerDown";
+        public const string StatusEffectMiningUp   = "StatusEffect_MiningPowerUp";
+
+        // Monster Prefabs
+        public const string MonsterSlime           = "Combat_Monster_Slime";
+        public const string MonsterSmallSlime      = "Combat_Monster_SmallSlime";
+        public const string MonsterSkeleton        = "Combat_Monster_Skeleton";
+        public const string MonsterArmoredSkeleton = "Combat_Monster_ArmoredSkeleton";
+        public const string MonsterMimic           = "Combat_Monster_Mimic";
+
+        // Monster Data (label + per-asset keys)
+        public const string LabelMonsterData       = "MonsterData";
+        public const string MonsterSpawnTableKey   = "Monster_SpawnTable";
+        public const string MimicRewardTableKey    = "Monster_MimicRewardTable";
 
         // Pickaxe
         public const string PickaxeDefault = "Pickaxe_Default";
@@ -127,6 +152,7 @@ namespace DeepEarth.Common
         Tombstone,
         MonsterRat,
         MonsterSpider,
+        MonsterSlime,
         Water,
         Lava,
         Boss
@@ -141,8 +167,17 @@ namespace DeepEarth.Common
 
     public static class SceneNames
     {
+        public const string Bootstrap = "BootstrapScene";
         public const string Loading   = "LoadingScene";
         public const string StartMenu = "StartMenuScene";
         public const string MainGame  = "MainGameScene";
+    }
+
+    public static class AudioMixerParams
+    {
+        public const string MasterVolume = "MasterVolume";
+        public const string BGMVolume    = "BGMVolume";
+        public const string SFXVolume    = "SFXVolume";
+        public const string UIVolume     = "UIVolume";
     }
 }

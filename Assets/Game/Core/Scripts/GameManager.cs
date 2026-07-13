@@ -458,12 +458,17 @@ namespace DeepEarth.Core
             float monsterChance = GetMonsterSpawnChance(CurrentDepth) * StatManager.Instance.GetMonsterSpawnRateMultiplier();
             if (UnityEngine.Random.value < monsterChance)
             {
-                MonsterType mType = (UnityEngine.Random.value < 0.6f) ? MonsterType.CaveRat : MonsterType.CaveSpider;
-                EventRevealType mReveal = mType == MonsterType.CaveRat ? EventRevealType.MonsterRat : EventRevealType.MonsterSpider;
+                MonsterType mType = CombatSystem.Instance.PickMonsterForDepth(CurrentDepth);
+                EventRevealType mReveal = MonsterTypeToReveal(mType);
                 await EventManager.Instance.PlayRevealAsync(mReveal);
 
                 EffectSystem.Instance.FlashScreen(new Color(1f, 0f, 0f, 0.2f), 0.2f);
-                EffectSystem.Instance.SpawnDamageText(Camera.main.transform.position + Camera.main.transform.forward * 1.5f, LocalizationManager.Instance.GetTranslation("combat_monster_encounter"), Color.red);
+                string nameLocKey   = CombatSystem.Instance.GetMonsterNameLocKey(mType);
+                string monsterName  = string.IsNullOrEmpty(nameLocKey)
+                    ? mType.ToString()
+                    : LocalizationManager.Instance.GetTranslation(nameLocKey);
+                string encounterMsg = LocalizationManager.Instance.GetFormatted("combat_monster_encounter_fmt", monsterName);
+                EffectSystem.Instance.SpawnDamageText(Camera.main.transform.position + Camera.main.transform.forward * 1.5f, encounterMsg, Color.red);
 
                 await CombatSystem.Instance.StartCombatAsync(mType, CurrentDepth);
 
@@ -561,9 +566,9 @@ namespace DeepEarth.Core
 
                 // Step 2: Reward Calculate
                 Debug.Log("[Run]\nReward Calculate");
-                // Will reward formula: Depth/5 + Resources value/2
+                // Will reward formula: Depth/3 + Resources value/2
                 int resourceValue = (IronCount * 1) + (SilverCount * 2) + (GoldCount * 3) + (DiamondCount * 5);
-                WillEarnedThisRun = (CurrentDepth / 5) + (resourceValue / 2);
+                WillEarnedThisRun = (CurrentDepth / 3) + (resourceValue / 2);
 
                 // Update personal best depth
                 if (CurrentDepth > SaveManager.CurrentData.BestDepth)
@@ -660,12 +665,53 @@ namespace DeepEarth.Core
             UnityEngine.SceneManagement.SceneManager.LoadScene(DeepEarth.Common.SceneNames.StartMenu);
         }
 
+        public void AbandonRun()
+        {
+            Debug.Log($"[Run]\nPlayer Give Up\nDepth : {CurrentDepth}");
+
+            InventoryManager.Instance?.ClearRunInventory();
+            EffectManager.Instance?.ClearRunEffects();
+            StatusEffectManager.Instance?.ClearAll();
+            RelicManager.Instance?.ClearAll();
+            StatManager.Instance?.ResetStatsForRun();
+
+            RunSetupContext.Reset();
+            RunDataModel.Clear();
+
+            Debug.Log("[Run]\nRunData Cleared");
+
+            SaveManager.Save();
+
+            DisposePresenters();
+            Destroy(gameObject);
+
+            Time.timeScale = 1f;
+
+            Debug.Log("[Scene]\nMove\nMainMenuScene");
+            UnityEngine.SceneManagement.SceneManager.LoadScene(DeepEarth.Common.SceneNames.StartMenu);
+        }
+
         private float GetMonsterSpawnChance(int depth)
         {
             if (depth < 50) return 0.10f;
             if (depth < 100) return 0.20f;
             if (depth < 200) return 0.35f;
             return 0.50f;
+        }
+
+        private static EventRevealType MonsterTypeToReveal(MonsterType type)
+        {
+            switch (type)
+            {
+                case MonsterType.CaveRat:
+                case MonsterType.Mimic:
+                    return EventRevealType.MonsterRat;
+                case MonsterType.Slime:
+                case MonsterType.SmallSlime:
+                    return EventRevealType.MonsterSlime;
+                default:
+                    return EventRevealType.MonsterSpider;
+            }
         }
 
         private float GetHazardSpawnChance(int depth)

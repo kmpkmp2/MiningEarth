@@ -112,6 +112,7 @@ namespace DeepEarth.Core
 
             var progress = GetCharacterProgress(id);
             progress.IsUnlocked = true;
+            MetaProgressionManager.Instance?.InitializePassiveOnUnlock(id);
 
             SaveManager.Save();
             DeepEarth.Common.GameEvents.FireCharacterUnlocked(id);
@@ -160,17 +161,6 @@ namespace DeepEarth.Core
                 case BlockType.Diamond: SaveManager.CurrentData.PersistentDiamond += amount; break;
             }
             SaveManager.Save();
-        }
-
-        // Stats integration
-        public int GetStartingAttackBonus(CharacterID id)
-        {
-            return CharacterDatabase.Get(id)?.BaseAttackPowerBonus ?? 0;
-        }
-
-        public int GetStartingMiningBonus(CharacterID id)
-        {
-            return CharacterDatabase.Get(id)?.BaseMiningPowerBonus ?? 0;
         }
 
         public int GetPassiveAttackBonus(CharacterID id)

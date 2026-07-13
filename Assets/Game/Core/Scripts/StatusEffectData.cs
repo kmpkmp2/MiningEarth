@@ -5,10 +5,11 @@ namespace DeepEarth.Core
     public enum StatusEffectID
     {
         Burn,
-        // Future: Poison, Freeze, Bleeding, Weakness
+        MiningPowerDown,
+        MiningPowerUp,
     }
 
-    [CreateAssetMenu(fileName = "StatusEffect_Burn", menuName = "DeepEarth/StatusEffect/Burn")]
+    [CreateAssetMenu(fileName = "StatusEffect_New", menuName = "DeepEarth/StatusEffect/StatusEffect")]
     public class StatusEffectData : ScriptableObject
     {
         public StatusEffectID effectType = StatusEffectID.Burn;
@@ -17,6 +18,9 @@ namespace DeepEarth.Core
         public string descLocKey = "status_burn_desc";
         public string iconKey = "";
         [Min(1)] public int baseDuration = 8;
-        [Min(1)] public int damagePerTurn = 1;
+        public int damagePerTurn = 0;
+        [Range(-1f, 1f)] public float miningPowerModifier = 0f;
+        public EffectSystemType systemType = EffectSystemType.StatusEffect;
+        public string source = "";
     }
 }

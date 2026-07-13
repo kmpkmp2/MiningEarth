@@ -20,9 +20,26 @@ namespace DeepEarth.UI
         [SerializeField] private Button languageKoButton;
         [SerializeField] private Button languageEnButton;
 
+        [Header("Volume Sliders")]
+        [SerializeField] private Slider masterVolumeSlider;
+        [SerializeField] private Slider bgmVolumeSlider;
+        [SerializeField] private Slider sfxVolumeSlider;
+
+        [Header("Exit Run")]
+        [SerializeField] private GameObject exitRunRow;
+        [SerializeField] private Button exitRunButton;
+        [SerializeField] private TextMeshProUGUI exitRunButtonLabel;
+        [SerializeField] private ExitRunConfirmPopupView exitRunConfirmPopup;
+
         public event Action OnCloseClicked;
         public event Action OnLanguageKoClicked;
         public event Action OnLanguageEnClicked;
+
+        public event Action<float> OnMasterVolumeChanged;
+        public event Action<float> OnBGMVolumeChanged;
+        public event Action<float> OnSFXVolumeChanged;
+
+        public event Action OnExitRunClicked;
 
         private static readonly Color SelectedColor = new Color(0.12f, 0.46f, 0.61f, 1f); // Premium cyan
         private static readonly Color UnselectedColor = new Color(0.2f, 0.22f, 0.25f, 1f); // Sleek dark gray
@@ -43,25 +60,50 @@ namespace DeepEarth.UI
             {
                 languageEnButton.onClick.AddListener(() => OnLanguageEnClicked?.Invoke());
             }
+
+            if (masterVolumeSlider != null)
+                masterVolumeSlider.onValueChanged.AddListener(v => OnMasterVolumeChanged?.Invoke(v));
+            if (bgmVolumeSlider != null)
+                bgmVolumeSlider.onValueChanged.AddListener(v => OnBGMVolumeChanged?.Invoke(v));
+            if (sfxVolumeSlider != null)
+                sfxVolumeSlider.onValueChanged.AddListener(v => OnSFXVolumeChanged?.Invoke(v));
+
+            if (exitRunButton != null)
+                exitRunButton.onClick.AddListener(() => OnExitRunClicked?.Invoke());
+        }
+
+        public void InitSliders(float master, float bgm, float sfx)
+        {
+            if (masterVolumeSlider != null) masterVolumeSlider.SetValueWithoutNotify(master);
+            if (bgmVolumeSlider != null)    bgmVolumeSlider.SetValueWithoutNotify(bgm);
+            if (sfxVolumeSlider != null)    sfxVolumeSlider.SetValueWithoutNotify(sfx);
         }
 
         public void Localize()
         {
+            if (LocalizationManager.Instance == null) return;
+
             if (titleText != null)
-            {
                 titleText.text = LocalizationManager.Instance.GetTranslation("settings_title");
-            }
 
             if (closeButtonLabel != null)
-            {
                 closeButtonLabel.text = LocalizationManager.Instance.GetTranslation("settings_close");
-            }
 
             if (languageTabLabel != null)
-            {
                 languageTabLabel.text = LocalizationManager.Instance.GetTranslation("settings_lang_label");
-            }
+
+            if (exitRunButtonLabel != null)
+                exitRunButtonLabel.text = LocalizationManager.Instance.GetTranslation("exit_run_btn");
+
+            exitRunConfirmPopup?.Localize();
         }
+
+        public void SetExitRunVisible(bool visible)
+        {
+            exitRunRow?.SetActive(visible);
+        }
+
+        public ExitRunConfirmPopupView GetConfirmPopup() => exitRunConfirmPopup;
 
         public void UpdateVisuals(string currentLang)
         {

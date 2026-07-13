@@ -1,4 +1,3 @@
-using System;
 using DeepEarth.Common;
 using UnityEngine;
 
@@ -6,11 +5,10 @@ namespace DeepEarth.Combat
 {
     public enum BossID
     {
-        CaveRat,
-        QueenSpider,
-        RockGolem,
-        LavaWorm,
-        CrystalTitan
+        StoneGolem,
+        MotherCaveSpider,
+        SkeletonWarlord,
+        AllMetalColossus
     }
 
     public class BossData
@@ -21,51 +19,60 @@ namespace DeepEarth.Combat
         public int CurrentHP { get; private set; }
         public int Damage { get; private set; }
         public float AttackInterval { get; private set; }
+        public int SpawnDepth { get; private set; }
 
         public bool IsDead => CurrentHP <= 0;
 
         public BossData(BossID id, int depth)
         {
             ID = id;
-            AttackInterval = GameSettings.BaseAttackInterval;
-
-            // Base values for Tier 1-5
-            // Depth 50 (Tier 1), 100 (Tier 2), 150 (Tier 3), 200 (Tier 4), 250 (Tier 5)
-            int tier = depth / 50;
-            int cycle = (tier - 1) / 5;
-            int index = (tier - 1) % 5;
-
-            int[] baseHPs = { 20, 40, 70, 100, 150 };
-            int[] baseDamages = { 1, 2, 3, 4, 5 };
+            SpawnDepth = depth;
 
             BossNameKey = id switch
             {
-                BossID.CaveRat => "boss_rat_name",
-                BossID.QueenSpider => "boss_spider_name",
-                BossID.RockGolem => "boss_golem_name",
-                BossID.LavaWorm => "boss_worm_name",
-                BossID.CrystalTitan => "boss_titan_name",
-                _ => "boss_rat_name"
+                BossID.StoneGolem       => "boss_stone_golem_name",
+                BossID.MotherCaveSpider => "boss_mother_cave_spider_name",
+                BossID.SkeletonWarlord  => "boss_skeleton_warlord_name",
+                BossID.AllMetalColossus => "boss_all_metal_colossus_name",
+                _                       => "boss_stone_golem_name"
             };
 
-            if (id == BossID.CaveRat)
+            int tier = depth / 50;
+            // AllMetalColossus scales for each repeat beyond tier 4
+            int colossusScale = Mathf.Max(0, tier - 4);
+
+            switch (id)
             {
-                // Slow attack rate (slow attack speed)
-                AttackInterval = 2.0f;
+                case BossID.StoneGolem:
+                    MaxHP = 60;
+                    Damage = 3;
+                    AttackInterval = 2.5f;
+                    break;
+                case BossID.MotherCaveSpider:
+                    MaxHP = 80;
+                    Damage = 0;
+                    AttackInterval = 99999f; // never attacks directly
+                    break;
+                case BossID.SkeletonWarlord:
+                    MaxHP = 120;
+                    Damage = 3;
+                    AttackInterval = 1.5f;
+                    break;
+                case BossID.AllMetalColossus:
+                    MaxHP = 200 + colossusScale * 100;
+                    Damage = 5 + colossusScale * 2;
+                    AttackInterval = 3.0f;
+                    break;
             }
 
-            MaxHP = baseHPs[index] + cycle * 150;
-            Damage = baseDamages[index] + cycle * 5;
             CurrentHP = MaxHP;
         }
 
         public bool TakeDamage(int amount)
         {
             if (CurrentHP <= 0) return false;
-
             CurrentHP -= amount;
             if (CurrentHP < 0) CurrentHP = 0;
-
             return true;
         }
     }

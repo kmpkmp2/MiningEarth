@@ -8,11 +8,14 @@ namespace DeepEarth.Combat
         public event Action OnTouched;
 
         [SerializeField] private MeshRenderer meshRenderer;
+        [SerializeField] private SpriteRenderer spriteRenderer;
 
         private Vector3 _originalScale;
         private Vector3 _spawnWorldPosition;
         private Color _originalColor;
         private Material _instancedMaterial;
+
+        private bool UseSprite => spriteRenderer != null;
 
         public int SpawnIndex { get; private set; } = -1;
 
@@ -20,15 +23,20 @@ namespace DeepEarth.Combat
         {
             _originalScale = transform.localScale;
 
-            if (meshRenderer == null)
+            if (UseSprite)
             {
-                meshRenderer = GetComponent<MeshRenderer>();
+                _originalColor = spriteRenderer.color;
             }
-
-            if (meshRenderer != null)
+            else
             {
-                _instancedMaterial = meshRenderer.material;
-                _originalColor = _instancedMaterial.color;
+                if (meshRenderer == null)
+                    meshRenderer = GetComponent<MeshRenderer>();
+
+                if (meshRenderer != null)
+                {
+                    _instancedMaterial = meshRenderer.material;
+                    _originalColor = _instancedMaterial.color;
+                }
             }
         }
 
@@ -52,11 +60,19 @@ namespace DeepEarth.Combat
 
         private System.Collections.IEnumerator CoFlashColor(Color flashColor, float duration)
         {
-            if (_instancedMaterial == null) yield break;
-
-            _instancedMaterial.color = flashColor;
-            yield return new WaitForSeconds(duration);
-            _instancedMaterial.color = _originalColor;
+            if (UseSprite)
+            {
+                spriteRenderer.color = flashColor;
+                yield return new WaitForSeconds(duration);
+                spriteRenderer.color = _originalColor;
+            }
+            else
+            {
+                if (_instancedMaterial == null) yield break;
+                _instancedMaterial.color = flashColor;
+                yield return new WaitForSeconds(duration);
+                _instancedMaterial.color = _originalColor;
+            }
         }
 
         public void PlayAttackAnimation()
@@ -102,7 +118,7 @@ namespace DeepEarth.Combat
 
         private void OnDestroy()
         {
-            if (_instancedMaterial != null)
+            if (!UseSprite && _instancedMaterial != null)
             {
                 Destroy(_instancedMaterial);
             }

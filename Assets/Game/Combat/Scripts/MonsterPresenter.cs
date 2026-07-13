@@ -39,7 +39,8 @@ namespace DeepEarth.Combat
         {
             if (Model.IsDead) return;
 
-            if (GameManager.Instance != null && GameManager.Instance.CurrentState != GameState.Playing)
+            var state = GameManager.Instance?.CurrentState;
+            if (state != GameState.Playing && state != GameState.BossCombat)
             {
                 return;
             }
@@ -62,12 +63,16 @@ namespace DeepEarth.Combat
         {
             try
             {
+                if (Model.InitialAttackDelay > 0f)
+                    await UniTask.Delay(TimeSpan.FromSeconds(Model.InitialAttackDelay), cancellationToken: _cts.Token);
+
                 while (!Model.IsDead && !_cts.IsCancellationRequested)
                 {
                     // Delay before attack
                     await UniTask.Delay(TimeSpan.FromSeconds(Model.AttackInterval), cancellationToken: _cts.Token);
 
-                    if (Model.IsDead || GameManager.Instance == null || GameManager.Instance.CurrentState != GameState.Playing)
+                    var s = GameManager.Instance?.CurrentState;
+                    if (Model.IsDead || (s != GameState.Playing && s != GameState.BossCombat))
                     {
                         continue;
                     }
@@ -78,7 +83,8 @@ namespace DeepEarth.Combat
                     // Wait for the peak of the lunge
                     await UniTask.Delay(100, cancellationToken: _cts.Token);
 
-                    if (Model.IsDead || GameManager.Instance == null || GameManager.Instance.CurrentState != GameState.Playing)
+                    s = GameManager.Instance?.CurrentState;
+                    if (Model.IsDead || (s != GameState.Playing && s != GameState.BossCombat))
                     {
                         continue;
                     }

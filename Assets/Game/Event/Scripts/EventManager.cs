@@ -118,14 +118,15 @@ namespace DeepEarth.Event
             var lm = LocalizationManager.Instance;
             string key = type switch
             {
-                EventRevealType.Treasure     => "reveal_treasure",
-                EventRevealType.Tombstone    => "reveal_tombstone",
-                EventRevealType.MonsterRat   => "reveal_monster_rat",
+                EventRevealType.Treasure      => "reveal_treasure",
+                EventRevealType.Tombstone     => "reveal_tombstone",
+                EventRevealType.MonsterRat    => "reveal_monster_rat",
                 EventRevealType.MonsterSpider => "reveal_monster_spider",
-                EventRevealType.Water        => "reveal_water",
-                EventRevealType.Lava         => "reveal_lava",
-                EventRevealType.Boss         => "reveal_boss",
-                _                            => "reveal_unknown"
+                EventRevealType.MonsterSlime  => "reveal_monster_slime",
+                EventRevealType.Water         => "reveal_water",
+                EventRevealType.Lava          => "reveal_lava",
+                EventRevealType.Boss          => "reveal_boss",
+                _                             => "reveal_unknown"
             };
 
             string translated = lm != null ? lm.GetTranslation(key) : key;
@@ -135,13 +136,14 @@ namespace DeepEarth.Event
                 return type switch
                 {
                     EventRevealType.Treasure      => "보물상자 발견!",
-                    EventRevealType.Tombstone      => "수상한 무덤 발견!",
-                    EventRevealType.MonsterRat     => "동굴쥐 발견!",
-                    EventRevealType.MonsterSpider  => "동굴거미 무리 발견!",
-                    EventRevealType.Water          => "지하수 발견!",
-                    EventRevealType.Lava           => "용암 지대 발견!",
-                    EventRevealType.Boss           => "보스 출현!",
-                    _                              => "???",
+                    EventRevealType.Tombstone     => "수상한 무덤 발견!",
+                    EventRevealType.MonsterRat    => "동굴쥐 발견!",
+                    EventRevealType.MonsterSpider => "동굴거미 무리 발견!",
+                    EventRevealType.MonsterSlime  => "슬라임 발견!",
+                    EventRevealType.Water         => "지하수 발견!",
+                    EventRevealType.Lava          => "용암 지대 발견!",
+                    EventRevealType.Boss          => "보스 출현!",
+                    _                             => "???",
                 };
             }
             return translated;

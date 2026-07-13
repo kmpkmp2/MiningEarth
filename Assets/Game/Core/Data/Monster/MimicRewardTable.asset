@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0752e1941ca5a44face5777ad5e053e, type: 3}
+  m_Name: MimicRewardTable
+  m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.Core.MimicRewardTable
+  entries:
+  - rewardType: 0
+    baseWeight: 10
+    weightBonusPer10Depth: 0
+    amount: 3
+  - rewardType: 1
+    baseWeight: 8
+    weightBonusPer10Depth: 0
+    amount: 2
+  - rewardType: 2
+    baseWeight: 5
+    weightBonusPer10Depth: 1
+    amount: 2
+  - rewardType: 3
+    baseWeight: 2
+    weightBonusPer10Depth: 2
+    amount: 1
+  - rewardType: 4
+    baseWeight: 8
+    weightBonusPer10Depth: 0
+    amount: 1
+  - rewardType: 5
+    baseWeight: 5
+    weightBonusPer10Depth: 1
+    amount: 1
