@@ -17,6 +17,16 @@ namespace DeepEarth.Core
         private static GameManager _instance;
         public static GameManager Instance => _instance;
 
+        [Header("Route Map Config")]
+        [SerializeField] private DeepEarth.Map.DefaultGridTemplate  gridTemplate;
+        [SerializeField] private DeepEarth.Map.RoomGenerationConfig roomConfig;
+
+        public void SetMapConfig(DeepEarth.Map.DefaultGridTemplate template, DeepEarth.Map.RoomGenerationConfig config)
+        {
+            gridTemplate = template;
+            roomConfig   = config;
+        }
+
         [Header("Game States")]
         public GameState CurrentState { get; private set; } = GameState.MainMenu;
 
@@ -36,6 +46,7 @@ namespace DeepEarth.Core
         private GameObject _relicPopupObject;
         private GameObject _inventoryPopupObject;
         private GameObject _eventRevealObject;
+        private GameObject _mapPopupObject;
 
         private GameUIPresenter _hudPresenter;
         private GameOverUIPresenter _gameOverPresenter;
@@ -44,6 +55,7 @@ namespace DeepEarth.Core
         private RelicPopupPresenter _relicPopupPresenter;
         private InventoryPresenter _inventoryPopupPresenter;
         private EventRevealPresenter _eventRevealPresenter;
+        private DeepEarth.Map.RouteMapPresenter _routeMapPresenter;
 
         private GameState _previousState;
 
@@ -136,6 +148,21 @@ namespace DeepEarth.Core
             _inventoryPopupPresenter = null;
             _eventRevealPresenter?.Dispose();
             _eventRevealPresenter = null;
+            _routeMapPresenter?.Dispose();
+            _routeMapPresenter = null;
+        }
+
+        public void SetGameState(GameState state)
+        {
+            CurrentState = state;
+            OnGameDataChanged?.Invoke();
+        }
+
+        public void AdvanceDepth()
+        {
+            CurrentDepth++;
+            OnGameDataChanged?.Invoke();
+            DeepEarth.Common.GameEvents.FireDepthReached(CurrentDepth);
         }
 
         public async UniTask InitializeUIAsync(Canvas canvas, Image flashOverlay, GameObject particlePrefab)
@@ -253,6 +280,26 @@ namespace DeepEarth.Core
                 _eventRevealPresenter = new EventRevealPresenter(revealView);
                 EventManager.Instance.SetRevealPresenter(_eventRevealPresenter);
 
+                // Route Map UI
+                _mapPopupObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelMapPopup, canvas.transform);
+                if (_mapPopupObject != null)
+                {
+                    var mapPopupView = _mapPopupObject.GetComponent<DeepEarth.UI.MapPopupView>();
+                    if (mapPopupView != null)
+                    {
+                        _routeMapPresenter = new DeepEarth.Map.RouteMapPresenter(mapPopupView, gridTemplate, roomConfig);
+
+                        var saveData = SaveManager.CurrentData;
+                        if (saveData.MapSaveData != null && saveData.MapSaveData.HasActiveMap)
+                            _routeMapPresenter.RestoreFromSave(saveData.MapSaveData);
+                    }
+                    mapPopupView?.Hide();
+                }
+                else
+                {
+                    Debug.LogWarning("[GameManager] UI_Panel_MapPopup not found — Addressables에 등록 필요");
+                }
+
                 // Initially hide panels and show Main HUD
                 _hudObject.SetActive(true);
                 _gameOverObject.SetActive(false);
@@ -335,15 +382,20 @@ namespace DeepEarth.Core
                 rewardPresField?.SetValue(BossManager.Instance, null);
             }
 
-            // Reset Map system
-            if (DeepEarth.Map.MapGenerator.Instance != null)
-            {
-                DeepEarth.Map.MapGenerator.Instance.ResetGenerator();
-            }
+            // 3D 터널 맵 리셋
+            if (DeepEarth.Map.TunnelGenerator.Instance != null)
+                DeepEarth.Map.TunnelGenerator.Instance.ResetGenerator();
+
             if (DeepEarth.Map.MapPresenter.Instance != null && DeepEarth.Map.MapPresenter.Instance.Model != null)
-            {
                 DeepEarth.Map.MapPresenter.Instance.Model.CurrentDepth = 0;
-            }
+
+            // Route Map 리셋
+            _routeMapPresenter?.Reset();
+
+            // Route Map 세이브 데이터 클리어 (새 런이므로 이전 맵 무효화)
+            var mapSave = SaveManager.CurrentData;
+            if (mapSave.MapSaveData != null)
+                mapSave.MapSaveData.HasActiveMap = false;
         }
 
         public void StartGame()
@@ -351,8 +403,6 @@ namespace DeepEarth.Core
             RunStart();
 
             WillEarnedThisRun = 0;
-            CurrentState = GameState.Playing;
-
             DeepEarth.Common.GameEvents.FireRunStarted();
 
             _hudObject.SetActive(true);
@@ -360,8 +410,19 @@ namespace DeepEarth.Core
 
             OnGameDataChanged?.Invoke();
 
-            // Spawn first block
-            MiningSystem.Instance.SpawnNextBlockAsync().Forget();
+            if (_routeMapPresenter != null)
+            {
+                // Route Map 모드: 맵 생성 후 노드 선택 화면 표시
+                _routeMapPresenter.InitializeRun();
+                CurrentState = GameState.MapSelecting;
+                _routeMapPresenter.ShowMap();
+            }
+            else
+            {
+                // 폴백: RouteMapPresenter 없을 경우 기존 선형 채굴 모드
+                CurrentState = GameState.Playing;
+                MiningSystem.Instance.SpawnNextBlockAsync().Forget();
+            }
         }
 
         public void PauseForEvent()
@@ -373,7 +434,11 @@ namespace DeepEarth.Core
         {
             CurrentState = GameState.Playing;
             OnGameDataChanged?.Invoke();
-            // Continue mining
+
+            // Route Map 모드에서는 노드 핸들러가 완료를 대기 중이므로 여기서 블록을 스폰하지 않는다.
+            if (_routeMapPresenter != null) return;
+
+            // 기존 선형 채굴 모드
             MiningSystem.Instance.SpawnNextBlockAsync().Forget();
         }
 
@@ -437,16 +502,23 @@ namespace DeepEarth.Core
 
             CurrentDepth++;
             OnGameDataChanged?.Invoke();
-
             DeepEarth.Common.GameEvents.FireDepthReached(CurrentDepth);
 
-            // Trigger MapView slide transition and MapGenerator wall updates
+            // 3D 터널 슬라이드 갱신
             if (DeepEarth.Map.MapPresenter.Instance != null)
-            {
                 await DeepEarth.Map.MapPresenter.Instance.HandleBlockMinedAsync(CurrentDepth);
+
+            // ── Route Map 모드: Mine 노드 완료 처리 후 종료 ───────────────
+            if (_routeMapPresenter != null)
+            {
+                if (StatManager.Instance.CurrentHP <= 0) return;
+                await _routeMapPresenter.OnMineNodeCompleted();
+                return;
             }
 
-            // Check Boss trigger at Depth 50, 100, 150, 200, 250, and every 50 Depth thereafter
+            // ── 기존 선형 모드 ─────────────────────────────────────────────
+
+            // Boss trigger
             if (CurrentDepth > 0 && CurrentDepth % 50 == 0)
             {
                 await EventManager.Instance.PlayRevealAsync(EventRevealType.Boss);
@@ -454,7 +526,7 @@ namespace DeepEarth.Core
                 return;
             }
 
-            // 1. Check Combat trigger
+            // 1. Combat trigger
             float monsterChance = GetMonsterSpawnChance(CurrentDepth) * StatManager.Instance.GetMonsterSpawnRateMultiplier();
             if (UnityEngine.Random.value < monsterChance)
             {
@@ -471,12 +543,11 @@ namespace DeepEarth.Core
                 EffectSystem.Instance.SpawnDamageText(Camera.main.transform.position + Camera.main.transform.forward * 1.5f, encounterMsg, Color.red);
 
                 await CombatSystem.Instance.StartCombatAsync(mType, CurrentDepth);
-
                 if (StatManager.Instance.CurrentHP <= 0) return;
             }
-            // 2. Check Hazard (water/lava) trigger
             else
             {
+                // 2. Hazard trigger
                 float hazardChance = GetHazardSpawnChance(CurrentDepth) * StatManager.Instance.GetHazardSpawnRateMultiplier();
                 if (UnityEngine.Random.value < hazardChance)
                 {
@@ -485,7 +556,6 @@ namespace DeepEarth.Core
 
                     if (isLava)
                     {
-                        // Lava: apply Burn status effect (turn-based damage) instead of instant damage
                         StatusEffectManager.Instance.ApplyBurn();
                         DeepEarth.Common.GameEvents.FireLavaEncountered();
                         EffectSystem.Instance.FlashScreen(new Color(1f, 0.4f, 0f, 0.35f), 0.25f);
@@ -495,7 +565,6 @@ namespace DeepEarth.Core
                     }
                     else
                     {
-                        // Water: instant damage (unchanged)
                         DeepEarth.Common.GameEvents.FireWaterEncountered();
                         int damage = 1 + DifficultyLevel;
                         StatManager.Instance.TakeDamage(damage);
@@ -503,11 +572,10 @@ namespace DeepEarth.Core
                         EffectSystem.Instance.ShakeCamera(0.2f, 0.08f);
                         string msg = LocalizationManager.Instance.GetFormatted("combat_water", damage);
                         EffectSystem.Instance.SpawnDamageText(Camera.main.transform.position + Camera.main.transform.forward * 1.5f, msg, Color.red);
-
                         if (StatManager.Instance.CurrentHP <= 0) return;
                     }
                 }
-                // 3. Check Event trigger (Chest / Tombstone) — reveal is handled inside TriggerRandomEventAsync
+                // 3. Event trigger
                 else if (UnityEngine.Random.value < 0.08f)
                 {
                     bool isTombstone = UnityEngine.Random.value < 0.3f;
@@ -520,10 +588,78 @@ namespace DeepEarth.Core
                 }
             }
 
-            // Spawn next block if still alive
             if (StatManager.Instance.CurrentHP > 0 && CurrentState == GameState.Playing)
-            {
                 await MiningSystem.Instance.SpawnNextBlockAsync();
+        }
+
+        // ── Route Map 노드 선택 진입점 ─────────────────────────────────────
+
+        public void OnRouteNodeSelected(DeepEarth.Map.MapNode node)
+        {
+            HandleRouteNodeAsync(node).Forget();
+        }
+
+        private async UniTaskVoid HandleRouteNodeAsync(DeepEarth.Map.MapNode node)
+        {
+            CurrentState = GameState.Playing;
+            AdvanceDepth();
+
+            switch (node.RoomType)
+            {
+                case DeepEarth.Map.RoomType.Mine:
+                    await MiningSystem.Instance.SpawnNextBlockAsync();
+                    break;
+
+                case DeepEarth.Map.RoomType.Monster:
+                case DeepEarth.Map.RoomType.Elite:
+                    MonsterType mType = CombatSystem.Instance.PickMonsterForDepth(CurrentDepth);
+                    EventRevealType mReveal = MonsterTypeToReveal(mType);
+                    await EventManager.Instance.PlayRevealAsync(mReveal);
+
+                    EffectSystem.Instance.FlashScreen(new Color(1f, 0f, 0f, 0.2f), 0.2f);
+                    await CombatSystem.Instance.StartCombatAsync(mType, CurrentDepth);
+
+                    if (StatManager.Instance.CurrentHP <= 0) return;
+                    await _routeMapPresenter.OnNonMineNodeCompleted();
+                    break;
+
+                case DeepEarth.Map.RoomType.Treasure:
+                    DeepEarth.Common.GameEvents.FireTreasureOpened();
+                    await EventManager.Instance.TriggerRandomEventAsync(false);
+                    await _routeMapPresenter.OnNonMineNodeCompleted();
+                    break;
+
+                case DeepEarth.Map.RoomType.Event:
+                case DeepEarth.Map.RoomType.Merchant:
+                case DeepEarth.Map.RoomType.Rest:
+                    await EventManager.Instance.TriggerRandomEventAsync(false);
+                    await _routeMapPresenter.OnNonMineNodeCompleted();
+                    break;
+
+                case DeepEarth.Map.RoomType.Boss:
+                    await EventManager.Instance.PlayRevealAsync(EventRevealType.Boss);
+                    BossManager.Instance.StartBossSequenceAsync(CurrentDepth).Forget();
+                    break;
+            }
+        }
+
+        // BossManager가 보상 화면 종료 후 호출 (기존 흐름 교체 지점)
+        public void OnBossSequenceComplete()
+        {
+            if (_routeMapPresenter != null)
+            {
+                _routeMapPresenter.OnBossNodeCompleted()
+                    .ContinueWith(() =>
+                    {
+                        CurrentState = GameState.MapSelecting;
+                        _routeMapPresenter.ShowMap();
+                    }).Forget();
+            }
+            else
+            {
+                // 기존 선형 모드
+                CurrentState = GameState.Playing;
+                MiningSystem.Instance.SpawnNextBlockAsync().Forget();
             }
         }
 

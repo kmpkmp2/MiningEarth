@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using UnityEngine;
+using DeepEarth.Map;
 
 namespace DeepEarth.Core
 {
@@ -75,6 +76,9 @@ namespace DeepEarth.Core
 
         // Audio
         public AudioSettingsData AudioSettings = new AudioSettingsData();
+
+        // Route Map
+        public DeepEarth.Map.MapSaveData MapSaveData;
 
         public void InitializeDefault()
         {
@@ -192,6 +196,9 @@ namespace DeepEarth.Core
             // Migration: AudioSettings
             if (_cachedData.AudioSettings == null)
                 _cachedData.AudioSettings = new AudioSettingsData();
+
+            // Migration: RouteMapSaveData (신규 추가 필드)
+            // MapSaveData는 null 허용 - 런 시작 시 초기화됨
 
             // Migration: 기존 해금 캐릭터의 PassiveLevel 0 → 1
             if (_cachedData.CharacterProgress != null)

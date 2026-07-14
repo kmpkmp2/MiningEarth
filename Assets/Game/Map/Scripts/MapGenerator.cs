@@ -1,143 +1,79 @@
-using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
-using DeepEarth.Common;
 
 namespace DeepEarth.Map
 {
-    public class MapGenerator : MonoBehaviour
+    /// <summary>
+    /// Orchestrates the full route-map generation pipeline.
+    ///
+    /// Pipeline order (must not be changed):
+    ///   1. Grid generation   — GridGenerator.Generate()
+    ///   2. Path generation   — PathGenerator.GeneratePaths()
+    ///   3. Node activation   — ActivateVisitedNodes()
+    ///   4. Room assignment   — RoomGenerator   (Step 5)
+    ///   5. Rule validation   — RuleValidator   (Step 6)
+    ///   6. Boss connection   — BossConnector   (Step 7)
+    /// </summary>
+    public class MapGenerator
     {
-        private static MapGenerator _instance;
-        public static MapGenerator Instance => _instance;
+        private readonly GridTemplate    _template;
+        private readonly GridGenerator   _gridGenerator;
+        private readonly PathGenerator   _pathGenerator;
+        private readonly RoomGenerator   _roomGenerator;
+        private readonly RuleValidator   _ruleValidator;
+        private readonly BossConnector   _bossConnector;
 
-        [SerializeField] private Transform mapRoot;
-        [SerializeField] private Transform floorParent;
-        [SerializeField] private Transform leftWallParent;
-        [SerializeField] private Transform rightWallParent;
-        [SerializeField] private Transform ceilingParent;
-
-        private readonly Dictionary<int, WallSegmentView> _activeSegments = new Dictionary<int, WallSegmentView>();
-
-        private void Awake()
+        public MapGenerator(GridTemplate template, RoomGenerationConfig roomConfig, IRandomProvider rng)
         {
-            if (_instance == null)
-            {
-                _instance = this;
-            }
+            _template      = template;
+            _gridGenerator = new GridGenerator(template);
+            _pathGenerator = new PathGenerator(template, rng);
+            _roomGenerator = new RoomGenerator(roomConfig, rng);
+            _ruleValidator = new RuleValidator(roomConfig, rng);
+            _bossConnector = new BossConnector();
         }
 
-        public void Initialize(Transform root, Transform floor, Transform leftWall, Transform rightWall, Transform ceiling)
+        /// <summary>Runs the full pipeline and returns a fully generated MapData.</summary>
+        public MapData Generate(int seed)
         {
-            mapRoot = root;
-            floorParent = floor;
-            leftWallParent = leftWall;
-            rightWallParent = rightWall;
-            ceilingParent = ceiling;
+            // Step 1 — Allocate the empty grid
+            MapData mapData = _gridGenerator.Generate(seed);
+
+            // Step 2 — Generate paths and write connections into the grid
+            _pathGenerator.GeneratePaths(mapData);
+
+            // Step 3 — Activate every node visited by at least one path
+            ActivateVisitedNodes(mapData);
+
+            // Step 4 — Assign room types (weighted random, then override fixed floors)
+            _roomGenerator.AssignRoomTypes(mapData);
+
+            // Step 5 — Validate and repair rule violations (post-processing only)
+            _ruleValidator.Validate(mapData);
+
+            // Step 6 — Connect every last-floor active node to the single Boss node
+            _bossConnector.Connect(mapData);
+
+            Debug.Log($"[Map]\nGenerated: seed={seed} columns={_template.Columns} floors={_template.Floors} paths={_template.PathCount}");
+            return mapData;
         }
 
-        public void ResetGenerator()
+        // ─── Step 3: Node activation ─────────────────────────────────────────────
+
+        /// <summary>
+        /// Marks a node as active when at least one path edge touches it.
+        /// Floor-0 start nodes have outgoing connections only; they are caught by the
+        /// outgoing-connection check. Floor-(N-1) end nodes have incoming only — same logic.
+        /// </summary>
+        private static void ActivateVisitedNodes(MapData mapData)
         {
-            ClearMap();
-            if (mapRoot != null)
+            for (int floor = 0; floor < mapData.Floors; floor++)
             {
-                mapRoot.position = Vector3.zero;
-            }
-            UpdateMapSegments(0);
-        }
-
-        public void ClearMap()
-        {
-            foreach (var segment in _activeSegments.Values)
-            {
-                if (segment != null)
+                for (int col = 0; col < mapData.Columns; col++)
                 {
-                    PoolSystem.Instance.Return(segment.gameObject);
+                    MapNode node = mapData.Grid[floor, col];
+                    node.IsActive = node.IncomingConnections.Count > 0
+                                 || node.OutgoingConnections.Count > 0;
                 }
-            }
-            _activeSegments.Clear();
-        }
-
-        public void UpdateMapSegments(int depth)
-        {
-            if (mapRoot == null) return;
-
-            // Retrieve active wall material from ThemePresenter
-            Material wallMat = null;
-            if (ThemePresenter.Instance != null && ThemePresenter.Instance.Model != null)
-            {
-                wallMat = ThemePresenter.Instance.Model.WallMaterial;
-            }
-
-            float segmentLength = 2f;
-            // Visible range of local Z is [depth - 2, depth + 14]
-            int startIndex = Mathf.FloorToInt((depth - 2) / segmentLength);
-            int endIndex = Mathf.CeilToInt((depth + 14) / segmentLength);
-
-            // Spawn segments in range
-            for (int i = startIndex; i <= endIndex; i++)
-            {
-                float localZ = i * segmentLength;
-                if (!_activeSegments.ContainsKey(i))
-                {
-                    SpawnSegmentAsync(i, localZ, wallMat).Forget();
-                }
-                else if (_activeSegments[i] != null && wallMat != null)
-                {
-                    _activeSegments[i].SetMaterial(wallMat);
-                }
-            }
-
-            // Recycle off-screen segments (world Z < -4)
-            List<int> keysToRemove = new List<int>();
-            foreach (var kvp in _activeSegments)
-            {
-                if (kvp.Value == null) continue;
-
-                float localZ = kvp.Key * segmentLength;
-                float worldZ = localZ + mapRoot.position.z;
-                if (worldZ < -4f)
-                {
-                    PoolSystem.Instance.Return(kvp.Value.gameObject);
-                    keysToRemove.Add(kvp.Key);
-                }
-            }
-
-            foreach (var key in keysToRemove)
-            {
-                _activeSegments.Remove(key);
-            }
-        }
-
-        private async UniTaskVoid SpawnSegmentAsync(int index, float localZ, Material wallMat)
-        {
-            // Register placeholder to prevent double spawning
-            _activeSegments[index] = null;
-
-            GameObject segmentGo = await PoolSystem.Instance.GetAsync(AddressableKeys.MapWallSegment, mapRoot);
-            if (segmentGo == null)
-            {
-                _activeSegments.Remove(index);
-                return;
-            }
-
-            // Parent segment to MapRoot
-            segmentGo.transform.SetParent(mapRoot, false);
-            segmentGo.transform.localPosition = new Vector3(0, 0, localZ);
-            segmentGo.transform.localRotation = Quaternion.identity;
-
-            var view = segmentGo.GetComponent<WallSegmentView>();
-            if (view != null)
-            {
-                if (wallMat != null)
-                {
-                    view.SetMaterial(wallMat);
-                }
-                _activeSegments[index] = view;
-            }
-            else
-            {
-                PoolSystem.Instance.Return(segmentGo);
-                _activeSegments.Remove(index);
             }
         }
     }

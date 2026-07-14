@@ -213,11 +213,8 @@ namespace DeepEarth.Core
 
             _bossRewardPresenter = null;
 
-            // Resume Standard Progression
-            typeof(GameManager).GetProperty("CurrentState").SetValue(gameMgr, GameState.Playing);
-            onGameDataChanged?.Invoke();
-
-            MiningSystem.Instance.SpawnNextBlockAsync().Forget();
+            // Route Map / 기존 선형 모드 분기 진입점
+            gameMgr.OnBossSequenceComplete();
         }
 
         private void OnDestroy()

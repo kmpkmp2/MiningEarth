@@ -11,11 +11,11 @@ namespace DeepEarth.Map
 
         private readonly DepthData _model;
         private readonly MapView _view;
-        private readonly MapGenerator _generator;
+        private readonly TunnelGenerator _generator;
 
         public DepthData Model => _model;
 
-        public MapPresenter(DepthData model, MapView view, MapGenerator generator)
+        public MapPresenter(DepthData model, MapView view, TunnelGenerator generator)
         {
             _model = model;
             _view = view;

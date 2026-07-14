@@ -17,6 +17,10 @@ namespace DeepEarth.Core
         [SerializeField] private Transform blockSpawnPoint;
         [SerializeField] private Transform monsterSpawnPoint;
 
+        [Header("Route Map Config")]
+        [SerializeField] private DeepEarth.Map.DefaultGridTemplate  gridTemplate;
+        [SerializeField] private DeepEarth.Map.RoomGenerationConfig roomConfig;
+
         [Header("Map References")]
         [SerializeField] private Transform mapRoot;
         [SerializeField] private Transform floorParent;
@@ -37,6 +41,7 @@ namespace DeepEarth.Core
                 var go = new GameObject("GameManager");
                 go.AddComponent<GameManager>();
             }
+            FindAnyObjectByType<GameManager>()?.SetMapConfig(gridTemplate, roomConfig);
 
             if (FindAnyObjectByType<MiningSystem>() == null)
             {
@@ -116,12 +121,12 @@ namespace DeepEarth.Core
                 go.AddComponent<DeepEarth.Map.PoolSystem>();
             }
 
-            // Ensure MapGenerator exists
-            var generator = FindAnyObjectByType<DeepEarth.Map.MapGenerator>();
+            // Ensure TunnelGenerator exists
+            var generator = FindAnyObjectByType<DeepEarth.Map.TunnelGenerator>();
             if (generator == null)
             {
-                var go = new GameObject("MapGenerator");
-                generator = go.AddComponent<DeepEarth.Map.MapGenerator>();
+                var go = new GameObject("TunnelGenerator");
+                generator = go.AddComponent<DeepEarth.Map.TunnelGenerator>();
             }
             generator.Initialize(mapRoot, floorParent, leftWallParent, rightWallParent, ceilingParent);
 

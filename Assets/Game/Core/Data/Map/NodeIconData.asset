@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7642964cd76250f4d9c79ee7473ce288, type: 3}
+  m_Name: NodeIconData
+  m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.UI.NodeIconData
+  entries:
+  - Type: 0
+    Icon: {fileID: 21300000, guid: 24fa51553ebfc89449db6e22ac0bd3ae, type: 3}
+  - Type: 1
+    Icon: {fileID: 21300000, guid: ee9d1450d9ab5ee4bbb4454dd63eb222, type: 3}
+  - Type: 2
+    Icon: {fileID: 21300000, guid: 185a38ebdccf1bc47a28be03bf931235, type: 3}
+  - Type: 3
+    Icon: {fileID: 21300000, guid: deff6b984241ca9459056ca58535cd3c, type: 3}
+  - Type: 4
+    Icon: {fileID: 21300000, guid: 8bb8f6d3878318b4194192610e207dc3, type: 3}
+  - Type: 5
+    Icon: {fileID: 21300000, guid: f464a607b321b9a45b4e833f7f09ddc6, type: 3}

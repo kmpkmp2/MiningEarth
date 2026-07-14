@@ -26,6 +26,7 @@ namespace DeepEarth.Common
     {
         MainMenu,
         Playing,
+        MapSelecting,
         EventPause,
         SettingsPause,
         GameOver,
@@ -135,6 +136,13 @@ namespace DeepEarth.Common
 
         // Mining Data
         public const string DepthRewardTable = "Mining_DepthRewardTable";
+
+        // Route Map
+        public const string UIPanelMapPopup       = "UI_Panel_MapPopup";
+        public const string MapNodePrefab          = "Map_Node";
+        public const string MapLinePrefab          = "Map_Line";
+        public const string MapGenerationConfig    = "Map_GenerationConfig";
+        public const string MapNodeIconData        = "Map_NodeIconData";
 
         // Map & Themes
         public const string MapWallSegment = "Map_Wall_Segment";
