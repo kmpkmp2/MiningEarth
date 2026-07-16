@@ -23,9 +23,10 @@ namespace DeepEarth.UI
         [SerializeField] private Color lineInactiveColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
 
         [Header("Layout")]
-        [SerializeField] private float colSpacing   = 160f;
-        [SerializeField] private float floorSpacing = 120f;
-        [SerializeField] private float bottomPadding = 60f;
+        [SerializeField] private float colSpacing       = 160f;
+        [SerializeField] private float floorSpacing     = 120f;
+        [SerializeField] private float bottomPadding    = 60f;
+        [SerializeField] private float startNodeSpacing = 120f;
 
         public event Action<string> OnNodeSelected;
 
@@ -55,11 +56,33 @@ namespace DeepEarth.UI
             if (titleText != null)
                 titleText.text = "MAP";
 
-            float contentHeight = mapData.Floors * floorSpacing + bottomPadding;
+            // Content 범위: Mine Entrance(하단) → Floor 0..N-1 → Boss(상단)
+            float contentHeight = (mapData.Floors + 1) * floorSpacing + startNodeSpacing + bottomPadding;
             if (nodesContainer != null)
                 nodesContainer.sizeDelta = new Vector2(nodesContainer.sizeDelta.x, contentHeight);
 
-            // ── Lines first (SiblingIndex 낮음 → 노드 뒤에 렌더링) ──
+            // ── Mine Entrance → Floor 0 Lines (최하위 SiblingIndex) ──
+            if (mapData.StartNode != null)
+            {
+                Vector2 startPos = StartNodePosition();
+                foreach (var conn in mapData.StartNode.OutgoingConnections)
+                {
+                    Vector2 toPos  = NodePosition(conn.ToFloor, conn.ToColumn, mapData.Columns);
+                    string  toKey  = $"{conn.ToFloor}_{conn.ToColumn}";
+                    bool    active = accessibleKeys.Contains(toKey) || completedKeys.Contains(toKey);
+                    Color   color  = active ? lineActiveColor : lineInactiveColor;
+
+                    var lineGo = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.MapLinePrefab, nodesContainer);
+                    if (lineGo == null) continue;
+
+                    lineGo.GetComponent<MapLineView>()?.Connect(startPos, toPos, color);
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                    Debug.Log("[Map]\nMine Entrance Line Created");
+#endif
+                }
+            }
+
+            // ── Grid Lines (노드 뒤에 렌더링) ──
             for (int floor = 0; floor < mapData.Floors; floor++)
             {
                 for (int col = 0; col < mapData.Columns; col++)
@@ -73,21 +96,49 @@ namespace DeepEarth.UI
 
                     foreach (var conn in fromNode.OutgoingConnections)
                     {
-                        if (conn.ToFloor >= mapData.Floors) continue; // Boss 연결 제외
+                        bool isBossConn = mapData.BossNode != null && conn.ToFloor == mapData.BossNode.Floor;
+                        Vector2 toPos   = isBossConn
+                            ? BossNodePosition(mapData.BossNode.Floor)
+                            : NodePosition(conn.ToFloor, conn.ToColumn, mapData.Columns);
 
-                        Vector2 toPos = NodePosition(conn.ToFloor, conn.ToColumn, mapData.Columns);
-                        bool active   = fromDone || accessibleKeys.Contains($"{conn.ToFloor}_{conn.ToColumn}");
-                        Color color   = active ? lineActiveColor : lineInactiveColor;
+                        bool active = fromDone || accessibleKeys.Contains($"{conn.ToFloor}_{conn.ToColumn}");
+                        Color color = active ? lineActiveColor : lineInactiveColor;
 
                         var lineGo = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.MapLinePrefab, nodesContainer);
                         if (lineGo == null) continue;
 
                         lineGo.GetComponent<MapLineView>()?.Connect(fromPos, toPos, color);
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                        if (isBossConn) Debug.Log("[Map]\nBoss Line Created");
+#endif
                     }
                 }
             }
 
-            // ── Nodes ──
+            // ── Mine Entrance Node ──
+            if (mapData.StartNode != null)
+            {
+                var nodeGo = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.MapNodePrefab, nodesContainer);
+                if (nodeGo != null)
+                {
+                    var rt = nodeGo.GetComponent<RectTransform>();
+                    if (rt != null)
+                        rt.anchoredPosition = StartNodePosition();
+
+                    var nodeView = nodeGo.GetComponent<MapNodeView>();
+                    if (nodeView != null)
+                    {
+                        Sprite icon = iconData != null ? iconData.GetIcon(RoomType.Start) : null;
+                        nodeView.SetupAsEntrance(mapData.StartNode, icon);
+                        // Start 노드는 클릭 불가 — _nodeViews에 등록하지 않음
+                    }
+                }
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                Debug.Log("[Map]\nMine Entrance View Created");
+#endif
+            }
+
+            // ── Grid Nodes ──
             for (int floor = 0; floor < mapData.Floors; floor++)
             {
                 for (int col = 0; col < mapData.Columns; col++)
@@ -116,6 +167,34 @@ namespace DeepEarth.UI
                 }
             }
 
+            // ── Boss Node ──
+            if (mapData.BossNode != null)
+            {
+                string bossKey    = $"{mapData.BossNode.Floor}_{mapData.BossNode.Column}";
+                bool   isCompleted = completedKeys.Contains(bossKey);
+                bool   accessible  = accessibleKeys.Contains(bossKey);
+
+                var nodeGo = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.MapNodePrefab, nodesContainer);
+                if (nodeGo != null)
+                {
+                    var rt = nodeGo.GetComponent<RectTransform>();
+                    if (rt != null)
+                        rt.anchoredPosition = BossNodePosition(mapData.BossNode.Floor);
+
+                    var nodeView = nodeGo.GetComponent<MapNodeView>();
+                    if (nodeView != null)
+                    {
+                        Sprite icon = iconData != null ? iconData.GetIcon(RoomType.Boss) : null;
+                        nodeView.Setup(mapData.BossNode, icon, accessible, isCompleted);
+                        nodeView.OnClicked += RaiseNodeSelected;
+                        _nodeViews.Add(nodeView);
+                    }
+                }
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                Debug.Log("[Map]\nBoss Node View Created");
+#endif
+            }
+
             // 현재 접근 가능한 가장 높은 층으로 스크롤
             ScrollToFloor(GetHighestAccessibleFloor(accessibleKeys));
         }
@@ -140,6 +219,15 @@ namespace DeepEarth.UI
                     idx++;
                 }
             }
+
+            // Boss node (마지막 _nodeViews 엔트리)
+            if (_currentMap.BossNode != null && idx < _nodeViews.Count)
+            {
+                string bossKey    = $"{_currentMap.BossNode.Floor}_{_currentMap.BossNode.Column}";
+                bool   isCompleted = completedKeys.Contains(bossKey);
+                bool   accessible  = accessibleKeys.Contains(bossKey);
+                _nodeViews[idx].Refresh(_currentMap.BossNode, accessible, isCompleted);
+            }
         }
 
         // ─── Internals ──────────────────────────────────────────────────────
@@ -163,8 +251,8 @@ namespace DeepEarth.UI
         {
             if (scrollRect == null || nodesContainer == null) return;
             Canvas.ForceUpdateCanvases();
-            float contentH  = nodesContainer.sizeDelta.y;
-            float targetY   = floorIndex * floorSpacing;
+            float contentH   = nodesContainer.sizeDelta.y;
+            float targetY    = floorIndex * floorSpacing + startNodeSpacing;
             float normalised = contentH > 0f ? Mathf.Clamp01(targetY / contentH) : 0f;
             scrollRect.verticalNormalizedPosition = normalised;
         }
@@ -172,7 +260,17 @@ namespace DeepEarth.UI
         private Vector2 NodePosition(int floor, int col, int columns)
         {
             float halfW = (columns - 1) * colSpacing * 0.5f;
-            return new Vector2(col * colSpacing - halfW, floor * floorSpacing + bottomPadding);
+            return new Vector2(col * colSpacing - halfW, floor * floorSpacing + startNodeSpacing + bottomPadding);
+        }
+
+        private Vector2 StartNodePosition()
+        {
+            return new Vector2(0f, bottomPadding);
+        }
+
+        private Vector2 BossNodePosition(int bossFloor)
+        {
+            return new Vector2(0f, bossFloor * floorSpacing + startNodeSpacing + bottomPadding);
         }
 
         private static int GetHighestAccessibleFloor(HashSet<string> accessibleKeys)

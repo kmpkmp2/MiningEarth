@@ -19,7 +19,10 @@ namespace DeepEarth.Map
         public MapNode[,] Grid { get; }
 
         /// <summary>The Boss node at the conceptual floor beyond the last grid floor.</summary>
-        public MapNode BossNode { get; private set; }
+        public MapNode BossNode  { get; private set; }
+
+        /// <summary>The Mine Entrance node at the conceptual floor below floor 0.</summary>
+        public MapNode StartNode { get; private set; }
 
         public MapData(int columns, int floors, int seed)
         {
@@ -36,7 +39,21 @@ namespace DeepEarth.Map
             return Grid[floor, column];
         }
 
+        /// <summary>
+        /// Returns the node at the given indices, including the Boss node which lives outside the grid.
+        /// Use this instead of GetNode when the caller may receive a Boss connection.
+        /// </summary>
+        public MapNode GetNodeIncludingBoss(int floor, int column)
+        {
+            if (BossNode != null && floor == BossNode.Floor && column == BossNode.Column)
+                return BossNode;
+            return GetNode(floor, column);
+        }
+
         /// <summary>Assigns the boss node. Called exclusively by BossConnector.</summary>
         public void SetBossNode(MapNode bossNode) => BossNode = bossNode;
+
+        /// <summary>Assigns the start (Mine Entrance) node. Called exclusively by EntranceConnector.</summary>
+        public void SetStartNode(MapNode startNode) => StartNode = startNode;
     }
 }

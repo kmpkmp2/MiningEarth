@@ -15,21 +15,23 @@ namespace DeepEarth.Map
     /// </summary>
     public class MapGenerator
     {
-        private readonly GridTemplate    _template;
-        private readonly GridGenerator   _gridGenerator;
-        private readonly PathGenerator   _pathGenerator;
-        private readonly RoomGenerator   _roomGenerator;
-        private readonly RuleValidator   _ruleValidator;
-        private readonly BossConnector   _bossConnector;
+        private readonly GridTemplate      _template;
+        private readonly GridGenerator    _gridGenerator;
+        private readonly PathGenerator    _pathGenerator;
+        private readonly RoomGenerator    _roomGenerator;
+        private readonly RuleValidator    _ruleValidator;
+        private readonly BossConnector    _bossConnector;
+        private readonly EntranceConnector _entranceConnector;
 
         public MapGenerator(GridTemplate template, RoomGenerationConfig roomConfig, IRandomProvider rng)
         {
-            _template      = template;
-            _gridGenerator = new GridGenerator(template);
-            _pathGenerator = new PathGenerator(template, rng);
-            _roomGenerator = new RoomGenerator(roomConfig, rng);
-            _ruleValidator = new RuleValidator(roomConfig, rng);
-            _bossConnector = new BossConnector();
+            _template          = template;
+            _gridGenerator     = new GridGenerator(template);
+            _pathGenerator     = new PathGenerator(template, rng);
+            _roomGenerator     = new RoomGenerator(roomConfig, rng);
+            _ruleValidator     = new RuleValidator(roomConfig, rng);
+            _bossConnector     = new BossConnector();
+            _entranceConnector = new EntranceConnector();
         }
 
         /// <summary>Runs the full pipeline and returns a fully generated MapData.</summary>
@@ -52,6 +54,9 @@ namespace DeepEarth.Map
 
             // Step 6 — Connect every last-floor active node to the single Boss node
             _bossConnector.Connect(mapData);
+
+            // Step 7 — Connect the Mine Entrance node to all active floor-0 nodes
+            _entranceConnector.Connect(mapData);
 
             Debug.Log($"[Map]\nGenerated: seed={seed} columns={_template.Columns} floors={_template.Floors} paths={_template.PathCount}");
             return mapData;

@@ -372,14 +372,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.UI.MapPopupView
   scrollRect: {fileID: 7266008008608029215}
   nodesContainer: {fileID: 7097413836773577174}
-  linesContainer: {fileID: 3174511947099279357}
   titleText: {fileID: 5999149261344930452}
   iconData: {fileID: 11400000, guid: 10228852d6c90d144aab641681ba4384, type: 2}
   lineActiveColor: {r: 1, g: 1, b: 1, a: 1}
   lineInactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
-  colSpacing: 160
-  floorSpacing: 120
-  bottomPadding: 60
+  layoutConfig: {fileID: 0}
 --- !u!1 &6363413011673439991
 GameObject:
   m_ObjectHideFlags: 0
@@ -558,8 +555,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RawImage
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
-  m_RaycastTarget: 0
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:

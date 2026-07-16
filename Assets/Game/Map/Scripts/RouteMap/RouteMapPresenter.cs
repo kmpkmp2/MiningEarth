@@ -113,6 +113,10 @@ namespace DeepEarth.Map
             var rng       = new SeededRandomProvider(seed);
             var generator = new MapGenerator(_gridTemplate, _roomConfig, rng);
             _currentMap   = generator.Generate(seed);
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            if (_currentMap.StartNode != null)
+                Debug.Log("[Map]\nMine Entrance Added To Presenter");
+#endif
         }
 
         private void OpenFloor0()
@@ -142,13 +146,12 @@ namespace DeepEarth.Map
             if (parts.Length < 2) return;
             if (!int.TryParse(parts[0], out int floor) || !int.TryParse(parts[1], out int col)) return;
 
-            MapNode node = _currentMap.GetNode(floor, col);
+            MapNode node = _currentMap.GetNodeIncludingBoss(floor, col);
             if (node == null) return;
 
             foreach (var conn in node.OutgoingConnections)
             {
-                if (conn.ToFloor >= _currentMap.Floors) continue; // Boss는 별도 처리
-                MapNode next = _currentMap.GetNode(conn.ToFloor, conn.ToColumn);
+                MapNode next = _currentMap.GetNodeIncludingBoss(conn.ToFloor, conn.ToColumn);
                 if (next != null && next.IsActive)
                     _accessibleNodes.Add($"{next.Floor}_{next.Column}");
             }
@@ -162,11 +165,15 @@ namespace DeepEarth.Map
             if (parts.Length < 2) return;
             if (!int.TryParse(parts[0], out int floor) || !int.TryParse(parts[1], out int col)) return;
 
-            MapNode node = _currentMap?.GetNode(floor, col);
+            MapNode node = _currentMap?.GetNodeIncludingBoss(floor, col);
             if (node == null) return;
 
             _activeNode = node;
             HideMap();
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            if (node.RoomType == RoomType.Boss)
+                Debug.Log("[Map]\nBoss Node Clicked");
+#endif
             GameManager.Instance.OnRouteNodeSelected(_activeNode);
         }
 

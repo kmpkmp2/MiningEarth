@@ -11,6 +11,7 @@ namespace DeepEarth.Map
         Merchant,
         Treasure,
         Rest,
-        Boss
+        Boss,
+        Start   // Mine Entrance — 광산 입구, 각 50층 구간의 시작점
     }
 }

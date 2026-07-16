@@ -638,6 +638,9 @@ namespace DeepEarth.Core
 
                 case DeepEarth.Map.RoomType.Boss:
                     await EventManager.Instance.PlayRevealAsync(EventRevealType.Boss);
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                    Debug.Log("[Map]\nBoss Battle Started");
+#endif
                     BossManager.Instance.StartBossSequenceAsync(CurrentDepth).Forget();
                     break;
             }

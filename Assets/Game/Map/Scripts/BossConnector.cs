@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace DeepEarth.Map
 {
     /// <summary>
@@ -35,6 +37,9 @@ namespace DeepEarth.Map
             }
 
             mapData.SetBossNode(bossNode);
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            Debug.Log($"[Map]\nBoss Node Created\nDepth : {bossNode.Floor}");
+#endif
         }
     }
 }
