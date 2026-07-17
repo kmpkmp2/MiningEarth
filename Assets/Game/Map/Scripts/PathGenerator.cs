@@ -4,176 +4,189 @@ using UnityEngine;
 namespace DeepEarth.Map
 {
     /// <summary>
-    /// Generates independent paths through the map grid following Slay the Spire's algorithm.
+    /// Generates a Main Path + Short Branch + Quick Merge map structure.
     ///
-    /// Rules (applied strictly in this order):
-    ///   1. Each path starts at Floor 0, random column.
-    ///   2. The first two paths must start at different columns.
-    ///   3. Each step moves from Floor f to Floor f+1 (column ±1 or same, clamped to grid).
-    ///   4. No two path segments at the same floor may cross (form an X).
-    ///   5. Multiple paths converging at the same node are allowed.
-    ///   6. If all candidates are blocked, the entire current path is retried from scratch.
+    /// Pipeline:
+    ///   1. Two Start Nodes at Floor 0; both connect into the single Main Path at Floor 1.
+    ///   2. One Main Path runs from Floor 0 to Floor (Floors-1), one active node per floor.
+    ///      Direction weights: straight 70 %, left 15 %, right 15 %.
+    ///      No two consecutive steps in the same lateral direction.
+    ///   3. Short Branches (length 1-2) spawn from Main Path nodes with BranchProbability,
+    ///      subject to BranchCooldown floors between consecutive branches.
+    ///      Branches never spawn from Floor 0 (Start/Mine nodes) and never re-branch.
+    ///   4. Every branch merges back to the Main Path within MaxBranchLength floors.
     ///
-    /// Node activation (IsActive) is handled in Step 3 by the MapGenerator after all paths commit.
+    /// Cross-detection is not needed: branches always occupy the column adjacent to the
+    /// Main Path and never cross it.
     /// </summary>
     public class PathGenerator
     {
-        private const int MaxPathRetries = 1000;
+        public const float BranchProbability = 0.25f; // ~25 % (20-30 % range)
+        public const int   BranchCooldown    = 5;     // floors between branches
+        public const int   MaxBranchLength   = 2;     // max branch length in floors
 
-        private readonly int              _columns;
-        private readonly int              _floors;
-        private readonly int              _pathCount;
-        private readonly IRandomProvider  _rng;
+        private readonly int             _columns;
+        private readonly int             _floors;
+        private readonly IRandomProvider _rng;
 
-        /// <summary>All edges committed from successfully generated paths so far.</summary>
-        private readonly List<(int floor, int fromCol, int toCol)> _committed
-            = new List<(int, int, int)>();
+        private int[]                              _mainPathCols;
+        private readonly List<(int floor, int len)> _branches = new();
+
+        // ─── Public metadata (read after GeneratePaths) ────────────────────────
+
+        public IReadOnlyList<int>               MainPathCols    => _mainPathCols;
+        public IReadOnlyList<(int floor, int)>  Branches        => _branches;
+        public int                              LastBranchFloor { get; private set; } = -1;
+
+        // ─── Construction ──────────────────────────────────────────────────────
 
         public PathGenerator(GridTemplate template, IRandomProvider rng)
         {
-            _columns   = template.Columns;
-            _floors    = template.Floors;
-            _pathCount = template.PathCount;
-            _rng       = rng;
+            _columns = template.Columns;
+            _floors  = template.Floors;
+            _rng     = rng;
         }
 
-        /// <summary>
-        /// Generates all paths and writes their connections into <paramref name="mapData"/>.
-        /// Does NOT set IsActive on nodes — that is Step 3 (MapGenerator).
-        /// </summary>
+        // ─── Entry point ───────────────────────────────────────────────────────
+
         public void GeneratePaths(MapData mapData)
         {
-            _committed.Clear();
+            _branches.Clear();
+            LastBranchFloor = -1;
 
-            int firstStartCol = -1;
+            GenerateMainPath(mapData);
+            GenerateBranches(mapData);
+        }
 
-            for (int pathIndex = 0; pathIndex < _pathCount; pathIndex++)
+        // ─── Main Path ─────────────────────────────────────────────────────────
+
+        private void GenerateMainPath(MapData mapData)
+        {
+            // Two distinct start columns at Floor 0
+            int startColA = _rng.Range(0, _columns);
+            int startColB;
+            do { startColB = _rng.Range(0, _columns); }
+            while (startColB == startColA);
+
+            _mainPathCols    = new int[_floors];
+            _mainPathCols[0] = startColA;
+
+            int currentCol = startColA;
+            int lastDelta  = 0;
+
+            for (int floor = 0; floor < _floors - 1; floor++)
             {
-                int retries = 0;
-                while (true)
+                int nextCol = PickMainPathNext(currentCol, lastDelta);
+                _mainPathCols[floor + 1] = nextCol;
+                CommitEdge(mapData, floor, currentCol, nextCol);
+                lastDelta  = nextCol - currentCol;
+                currentCol = nextCol;
+            }
+
+            // Second start node (startColB) merges into the Main Path at floor 1
+            CommitEdge(mapData, 0, startColB, _mainPathCols[1]);
+        }
+
+        private int PickMainPathNext(int col, int lastDelta)
+        {
+            int roll  = _rng.Range(0, 100);
+            int delta = roll < 70 ? 0 : roll < 85 ? -1 : 1; // straight / left / right
+
+            // No two consecutive lateral moves in the same direction
+            if (delta == lastDelta && delta != 0) delta = 0;
+
+            return Mathf.Clamp(col + delta, 0, _columns - 1);
+        }
+
+        // ─── Short Branches ────────────────────────────────────────────────────
+
+        private void GenerateBranches(MapData mapData)
+        {
+            int lastBranchFloor = -(BranchCooldown + 1); // allow branch as early as floor 1
+
+            // Floor 0 is always Start/Mine (cannot branch); stop at floors-3 so merge fits
+            for (int floor = 1; floor < _floors - 2; floor++)
+            {
+                if (floor - lastBranchFloor < BranchCooldown) continue;
+                if (_rng.Range(0, 100) >= Mathf.RoundToInt(BranchProbability * 100f)) continue;
+
+                // Prefer random length; fall back to shorter if preferred fails
+                int preferred = _rng.Range(0, 2) == 0 ? 1 : MaxBranchLength;
+                bool created  = TryCreateBranch(mapData, floor, preferred);
+                if (!created && preferred == MaxBranchLength)
+                    created = TryCreateBranch(mapData, floor, 1);
+
+                if (created)
                 {
-                    if (++retries > MaxPathRetries)
-                    {
-                        Debug.LogError($"[Map]\nPathGenerator: path {pathIndex} exceeded {MaxPathRetries} retries. Map seed may produce an unusable layout.");
-                        break;
-                    }
-
-                    int startCol = PickStartColumn(pathIndex, firstStartCol);
-                    List<(int, int, int)> edges = TryBuildPath(startCol);
-
-                    if (edges != null)
-                    {
-                        if (pathIndex == 0) firstStartCol = startCol;
-                        _committed.AddRange(edges);
-                        CommitEdgesToMapData(mapData, edges);
-                        break;
-                    }
+                    lastBranchFloor = floor;
+                    LastBranchFloor = floor;
                 }
             }
         }
 
-        // ─── Start column selection ────────────────────────────────────────────
-
-        private int PickStartColumn(int pathIndex, int firstStartCol)
-        {
-            if (pathIndex == 1 && firstStartCol >= 0)
-            {
-                // Path 1 must start at a different column than path 0.
-                int col;
-                do { col = _rng.Range(0, _columns); }
-                while (col == firstStartCol);
-                return col;
-            }
-            return _rng.Range(0, _columns);
-        }
-
-        // ─── Single path construction ──────────────────────────────────────────
-
         /// <summary>
-        /// Attempts to build one path from floor 0 to floor (_floors - 1).
-        /// Returns the edge list on success, or null if a floor has no valid candidates.
+        /// Attempts to create a branch of <paramref name="branchLen"/> floors starting at
+        /// <paramref name="startFloor"/>. Returns true and commits edges on success.
         /// </summary>
-        private List<(int floor, int fromCol, int toCol)> TryBuildPath(int startCol)
+        private bool TryCreateBranch(MapData mapData, int startFloor, int branchLen)
         {
-            var edges      = new List<(int, int, int)>(_floors - 1);
-            int currentCol = startCol;
+            int mergeFloor = startFloor + branchLen + 1;
+            if (mergeFloor >= _floors) return false;
 
-            for (int floor = 0; floor < _floors - 1; floor++)
+            int mainColStart = _mainPathCols[startFloor];
+            int mergeCol     = _mainPathCols[mergeFloor];
+
+            // Branch column 1: adjacent to mainColStart, NOT on the main path at startFloor+1
+            var col1Cands = new List<int>(2);
+            for (int dc = -1; dc <= 1; dc += 2) // only left / right, never straight (that's main)
             {
-                List<int> candidates = BuildCandidates(currentCol);
-                List<int> valid      = FilterByCrossDetection(candidates, floor, currentCol);
+                int c = mainColStart + dc;
+                if (c < 0 || c >= _columns) continue;
+                if (c == _mainPathCols[startFloor + 1]) continue;
+                col1Cands.Add(c);
+            }
+            if (col1Cands.Count == 0) return false;
 
-                if (valid.Count == 0) return null;
+            int bc1 = col1Cands[_rng.Range(0, col1Cands.Count)];
 
-                int nextCol = valid[_rng.Range(0, valid.Count)];
-                edges.Add((floor, currentCol, nextCol));
-                currentCol = nextCol;
+            if (branchLen == 1)
+            {
+                // bc1 must be able to reach mergeCol in one step
+                if (Mathf.Abs(bc1 - mergeCol) > 1) return false;
+
+                CommitEdge(mapData, startFloor,     mainColStart, bc1);
+                CommitEdge(mapData, startFloor + 1, bc1,         mergeCol);
+                _branches.Add((startFloor, 1));
+                return true;
             }
 
-            return edges;
-        }
-
-        // ─── Candidate construction ────────────────────────────────────────────
-
-        private List<int> BuildCandidates(int col)
-        {
-            var list = new List<int>(3);
-            if (col > 0)               list.Add(col - 1);
-            list.Add(col);
-            if (col < _columns - 1)    list.Add(col + 1);
-            return list;
-        }
-
-        // ─── Cross detection ───────────────────────────────────────────────────
-
-        /// <summary>
-        /// Returns only those candidates that, if connected from (floor, fromCol),
-        /// would NOT cross any already-committed edge at the same floor.
-        ///
-        /// Cross condition: two edges at the same floor from (a1 → a2) and (b1 → b2)
-        /// cross when their from-columns and to-columns swap relative order.
-        /// Algebraically: (a1 - b1) * (a2 - b2) &lt; 0.
-        /// </summary>
-        private List<int> FilterByCrossDetection(List<int> candidates, int floor, int fromCol)
-        {
-            var valid = new List<int>(candidates.Count);
-            foreach (int toCol in candidates)
+            // branchLen == 2: need a second branch node
+            var col2Cands = new List<int>(3);
+            for (int c = bc1 - 1; c <= bc1 + 1; c++)
             {
-                if (!WouldCrossAnyCommitted(floor, fromCol, toCol))
-                    valid.Add(toCol);
+                if (c < 0 || c >= _columns) continue;
+                if (c == _mainPathCols[startFloor + 2]) continue; // stay off main path
+                if (Mathf.Abs(c - mergeCol) > 1) continue;        // must reach merge
+                col2Cands.Add(c);
             }
-            return valid;
+            if (col2Cands.Count == 0) return false;
+
+            int bc2 = col2Cands[_rng.Range(0, col2Cands.Count)];
+
+            CommitEdge(mapData, startFloor,     mainColStart, bc1);
+            CommitEdge(mapData, startFloor + 1, bc1,         bc2);
+            CommitEdge(mapData, startFloor + 2, bc2,         mergeCol);
+            _branches.Add((startFloor, 2));
+            return true;
         }
 
-        private bool WouldCrossAnyCommitted(int floor, int fromCol, int toCol)
+        // ─── Helpers ───────────────────────────────────────────────────────────
+
+        private static void CommitEdge(MapData mapData, int fromFloor, int fromCol, int toCol)
         {
-            foreach (var (ef, ec1, ec2) in _committed)
-            {
-                if (ef == floor && EdgesCross(fromCol, toCol, ec1, ec2))
-                    return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Returns true when segments (a1→a2) and (b1→b2) cross at the same floor.
-        /// Identical or sharing-endpoint segments do NOT count as crossing.
-        /// </summary>
-        private static bool EdgesCross(int a1, int a2, int b1, int b2)
-            => (a1 - b1) * (a2 - b2) < 0;
-
-        // ─── Applying edges to MapData ─────────────────────────────────────────
-
-        private static void CommitEdgesToMapData(
-            MapData mapData,
-            List<(int floor, int fromCol, int toCol)> edges)
-        {
-            foreach (var (floor, fromCol, toCol) in edges)
-            {
-                var conn = new MapConnection(floor, fromCol, floor + 1, toCol);
-                mapData.Grid[floor,     fromCol].AddOutgoingConnection(conn);
-                mapData.Grid[floor + 1, toCol  ].AddIncomingConnection(conn);
-            }
+            var conn = new MapConnection(fromFloor, fromCol, fromFloor + 1, toCol);
+            mapData.Grid[fromFloor,     fromCol].AddOutgoingConnection(conn);
+            mapData.Grid[fromFloor + 1, toCol  ].AddIncomingConnection(conn);
         }
     }
 }

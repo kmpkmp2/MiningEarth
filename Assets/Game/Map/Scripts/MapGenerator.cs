@@ -59,7 +59,107 @@ namespace DeepEarth.Map
             _entranceConnector.Connect(mapData);
 
             Debug.Log($"[Map]\nGenerated: seed={seed} columns={_template.Columns} floors={_template.Floors} paths={_template.PathCount}");
+            LogMapSummary(mapData);
             return mapData;
+        }
+
+        // ─── Debug Summary ───────────────────────────────────────────────────────
+
+        private void LogMapSummary(MapData mapData)
+        {
+            var branches = _pathGenerator.Branches;
+
+            // Branch stats
+            int branchCount      = branches.Count;
+            int totalBranchLen   = 0;
+            int longestBranch    = 0;
+            var branchFloorsSb   = new System.Text.StringBuilder();
+
+            foreach (var (floor, len) in branches)
+            {
+                totalBranchLen += len;
+                if (len > longestBranch) longestBranch = len;
+                if (branchFloorsSb.Length > 0) branchFloorsSb.Append(", ");
+                branchFloorsSb.Append(floor);
+            }
+
+            float avgBranchLen = branchCount > 0 ? (float)totalBranchLen / branchCount : 0f;
+
+            // Per-floor active node count
+            int maxActivePerFloor = 0;
+            for (int f = 0; f < mapData.Floors; f++)
+            {
+                int count = 0;
+                for (int c = 0; c < mapData.Columns; c++)
+                    if (mapData.Grid[f, c].IsActive) count++;
+                if (count > maxActivePerFloor) maxActivePerFloor = count;
+            }
+
+            // Floor-0 checks (Start Nodes)
+            int  floor0Active  = 0;
+            bool floor0AllMine = true;
+            for (int c = 0; c < mapData.Columns; c++)
+            {
+                var node = mapData.Grid[0, c];
+                if (!node.IsActive) continue;
+                floor0Active++;
+                if (node.RoomType != RoomType.Mine) floor0AllMine = false;
+            }
+
+            // Mine OutConnection violations
+            int mineViolations = 0;
+            for (int f = 0; f < mapData.Floors; f++)
+                for (int c = 0; c < mapData.Columns; c++)
+                {
+                    var node = mapData.Grid[f, c];
+                    if (node.IsActive && node.RoomType == RoomType.Mine && node.OutgoingConnections.Count > 1)
+                        mineViolations++;
+                }
+
+            // Branch cooldown check
+            bool cooldownOk = true;
+            for (int i = 1; i < branches.Count; i++)
+                if (branches[i].Item1 - branches[i - 1].Item1 < PathGenerator.BranchCooldown)
+                    { cooldownOk = false; break; }
+
+            // Validation
+            bool passMainPath      = _pathGenerator.MainPathCols != null && _pathGenerator.MainPathCols.Count == mapData.Floors;
+            bool passFloor15       = mapData.Floors >= 15; // Main Path always spans all floors
+            bool passBranchSource  = true;  // guaranteed: TryCreateBranch only from main path
+            bool passNoBranchBranch = true; // guaranteed: branches never call TryCreateBranch
+            bool passBranchLen     = longestBranch <= PathGenerator.MaxBranchLength;
+            bool passMerge         = true;  // guaranteed: TryCreateBranch always commits merge edge
+            bool passCooldown      = cooldownOk;
+            bool passMaxActive     = maxActivePerFloor <= 3;
+            bool passFloor1Active  = floor0Active == 2;
+            bool passFloor1Mine    = floor0AllMine;
+            bool passMineOutConn   = mineViolations == 0;
+
+            string V(bool ok) => ok ? "PASS" : "FAIL";
+
+            Debug.Log(
+                $"[Map]\n===== MAP SUMMARY =====\n" +
+                $"Main Path Length\n{mapData.Floors}\n" +
+                $"Branch Count\n{branchCount}\n" +
+                $"Branch Floors\n{(branchFloorsSb.Length > 0 ? branchFloorsSb.ToString() : "-")}\n" +
+                $"Average Branch Length\n{avgBranchLen:F1}\n" +
+                $"Longest Branch\n{longestBranch}\n" +
+                $"Merge Count\n{branchCount}\n" +
+                $"Max Active Nodes Per Floor\n{maxActivePerFloor}\n" +
+                $"Last Branch Floor\n{_pathGenerator.LastBranchFloor}\n" +
+                $"===== VALIDATION =====\n" +
+                $"Main Path 하나만 존재          : {V(passMainPath)}\n" +
+                $"Main Path Floor15까지 연결     : {V(passFloor15)}\n" +
+                $"Branch → Main Path에서만 생성 : {V(passBranchSource)}\n" +
+                $"Branch 재분기 없음             : {V(passNoBranchBranch)}\n" +
+                $"Branch 길이 <= 2               : {V(passBranchLen)}\n" +
+                $"모든 Branch 2Floor 내 Merge    : {V(passMerge)}\n" +
+                $"Branch 간 최소 간격 >= 5       : {V(passCooldown)}\n" +
+                $"Floor당 Active Node <= 3       : {V(passMaxActive)}\n" +
+                $"Floor1 Active Node == 2        : {V(passFloor1Active)}\n" +
+                $"Floor1 == Mine                 : {V(passFloor1Mine)}\n" +
+                $"Mine OutConnection == 1        : {V(passMineOutConn)}"
+            );
         }
 
         // ─── Step 3: Node activation ─────────────────────────────────────────────

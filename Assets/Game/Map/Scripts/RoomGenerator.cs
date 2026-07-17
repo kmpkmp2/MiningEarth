@@ -31,11 +31,28 @@ namespace DeepEarth.Map
                 {
                     MapNode node = mapData.Grid[floor, col];
                     if (!node.IsActive) continue;
-                    node.RoomType = _config.PickRoomType(_rng);
+
+                    RoomType picked = _config.PickRoomType(_rng);
+
+                    // Rule 3: Mine cannot branch — avoid assigning Mine to a node with
+                    // multiple outgoing connections. RuleValidator will also enforce this,
+                    // but an early guard reduces the number of iterations required.
+                    if (picked == RoomType.Mine && node.OutgoingConnections.Count > 1)
+                    {
+                        for (int attempt = 0; attempt < 10; attempt++)
+                        {
+                            picked = _config.PickRoomType(_rng);
+                            if (picked != RoomType.Mine) break;
+                        }
+                        if (picked == RoomType.Mine) picked = RoomType.Monster;
+                    }
+
+                    node.RoomType = picked;
                 }
             }
 
             // Pass 2 — Override fixed floors
+            SetFixedFloor(mapData, 0,                          RoomType.Mine);     // Start Nodes are always Mine
             SetFixedFloor(mapData, _config.TreasureFloorIndex, RoomType.Treasure);
             SetFixedFloor(mapData, _config.RestFloorIndex,     RoomType.Rest);
         }

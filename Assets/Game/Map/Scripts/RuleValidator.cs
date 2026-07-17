@@ -104,6 +104,15 @@ namespace DeepEarth.Map
                 violated = true;
             }
 
+            // Rule Mine: Mine cannot have more than 1 outgoing connection.
+            // Checked last so that prior rule fixes (which may assign Mine) are caught
+            // in the same pass rather than waiting for the next iteration.
+            if (BreaksRuleMine(node))
+            {
+                ReassignNonMine(node);
+                violated = true;
+            }
+
             return violated;
         }
 
@@ -170,6 +179,39 @@ namespace DeepEarth.Map
         /// <summary>Floor 49 (1-indexed) = floor 48 (0-indexed) cannot be Rest.</summary>
         private static bool BreaksRule4(MapNode node)
             => node.Floor == Rule4FloorIdx && node.RoomType == RoomType.Rest;
+
+        // ─── Rule Mine ─────────────────────────────────────────────────────────
+
+        /// <summary>Mine Room must have OutDegree == 1 (no branching).</summary>
+        private static bool BreaksRuleMine(MapNode node)
+            => node.RoomType == RoomType.Mine && node.OutgoingConnections.Count > 1;
+
+        /// <summary>
+        /// Reassigns a Mine-violating node to a non-Mine type.
+        /// For early-floor nodes, only Event or Merchant are valid alternatives
+        /// (the third early-floor type, Mine, is what we're avoiding).
+        /// </summary>
+        private void ReassignNonMine(MapNode node)
+        {
+            // Early floors: only Event / Merchant are valid non-Mine alternatives
+            if (node.Floor < EarlyFloorMax)
+            {
+                node.RoomType = _rng.Range(0, 2) == 0 ? RoomType.Event : RoomType.Merchant;
+                return;
+            }
+
+            for (int attempt = 0; attempt < MaxReassignAttempts; attempt++)
+            {
+                RoomType picked = _config.PickRoomType(_rng);
+                if (picked != RoomType.Mine)
+                {
+                    node.RoomType = picked;
+                    return;
+                }
+            }
+            // Guaranteed non-Mine, non-consecutive-restricted fallback
+            node.RoomType = RoomType.Monster;
+        }
 
         // ─── Reassignment ──────────────────────────────────────────────────────
 
