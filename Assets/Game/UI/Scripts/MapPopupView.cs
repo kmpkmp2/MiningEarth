@@ -23,10 +23,11 @@ namespace DeepEarth.UI
         [SerializeField] private Color lineInactiveColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
 
         [Header("Layout")]
-        [SerializeField] private float colSpacing       = 160f;
-        [SerializeField] private float floorSpacing     = 120f;
-        [SerializeField] private float bottomPadding    = 60f;
-        [SerializeField] private float startNodeSpacing = 120f;
+        [SerializeField] private float colSpacing          = 160f;
+        [SerializeField] private float floorSpacing        = 120f;
+        [SerializeField] private float bottomPadding       = 60f;
+        [SerializeField] private float startNodeSpacing    = 120f;
+        [SerializeField] private float nodeVerticalOffset  = -3000f; // 모든 노드/라인 y 오프셋
 
         public event Action<string> OnNodeSelected;
 
@@ -251,26 +252,36 @@ namespace DeepEarth.UI
         {
             if (scrollRect == null || nodesContainer == null) return;
             Canvas.ForceUpdateCanvases();
-            float contentH   = nodesContainer.sizeDelta.y;
-            float targetY    = floorIndex * floorSpacing + startNodeSpacing;
-            float normalised = contentH > 0f ? Mathf.Clamp01(targetY / contentH) : 0f;
-            scrollRect.verticalNormalizedPosition = normalised;
+
+            // floor 0 이하(게임 시작) → Mine Entrance가 화면 하단에 보이도록 완전한 Bottom
+            if (floorIndex <= 0)
+            {
+                scrollRect.verticalNormalizedPosition = 0f;
+                return;
+            }
+
+            float contentH    = nodesContainer.sizeDelta.y;
+            float viewportH   = scrollRect.viewport != null ? scrollRect.viewport.rect.height : 0f;
+            float scrollableH = Mathf.Max(0f, contentH - viewportH);
+            float targetY     = floorIndex * floorSpacing + startNodeSpacing + nodeVerticalOffset;
+            scrollRect.verticalNormalizedPosition = scrollableH > 0f ? Mathf.Clamp01(targetY / scrollableH) : 0f;
         }
 
         private Vector2 NodePosition(int floor, int col, int columns)
         {
             float halfW = (columns - 1) * colSpacing * 0.5f;
-            return new Vector2(col * colSpacing - halfW, floor * floorSpacing + startNodeSpacing + bottomPadding);
+            return new Vector2(col * colSpacing - halfW,
+                               floor * floorSpacing + startNodeSpacing + bottomPadding + nodeVerticalOffset);
         }
 
         private Vector2 StartNodePosition()
         {
-            return new Vector2(0f, bottomPadding);
+            return new Vector2(0f, bottomPadding + nodeVerticalOffset);
         }
 
         private Vector2 BossNodePosition(int bossFloor)
         {
-            return new Vector2(0f, bossFloor * floorSpacing + startNodeSpacing + bottomPadding);
+            return new Vector2(0f, bossFloor * floorSpacing + startNodeSpacing + bottomPadding + nodeVerticalOffset);
         }
 
         private static int GetHighestAccessibleFloor(HashSet<string> accessibleKeys)

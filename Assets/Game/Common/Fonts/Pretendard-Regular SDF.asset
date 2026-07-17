@@ -2040,7 +2040,7 @@ MonoBehaviour:
     m_Scale: 1
   m_AtlasTextures:
   - {fileID: 1105611900315398405}
-  - {fileID: 4732935562660704064}
+  - {fileID: 7724551707186463895}
   m_AtlasTextureIndex: 1
   m_IsMultiAtlasTexturesEnabled: 1
   m_GetFontFeatures: 1
@@ -2297,7 +2297,7 @@ Material:
     - _UnderlayColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!28 &4732935562660704064
+--- !u!28 &7724551707186463895
 Texture2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

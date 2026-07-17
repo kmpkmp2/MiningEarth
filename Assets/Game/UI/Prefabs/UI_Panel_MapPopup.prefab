@@ -376,7 +376,11 @@ MonoBehaviour:
   iconData: {fileID: 11400000, guid: 10228852d6c90d144aab641681ba4384, type: 2}
   lineActiveColor: {r: 1, g: 1, b: 1, a: 1}
   lineInactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
-  layoutConfig: {fileID: 0}
+  colSpacing: 160
+  floorSpacing: 120
+  bottomPadding: 60
+  startNodeSpacing: 120
+  nodeVerticalOffset: -3000
 --- !u!1 &6363413011673439991
 GameObject:
   m_ObjectHideFlags: 0
@@ -411,7 +415,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 6000}
+  m_SizeDelta: {x: 0, y: 6500}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!1 &6722447607014766122
 GameObject:
