@@ -215,7 +215,7 @@ namespace DeepEarth.Combat
                 var tasks = new List<UniTask>();
                 for (int i = 0; i < count; i++)
                 {
-                    float xOff    = (i - count / 2f + 0.5f) * 0.6f;
+                    float xOff    = (i - count / 2f + 0.5f) * 1.5f;
                     Vector3 world = basePos + new Vector3(xOff, 0f, 0f);
                     tasks.Add(SpawnMonsterAtWorldPosAsync(splitData, world, depth));
                 }

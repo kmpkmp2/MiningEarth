@@ -40,6 +40,19 @@ namespace DeepEarth.Combat
             }
         }
 
+        private void OnEnable()
+        {
+            // 풀 재사용 시 코루틴 중단으로 잔류한 플래시 색상 초기화
+            if (UseSprite)
+            {
+                if (spriteRenderer != null) spriteRenderer.color = _originalColor;
+            }
+            else
+            {
+                if (_instancedMaterial != null) _instancedMaterial.color = _originalColor;
+            }
+        }
+
         // Must be called after transform.position is set at spawn time.
         // Stores world position so attack animation is independent of parent changes.
         public void InitializeSpawn(int spawnIndex)

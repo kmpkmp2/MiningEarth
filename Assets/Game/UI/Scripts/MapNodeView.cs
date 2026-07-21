@@ -19,8 +19,9 @@ namespace DeepEarth.UI
         [SerializeField] private Color completedColor  = new Color(0.55f, 0.55f, 0.55f, 1f);
         [SerializeField] private Color lockedColor     = new Color(0.25f, 0.25f, 0.25f, 1f);
 
-        [Header("Mine Entrance")]
-        [SerializeField] private GameObject glowObject;   // 글로우 이미지 — 기본 비활성, 입구에서만 활성
+        [Header("Glow / Pulse")]
+        [SerializeField] private GameObject glowObject;
+        [SerializeField] private GameObject currentPositionIndicator; // 현재 위치 링 — Prefab에서 직접 참조
         [SerializeField] private float      pulseSpeed  = 1.2f;
         [SerializeField] private float      pulseAmount = 0.08f;
 
@@ -46,6 +47,7 @@ namespace DeepEarth.UI
                 iconImage.gameObject.SetActive(icon != null && data.RoomType != RoomType.Mine);
             }
 
+            if (currentPositionIndicator != null) currentPositionIndicator.SetActive(false);
             UpdateVisuals(isAccessible, isCompleted);
         }
 
@@ -54,11 +56,15 @@ namespace DeepEarth.UI
             UpdateVisuals(isAccessible, isCompleted);
         }
 
+        /// <summary>현재 위치 링 표시 여부. Setup() 이후 별도로 호출.</summary>
+        public void SetCurrentPosition(bool isCurrent)
+        {
+            if (currentPositionIndicator != null) currentPositionIndicator.SetActive(isCurrent);
+        }
+
         // ─── Mine Entrance Setup ────────────────────────────────────────────
 
-        /// <summary>
-        /// Mine Entrance 전용 초기화. 클릭 불가 / Glow + Pulse 활성화.
-        /// </summary>
+        /// <summary>Mine Entrance 전용 초기화. 클릭 불가 / Glow + Pulse 활성화.</summary>
         public void SetupAsEntrance(MapNode data, Sprite icon)
         {
             NodeKey = $"{data.Floor}_{data.Column}";
@@ -75,6 +81,7 @@ namespace DeepEarth.UI
             if (backgroundImage != null) backgroundImage.color = accessibleColor;
             if (glowObject      != null) glowObject.SetActive(true);
 
+            if (currentPositionIndicator != null) currentPositionIndicator.SetActive(false);
             StartPulse();
         }
 
@@ -84,8 +91,8 @@ namespace DeepEarth.UI
         {
             bool locked = !isAccessible && !isCompleted;
 
-            completedMark?.SetActive(isCompleted);
-            lockedOverlay?.SetActive(locked);
+            if (completedMark   != null) completedMark.SetActive(isCompleted);
+            if (lockedOverlay   != null) lockedOverlay.SetActive(locked);
 
             if (button != null)
                 button.interactable = isAccessible && !isCompleted;
@@ -96,6 +103,43 @@ namespace DeepEarth.UI
                                       : locked      ? lockedColor
                                       :               accessibleColor;
             }
+
+            // Glow + Pulse: 선택 가능 노드만 활성화
+            if (isAccessible && !isCompleted)
+            {
+                if (glowObject != null) glowObject.SetActive(true);
+                StartPulse();
+            }
+            else
+            {
+                if (glowObject != null) glowObject.SetActive(false);
+                StopPulse();
+            }
+        }
+
+        private void HandleClick() => PlaySelectAnimationAsync().Forget();
+
+        private async UniTaskVoid PlaySelectAnimationAsync()
+        {
+            if (button != null) button.interactable = false;
+
+            var rt = GetComponent<RectTransform>();
+            if (rt != null)
+            {
+                const float duration = 0.15f;
+                float elapsed = 0f;
+                while (elapsed < duration)
+                {
+                    elapsed += Time.unscaledDeltaTime;
+                    float t = Mathf.Clamp01(elapsed / duration);
+                    float scale = Mathf.Lerp(1f, 0.85f, t);
+                    rt.localScale = new Vector3(scale, scale, 1f);
+                    await UniTask.Yield(PlayerLoopTiming.Update);
+                }
+                rt.localScale = Vector3.one;
+            }
+
+            OnClicked?.Invoke(NodeKey);
         }
 
         private void StartPulse()
@@ -129,8 +173,6 @@ namespace DeepEarth.UI
                 await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken: token);
             }
         }
-
-        private void HandleClick() => OnClicked?.Invoke(NodeKey);
 
         private void OnDestroy()
         {

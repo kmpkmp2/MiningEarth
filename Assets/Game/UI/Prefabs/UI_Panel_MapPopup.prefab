@@ -378,9 +378,10 @@ MonoBehaviour:
   lineInactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
   colSpacing: 160
   floorSpacing: 120
-  bottomPadding: 60
+  bottomPadding: 300
+  topPadding: 300
   startNodeSpacing: 120
-  nodeVerticalOffset: -3000
+  nodeVerticalOffset: -3400
 --- !u!1 &6363413011673439991
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,6 +2,9 @@ namespace DeepEarth.Combat
 {
     public enum BossRewardType
     {
+        // Fixed (always appears)
+        HealHP,
+
         // Normal Buffs
         Attack,
         MaxHP,
@@ -38,6 +41,7 @@ namespace DeepEarth.Combat
 
             TitleKey = type switch
             {
+                BossRewardType.HealHP => "boss_fixed_heal_hp",
                 BossRewardType.Attack => "boss_buff_atk",
                 BossRewardType.MaxHP => "boss_buff_hp",
                 BossRewardType.Mining => "boss_buff_mining",
@@ -53,6 +57,7 @@ namespace DeepEarth.Combat
 
             DescriptionKey = type switch
             {
+                BossRewardType.HealHP => "boss_fixed_heal_hp_desc",
                 BossRewardType.Attack => "boss_buff_atk_desc",
                 BossRewardType.MaxHP => "boss_buff_hp_desc",
                 BossRewardType.Mining => "boss_buff_mining_desc",

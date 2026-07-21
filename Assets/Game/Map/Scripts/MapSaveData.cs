@@ -18,5 +18,17 @@ namespace DeepEarth.Map
         // Node state persistence — keys are "{floor}_{column}"
         public List<string> CompletedNodeKeys  = new List<string>();
         public List<string> AccessibleNodeKeys = new List<string>();
+
+        // Key of the node currently being played (set on select, cleared on complete).
+        // Used to resume from mid-node on app restart.
+        public string CurrentNodeKey = "";
+
+        // Key of the last completed node — used to render the "current position" ring.
+        // Empty = Mine Entrance is current position.
+        public string CurrentPositionKey = "";
+
+        // Floor of the last completed node. -1 = no node completed yet.
+        // Nodes at Floor <= CurrentFloor are non-selectable (floor restriction).
+        public int CurrentFloor = -1;
     }
 }

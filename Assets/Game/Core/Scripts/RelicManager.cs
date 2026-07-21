@@ -79,6 +79,9 @@ namespace DeepEarth.Core
             if (relic.monsterAttackBonus != 0)
                 StatManager.Instance.RelicMonsterAttackBonus += relic.monsterAttackBonus;
 
+            if (relic.pickaxeDurabilityModifier != 0)
+                PickaxeDurabilityManager.Instance?.ApplyRelicDurabilityModifier(relic.pickaxeDurabilityModifier);
+
             EffectSystemType displayType = relic.isTombstone ? EffectSystemType.Special : EffectSystemType.Buff;
             EffectManager.Instance?.RegisterEffect(
                 relic.relicID,
@@ -179,6 +182,8 @@ namespace DeepEarth.Core
                 sb.Append($"몬스터 공격 {(relic.monsterAttackBonus > 0 ? "+" : "")}{relic.monsterAttackBonus}  ");
             if (relic.monsterSpawnRateBonus != 0)
                 sb.Append($"몬스터 조우 {(relic.monsterSpawnRateBonus > 0 ? "+" : "")}{relic.monsterSpawnRateBonus * 100:0}%  ");
+            if (relic.pickaxeDurabilityModifier != 0)
+                sb.Append($"곡괭이 내구도 {(relic.pickaxeDurabilityModifier > 0 ? "+" : "")}{relic.pickaxeDurabilityModifier}  ");
             if (relic.burnImmunityChance > 0f)
                 sb.Append($"화상 무효 {relic.burnImmunityChance * 100:0}%  ");
 

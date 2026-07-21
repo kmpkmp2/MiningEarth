@@ -1440,7 +1440,6 @@ namespace DeepEarth.Editor
                 "Effect_Relic_FireCultMask",
                 "Effect_Relic_FirefighterHelmet",
                 "Effect_Relic_FrozenCrystal",
-                "Effect_Relic_HeatResistantCharm",
                 "Effect_Relic_HuntersEye",
                 "Effect_Relic_LavaContract",
                 "Effect_Relic_MadnessSword",

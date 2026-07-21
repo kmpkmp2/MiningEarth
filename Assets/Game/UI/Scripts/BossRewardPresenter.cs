@@ -48,7 +48,11 @@ namespace DeepEarth.Combat
             _activeChoices = new List<BossRewardChoice>();
             var chosenTypes = new HashSet<BossRewardType>();
 
-            // Pick 3 unique rewards
+            // HealHP는 항상 고정으로 포함
+            _activeChoices.Add(new BossRewardChoice(BossRewardType.HealHP));
+            chosenTypes.Add(BossRewardType.HealHP);
+
+            // 나머지 2개를 랜덤 선택
             while (_activeChoices.Count < 3)
             {
                 // 15% chance to roll a Rare reward
@@ -111,6 +115,10 @@ namespace DeepEarth.Combat
             var stats = StatManager.Instance;
             switch (type)
             {
+                case BossRewardType.HealHP:
+                    int healAmount = Mathf.RoundToInt(stats.GetMaxHP() * 0.3f);
+                    stats.Heal(healAmount);
+                    break;
                 case BossRewardType.Attack:
                     stats.BossAttackModifier += 2;
                     break;
@@ -162,6 +170,13 @@ namespace DeepEarth.Combat
 
             switch (type)
             {
+                case BossRewardType.HealHP:
+                    nameKey = "effect_boss_heal_hp_name";
+                    descKey = "effect_boss_heal_hp_desc";
+                    value = 30;
+                    display = "❤30%";
+                    iconKey = "Effect_BossReward_HealHP";
+                    break;
                 case BossRewardType.Attack:
                     nameKey = "effect_boss_attack_name";
                     descKey = "effect_boss_attack_desc";

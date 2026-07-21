@@ -500,9 +500,13 @@ namespace DeepEarth.Core
         {
             if (CurrentState != GameState.Playing) return;
 
-            CurrentDepth++;
-            OnGameDataChanged?.Invoke();
-            DeepEarth.Common.GameEvents.FireDepthReached(CurrentDepth);
+            // Route Map 모드: AdvanceDepth()가 HandleRouteNodeAsync()에서 이미 호출됨
+            if (_routeMapPresenter == null)
+            {
+                CurrentDepth++;
+                OnGameDataChanged?.Invoke();
+                DeepEarth.Common.GameEvents.FireDepthReached(CurrentDepth);
+            }
 
             // 3D 터널 슬라이드 갱신
             if (DeepEarth.Map.MapPresenter.Instance != null)
@@ -594,17 +598,20 @@ namespace DeepEarth.Core
 
         // ── Route Map 노드 선택 진입점 ─────────────────────────────────────
 
-        public void OnRouteNodeSelected(DeepEarth.Map.MapNode node)
+        public void OnRouteNodeSelected(DeepEarth.Map.NodeData nodeData)
         {
-            HandleRouteNodeAsync(node).Forget();
+            HandleRouteNodeAsync(nodeData).Forget();
         }
 
-        private async UniTaskVoid HandleRouteNodeAsync(DeepEarth.Map.MapNode node)
+        private async UniTaskVoid HandleRouteNodeAsync(DeepEarth.Map.NodeData nodeData)
         {
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            Debug.Log($"[Run]\nGame Started\nNode : {nodeData}");
+#endif
             CurrentState = GameState.Playing;
             AdvanceDepth();
 
-            switch (node.RoomType)
+            switch (nodeData.NodeType)
             {
                 case DeepEarth.Map.RoomType.Mine:
                     await MiningSystem.Instance.SpawnNextBlockAsync();
@@ -629,6 +636,12 @@ namespace DeepEarth.Core
                     await _routeMapPresenter.OnNonMineNodeCompleted();
                     break;
 
+                case DeepEarth.Map.RoomType.Grave:
+                    DeepEarth.Common.GameEvents.FireTombstoneOpened();
+                    await EventManager.Instance.TriggerRandomEventAsync(true);
+                    await _routeMapPresenter.OnNonMineNodeCompleted();
+                    break;
+
                 case DeepEarth.Map.RoomType.Event:
                 case DeepEarth.Map.RoomType.Merchant:
                 case DeepEarth.Map.RoomType.Rest:
@@ -639,7 +652,7 @@ namespace DeepEarth.Core
                 case DeepEarth.Map.RoomType.Boss:
                     await EventManager.Instance.PlayRevealAsync(EventRevealType.Boss);
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
-                    Debug.Log("[Map]\nBoss Battle Started");
+                    Debug.Log("[Run]\nBoss Battle Started");
 #endif
                     BossManager.Instance.StartBossSequenceAsync(CurrentDepth).Forget();
                     break;

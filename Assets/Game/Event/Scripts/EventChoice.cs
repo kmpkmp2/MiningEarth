@@ -9,6 +9,7 @@ namespace DeepEarth.Event
         public string Description { get; private set; }
         public List<EffectType> Effects { get; private set; } = new List<EffectType>();
         public RelicData RelicReward { get; private set; }
+        public string ItemRewardKey { get; private set; }
 
         public EventOption(string title, string description, List<EffectType> effects)
         {
@@ -16,6 +17,7 @@ namespace DeepEarth.Event
             Description = description;
             Effects = effects;
             RelicReward = null;
+            ItemRewardKey = null;
         }
 
         public EventOption(RelicData relic)
@@ -24,6 +26,16 @@ namespace DeepEarth.Event
             Description = relic.descLocKey;
             Effects = new List<EffectType>();
             RelicReward = relic;
+            ItemRewardKey = null;
+        }
+
+        public EventOption(string titleLocKey, string descLocKey, string itemRewardKey)
+        {
+            Title = titleLocKey;
+            Description = descLocKey;
+            Effects = new List<EffectType>();
+            RelicReward = null;
+            ItemRewardKey = itemRewardKey;
         }
     }
 

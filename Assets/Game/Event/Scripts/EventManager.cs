@@ -96,6 +96,14 @@ namespace DeepEarth.Event
                 RelicManager.Instance?.AddRelic(chosenOption.RelicReward);
             }
 
+            if (!string.IsNullOrEmpty(chosenOption.ItemRewardKey))
+            {
+                InventoryManager.Instance?.AddItem(chosenOption.ItemRewardKey, 1);
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                Debug.Log($"[Event]\nItem Reward\nKey : {chosenOption.ItemRewardKey}");
+#endif
+            }
+
             // Action turn: event choice completed = 1 turn
             StatusEffectManager.Instance?.ProcessActionTurn();
 
@@ -155,8 +163,7 @@ namespace DeepEarth.Event
             {
                 new EventOption("event_opt_mining_title", "event_opt_mining_desc", new List<EffectType> { EffectType.BuffAttackDamage }),
                 new EventOption("event_opt_hp_title", "event_opt_hp_desc", new List<EffectType> { EffectType.BuffMaxHP }),
-                new EventOption("event_opt_stealth_title", "event_opt_stealth_desc", new List<EffectType> { EffectType.BuffMonsterSpawnRateDecrease }),
-                new EventOption("event_opt_hat_title", "event_opt_hat_desc", new List<EffectType> { EffectType.BuffHazardSpawnRateDecrease })
+                new EventOption("item_burn_cure_name", "item_burn_cure_desc", AddressableKeys.ItemBurnCure)
             };
 
             if (RelicManager.Instance != null)
@@ -185,7 +192,7 @@ namespace DeepEarth.Event
                 new EventOption(
                     "event_opt_fortitude_title",
                     "event_opt_fortitude_desc",
-                    new List<EffectType> { EffectType.BuffMaxHP, EffectType.BuffMaxHP, EffectType.CurseHazardSpawnRateIncrease }
+                    new List<EffectType> { EffectType.BuffMaxHP, EffectType.BuffMaxHP, EffectType.CurseInstantDamageOnEncounter }
                 ),
                 new EventOption(
                     "event_opt_reckless_title",
@@ -195,7 +202,7 @@ namespace DeepEarth.Event
                 new EventOption(
                     "event_opt_vampiric_title",
                     "event_opt_vampiric_desc",
-                    new List<EffectType> { EffectType.BuffMonsterSpawnRateDecrease, EffectType.CurseInstantDamageOnEncounter }
+                    new List<EffectType> { EffectType.BuffAttackDamage, EffectType.BuffAttackDamage, EffectType.CurseInstantDamageOnEncounter }
                 )
             };
 

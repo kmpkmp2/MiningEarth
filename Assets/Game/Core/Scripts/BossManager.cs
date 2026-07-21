@@ -194,14 +194,6 @@ namespace DeepEarth.Core
                 Debug.Log("[Boss]\nStone Golem Drop\nIron : 3");
             }
 
-            // Defeat heal reward (35% + drop chance modifier)
-            float healChance = 0.35f + StatManager.Instance.BossHealDropChanceModifier;
-            if (UnityEngine.Random.value < healChance)
-            {
-                StatManager.Instance.Heal(5);
-                EffectSystem.Instance.SpawnDamageText(spawnPoint.position + Vector3.up, "+5 HP", Color.green);
-            }
-
             // Open Boss Reward Selection UI
             typeof(GameManager).GetProperty("CurrentState").SetValue(gameMgr, GameState.BossReward);
             onGameDataChanged?.Invoke();

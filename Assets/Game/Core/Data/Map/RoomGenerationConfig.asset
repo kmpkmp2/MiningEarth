@@ -16,14 +16,14 @@ MonoBehaviour:
   _restFloor: 50
   _weights:
   - Type: 1
-    Weight: 55
+    Weight: 75
   - Type: 2
-    Weight: 15
+    Weight: 9
   - Type: 4
-    Weight: 8
+    Weight: 4
   - Type: 5
-    Weight: 5
+    Weight: 3
   - Type: 3
-    Weight: 7
+    Weight: 5
   - Type: 7
-    Weight: 10
+    Weight: 4

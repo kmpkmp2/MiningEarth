@@ -25,7 +25,8 @@ namespace DeepEarth.UI
         [Header("Layout")]
         [SerializeField] private float colSpacing          = 160f;
         [SerializeField] private float floorSpacing        = 120f;
-        [SerializeField] private float bottomPadding       = 60f;
+        [SerializeField] private float bottomPadding       = 360f;
+        [SerializeField] private float topPadding          = 300f;
         [SerializeField] private float startNodeSpacing    = 120f;
         [SerializeField] private float nodeVerticalOffset  = -3000f; // 모든 노드/라인 y 오프셋
 
@@ -49,7 +50,7 @@ namespace DeepEarth.UI
 
         // ─── Render ─────────────────────────────────────────────────────────
 
-        public async UniTask RenderAsync(MapData mapData, HashSet<string> completedKeys, HashSet<string> accessibleKeys)
+        public async UniTask RenderAsync(MapData mapData, HashSet<string> completedKeys, HashSet<string> accessibleKeys, string currentPositionKey = "", int scrollTargetFloor = -1)
         {
             ClearAll();
             _currentMap = mapData;
@@ -58,7 +59,7 @@ namespace DeepEarth.UI
                 titleText.text = "MAP";
 
             // Content 범위: Mine Entrance(하단) → Floor 0..N-1 → Boss(상단)
-            float contentHeight = (mapData.Floors + 1) * floorSpacing + startNodeSpacing + bottomPadding;
+            float contentHeight = (mapData.Floors + 1) * floorSpacing + startNodeSpacing + bottomPadding + topPadding;
             if (nodesContainer != null)
                 nodesContainer.sizeDelta = new Vector2(nodesContainer.sizeDelta.x, contentHeight);
 
@@ -163,6 +164,8 @@ namespace DeepEarth.UI
 
                     Sprite icon = iconData != null ? iconData.GetIcon(node.RoomType) : null;
                     nodeView.Setup(node, icon, accessible, isCompleted);
+                    if (!string.IsNullOrEmpty(currentPositionKey) && key == currentPositionKey)
+                        nodeView.SetCurrentPosition(true);
                     nodeView.OnClicked += RaiseNodeSelected;
                     _nodeViews.Add(nodeView);
                 }
@@ -196,8 +199,9 @@ namespace DeepEarth.UI
 #endif
             }
 
-            // 현재 접근 가능한 가장 높은 층으로 스크롤
-            ScrollToFloor(GetHighestAccessibleFloor(accessibleKeys));
+            // 완료 Floor+1 위치로 스크롤 (미전달 시 접근 가능한 가장 높은 층으로 폴백)
+            int targetFloor = scrollTargetFloor >= 0 ? scrollTargetFloor : GetHighestAccessibleFloor(accessibleKeys);
+            ScrollToFloor(targetFloor);
         }
 
         public void RefreshNodeStates(HashSet<string> completedKeys, HashSet<string> accessibleKeys)
@@ -263,8 +267,10 @@ namespace DeepEarth.UI
             float contentH    = nodesContainer.sizeDelta.y;
             float viewportH   = scrollRect.viewport != null ? scrollRect.viewport.rect.height : 0f;
             float scrollableH = Mathf.Max(0f, contentH - viewportH);
-            float targetY     = floorIndex * floorSpacing + startNodeSpacing + nodeVerticalOffset;
-            scrollRect.verticalNormalizedPosition = scrollableH > 0f ? Mathf.Clamp01(targetY / scrollableH) : 0f;
+            // nodeVerticalOffset은 순수 시각 오프셋 — contentH 기준 상대 위치에서 제외
+            float nodeRelY = floorIndex * floorSpacing + startNodeSpacing + bottomPadding;
+            float centerY  = nodeRelY - viewportH * 0.5f;
+            scrollRect.verticalNormalizedPosition = scrollableH > 0f ? Mathf.Clamp01(centerY / scrollableH) : 0f;
         }
 
         private Vector2 NodePosition(int floor, int col, int columns)

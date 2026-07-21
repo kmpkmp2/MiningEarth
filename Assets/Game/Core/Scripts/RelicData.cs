@@ -25,5 +25,6 @@ namespace DeepEarth.Core
         public float resourceMultiplierBonus;
         public int monsterAttackBonus;
         public float monsterSpawnRateBonus;
+        public int pickaxeDurabilityModifier;
     }
 }

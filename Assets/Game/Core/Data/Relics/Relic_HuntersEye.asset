@@ -25,4 +25,5 @@ MonoBehaviour:
   maxHPBonus: 0
   resourceMultiplierBonus: 0
   monsterAttackBonus: 0
-  monsterSpawnRateBonus: 0.1
+  monsterSpawnRateBonus: 0
+  pickaxeDurabilityModifier: -2

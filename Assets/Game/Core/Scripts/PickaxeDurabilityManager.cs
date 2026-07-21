@@ -144,6 +144,15 @@ namespace DeepEarth.Core
 
         public bool HasRepairRecipe(string itemID) => _configData?.GetRepairRecipe(itemID) != null;
 
+        public void ApplyRelicDurabilityModifier(int delta)
+        {
+            if (_model == null || delta >= 0) return;
+            _model.LoseDurability(-delta);
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            Debug.Log($"[Pickaxe]\nRelic Durability Penalty\nDelta : {delta}\nCurrent : {_model.CurrentDurability}/{_model.MaxDurability}");
+#endif
+        }
+
         public void SetCurrentPickaxe(PickaxeData data)
         {
             if (data == null) return;
