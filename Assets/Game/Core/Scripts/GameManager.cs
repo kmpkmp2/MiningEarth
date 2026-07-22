@@ -38,6 +38,12 @@ namespace DeepEarth.Core
         public int DiamondCount => InventoryManager.Instance.GetItemCount("Item_Diamond");
         public int WillEarnedThisRun { get; private set; } = 0;
 
+        public void AddRunWill(int amount)
+        {
+            WillEarnedThisRun += amount;
+            OnGameDataChanged?.Invoke();
+        }
+
         // UI references
         private GameObject _hudObject;
         private GameObject _gameOverObject;
@@ -454,6 +460,19 @@ namespace DeepEarth.Core
             amount = Mathf.RoundToInt(amount * bossMult);
             if (amount < 1) amount = 1;
 
+            // Miner's Journal ore gain buff
+            float oreMult = NodeEventManager.Instance?.GetOreGainMultiplier() ?? 1.0f;
+            if (oreMult != 1.0f)
+                amount = Mathf.Max(1, Mathf.RoundToInt(amount * oreMult));
+
+            // 유물: 광물 타입별 획득 보너스 (IronOrnament, SilverNecklace 등)
+            float oreTypeBonus = RelicManager.Instance?.GetOreTypeGainBonus(type) ?? 0f;
+            if (oreTypeBonus > 0f)
+            {
+                int oreExtra = Mathf.Max(1, Mathf.RoundToInt(amount * oreTypeBonus));
+                amount += oreExtra;
+            }
+
             // Grave Robber passive: level-based chance for +10% extra yield (minimum +1)
             var selectedChar = CharacterManager.Instance.SelectedCharacterID;
             if (CharacterManager.Instance.HasGraveRobberPassive(selectedChar))
@@ -472,6 +491,14 @@ namespace DeepEarth.Core
             {
                 Debug.Log($"[Reward]\n{type}\nBase : {baseAmount}\nDepth Bonus : +{depthBonus}\nFinal : {amount}");
                 InventoryManager.Instance.AddItem(itemId, amount);
+
+                // 유물: 행운의 곡괭이 — 5% 확률 동일 광물 1개 추가
+                if (RelicManager.Instance?.CheckLuckyMineChance() ?? false)
+                    InventoryManager.Instance.AddItem(itemId, 1);
+
+                // 유물: 흡혈 곡괭이 — 10% 확률 HP +1
+                if (RelicManager.Instance?.CheckMineHealChance() ?? false)
+                    StatManager.Instance.Heal(1);
             }
 
             OnGameDataChanged?.Invoke();
@@ -570,13 +597,22 @@ namespace DeepEarth.Core
                     else
                     {
                         DeepEarth.Common.GameEvents.FireWaterEncountered();
-                        int damage = 1 + DifficultyLevel;
-                        StatManager.Instance.TakeDamage(damage);
-                        EffectSystem.Instance.FlashScreen(new Color(0f, 0.4f, 1f, 0.35f), 0.25f);
-                        EffectSystem.Instance.ShakeCamera(0.2f, 0.08f);
-                        string msg = LocalizationManager.Instance.GetFormatted("combat_water", damage);
-                        EffectSystem.Instance.SpawnDamageText(Camera.main.transform.position + Camera.main.transform.forward * 1.5f, msg, Color.red);
-                        if (StatManager.Instance.CurrentHP <= 0) return;
+                        // 유물: 방수 장화 — 수몰 피해 면역
+                        if (RelicManager.Instance?.HasFloodImmunity() ?? false)
+                        {
+                            EffectSystem.Instance.FlashScreen(new Color(0f, 0.4f, 1f, 0.2f), 0.15f);
+                            EffectSystem.Instance.SpawnDamageText(Camera.main.transform.position + Camera.main.transform.forward * 1.5f, "면역!", Color.cyan);
+                        }
+                        else
+                        {
+                            int damage = 1 + DifficultyLevel;
+                            StatManager.Instance.TakeDamage(damage);
+                            EffectSystem.Instance.FlashScreen(new Color(0f, 0.4f, 1f, 0.35f), 0.25f);
+                            EffectSystem.Instance.ShakeCamera(0.2f, 0.08f);
+                            string msg = LocalizationManager.Instance.GetFormatted("combat_water", damage);
+                            EffectSystem.Instance.SpawnDamageText(Camera.main.transform.position + Camera.main.transform.forward * 1.5f, msg, Color.red);
+                            if (StatManager.Instance.CurrentHP <= 0) return;
+                        }
                     }
                 }
                 // 3. Event trigger
@@ -610,6 +646,16 @@ namespace DeepEarth.Core
 #endif
             CurrentState = GameState.Playing;
             AdvanceDepth();
+            NodeEventManager.Instance?.DecrementFloorCounters();
+
+            // Collapsed Tunnel: skip this node entirely
+            if (NodeEventManager.Instance?.SkipNextNode == true)
+            {
+                NodeEventManager.Instance.SkipNextNode = false;
+                if (StatManager.Instance.CurrentHP <= 0) return;
+                if (_routeMapPresenter != null) await _routeMapPresenter.OnNonMineNodeCompleted();
+                return;
+            }
 
             switch (nodeData.NodeType)
             {
@@ -618,13 +664,20 @@ namespace DeepEarth.Core
                     break;
 
                 case DeepEarth.Map.RoomType.Monster:
-                case DeepEarth.Map.RoomType.Elite:
                     MonsterType mType = CombatSystem.Instance.PickMonsterForDepth(CurrentDepth);
                     EventRevealType mReveal = MonsterTypeToReveal(mType);
                     await EventManager.Instance.PlayRevealAsync(mReveal);
 
                     EffectSystem.Instance.FlashScreen(new Color(1f, 0f, 0f, 0.2f), 0.2f);
                     await CombatSystem.Instance.StartCombatAsync(mType, CurrentDepth);
+
+                    if (StatManager.Instance.CurrentHP <= 0) return;
+                    await _routeMapPresenter.OnNonMineNodeCompleted();
+                    break;
+
+                case DeepEarth.Map.RoomType.Elite:
+                    EffectSystem.Instance.FlashScreen(new Color(1f, 0.5f, 0f, 0.2f), 0.2f);
+                    await EliteCombatSystem.Instance.StartEliteCombatAsync(CurrentDepth);
 
                     if (StatManager.Instance.CurrentHP <= 0) return;
                     await _routeMapPresenter.OnNonMineNodeCompleted();
@@ -643,9 +696,20 @@ namespace DeepEarth.Core
                     break;
 
                 case DeepEarth.Map.RoomType.Event:
+                    await NodeEventManager.Instance.TriggerEventAsync(CurrentDepth);
+                    if (StatManager.Instance.CurrentHP <= 0) return;
+                    await _routeMapPresenter.OnNonMineNodeCompleted();
+                    break;
+
                 case DeepEarth.Map.RoomType.Merchant:
+                    await NodeEventManager.Instance.TriggerMerchantAsync(CurrentDepth);
+                    if (StatManager.Instance.CurrentHP <= 0) return;
+                    await _routeMapPresenter.OnNonMineNodeCompleted();
+                    break;
+
                 case DeepEarth.Map.RoomType.Rest:
-                    await EventManager.Instance.TriggerRandomEventAsync(false);
+                    await NodeEventManager.Instance.TriggerRestAsync(CurrentDepth);
+                    if (StatManager.Instance.CurrentHP <= 0) return;
                     await _routeMapPresenter.OnNonMineNodeCompleted();
                     break;
 
@@ -683,6 +747,9 @@ namespace DeepEarth.Core
         {
             if (StatManager.Instance.CurrentHP <= 0 && CurrentState != GameState.GameOver && CurrentState != GameState.MainMenu)
             {
+                // 유물: 불사의 심장 — 런 중 1회 부활
+                if (RelicManager.Instance?.CheckAndConsumeRevive() ?? false) return;
+
                 Debug.Log("[Run]\nPlayer Dead");
                 DeepEarth.Common.GameEvents.FirePlayerDied();
                 EndGame();

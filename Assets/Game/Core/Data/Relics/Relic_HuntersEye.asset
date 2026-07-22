@@ -20,10 +20,20 @@ MonoBehaviour:
   burnDurationModifier: 0
   burnDamageModifier: 0
   burnImmunityChance: 0
-  attackBonus: 1
+  attackBonus: 0
   miningPowerBonus: 0
   maxHPBonus: 0
   resourceMultiplierBonus: 0
   monsterAttackBonus: 0
   monsterSpawnRateBonus: 0
-  pickaxeDurabilityModifier: -2
+  pickaxeDurabilityModifier: 0
+  rarity: 0
+  tags:
+  - 1
+  - 4
+  effects:
+  - effectType: 0
+    value: 1
+  - effectType: 9
+    value: -2
+  isUnique: 1

@@ -27,6 +27,15 @@ namespace DeepEarth.Combat
         public string DescriptionKey { get; private set; }
         public bool IsRare { get; private set; }
 
+        // Constructor for custom cards (e.g. relic choice in elite rewards).
+        public BossRewardChoice(string titleKey, string descriptionKey, bool isRare = false)
+        {
+            Type           = BossRewardType.Attack; // placeholder — not used for custom cards
+            TitleKey       = titleKey;
+            DescriptionKey = descriptionKey;
+            IsRare         = isRare;
+        }
+
         public BossRewardChoice(BossRewardType type)
         {
             Type = type;

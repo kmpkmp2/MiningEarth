@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbd98a17e09eedf44aca95949c0e9259, type: 3}
+  m_Name: NodeEvent_SpikeTrap
+  m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.Event.NodeEventData
+  eventID: 3
+  category: 0
+  titleLocKey: event_spiketrap_title
+  descLocKey: event_spiketrap_desc
+  iconKey: 
+  isAutomatic: 0
+  choices:
+  - titleLocKey: event_spiketrap_detour_title
+    descLocKey: event_spiketrap_detour_desc
+  - titleLocKey: event_spiketrap_dash_title
+    descLocKey: event_spiketrap_dash_desc
+  weight: 8

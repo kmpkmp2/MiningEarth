@@ -19,10 +19,18 @@ MonoBehaviour:
   isTombstone: 0
   burnDurationModifier: 0
   burnDamageModifier: 0
-  burnImmunityChance: 0.5
+  burnImmunityChance: 0
   attackBonus: 0
   miningPowerBonus: 0
   maxHPBonus: 0
   resourceMultiplierBonus: 0
   monsterAttackBonus: 0
   monsterSpawnRateBonus: 0
+  rarity: 1
+  tags:
+  - 6
+  - 2
+  effects:
+  - effectType: 6
+    value: 0.5
+  isUnique: 1

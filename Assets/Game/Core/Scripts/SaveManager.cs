@@ -80,6 +80,9 @@ namespace DeepEarth.Core
         // Route Map
         public DeepEarth.Map.MapSaveData MapSaveData;
 
+        // Run-local relic IDs — persists while the run is active; cleared on run end
+        public System.Collections.Generic.List<string> ActiveRelicIDs = new System.Collections.Generic.List<string>();
+
         public void InitializeDefault()
         {
             Will = 0;
@@ -109,6 +112,7 @@ namespace DeepEarth.Core
 
             EquippedPickaxeID = "pickaxe_wood";
             UnlockedPickaxeIDs = new System.Collections.Generic.List<string> { "pickaxe_wood" };
+            ActiveRelicIDs = new System.Collections.Generic.List<string>();
         }
     }
 
@@ -196,6 +200,10 @@ namespace DeepEarth.Core
             // Migration: AudioSettings
             if (_cachedData.AudioSettings == null)
                 _cachedData.AudioSettings = new AudioSettingsData();
+
+            // Migration: ActiveRelicIDs
+            if (_cachedData.ActiveRelicIDs == null)
+                _cachedData.ActiveRelicIDs = new System.Collections.Generic.List<string>();
 
             // Migration: RouteMapSaveData (신규 추가 필드)
             // MapSaveData는 null 허용 - 런 시작 시 초기화됨

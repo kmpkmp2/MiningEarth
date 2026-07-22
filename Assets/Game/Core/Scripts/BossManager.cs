@@ -20,6 +20,8 @@ namespace DeepEarth.Core
         private BossView _bossView;
         private BossRewardView _bossRewardView;
 
+        public DeepEarth.UI.BossRewardView RewardView => _bossRewardView;
+
         private BossPresenter _bossPresenter;
         private BossRewardPresenter _bossRewardPresenter;
 
@@ -74,12 +76,17 @@ namespace DeepEarth.Core
             var onGameDataChanged = (Action)typeof(GameManager).GetField("OnGameDataChanged", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.GetValue(gameMgr);
             onGameDataChanged?.Invoke();
 
-            // Determine Boss type: 50=StoneGolem, 100=MotherCaveSpider, 150=SkeletonWarlord, 200+=AllMetalColossus
-            BossID bossId;
-            if      (depth == 50)  bossId = BossID.StoneGolem;
-            else if (depth == 100) bossId = BossID.MotherCaveSpider;
-            else if (depth == 150) bossId = BossID.SkeletonWarlord;
-            else                   bossId = BossID.AllMetalColossus;
+            // Determine Boss type by MapIndex (0-based map progression counter).
+            // Route Map mode increments MapIndex after each boss defeat, so each 50-floor
+            // segment gets a unique boss regardless of CurrentDepth node-counter value.
+            int mapIndex = SaveManager.CurrentData?.MapSaveData?.MapIndex ?? 0;
+            BossID bossId = mapIndex switch
+            {
+                0 => BossID.StoneGolem,
+                1 => BossID.MotherCaveSpider,
+                2 => BossID.SkeletonWarlord,
+                _ => BossID.AllMetalColossus
+            };
 
             // Addressable Key
             string bossKey = bossId switch
@@ -185,6 +192,25 @@ namespace DeepEarth.Core
             // Visual feedback on defeat
             EffectSystem.Instance.FlashScreen(new Color(0f, 0.8f, 1f, 0.3f), 0.3f);
             EffectSystem.Instance.ShakeCamera(0.3f, 0.1f);
+
+            // 유물: 시간의 모래시계 — 보스 처치 시 HP 전부 회복
+            if (RelicManager.Instance?.HasBossKillFullHeal() ?? false)
+            {
+                StatManager.Instance.Heal(StatManager.Instance.GetMaxHP());
+                EffectSystem.Instance.SpawnDamageText(
+                    gameMgr.transform.position + Vector3.up, "HP 전부 회복!", Color.green);
+            }
+            else
+            {
+                // 유물: 광산 도시락 — 보스 처치 후 HP +5
+                int bossHeal = RelicManager.Instance?.GetPostBossHealBonus() ?? 0;
+                if (bossHeal > 0)
+                {
+                    StatManager.Instance.Heal(bossHeal);
+                    EffectSystem.Instance.SpawnDamageText(
+                        gameMgr.transform.position + Vector3.up, $"+{bossHeal} HP", Color.green);
+                }
+            }
 
             // Stone Golem: guaranteed Iron ×3 drop
             if (bossId == BossID.StoneGolem)

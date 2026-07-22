@@ -18,7 +18,7 @@ MonoBehaviour:
   iconKey: Effect_Relic_FrozenCrystal
   isTombstone: 0
   burnDurationModifier: 0
-  burnDamageModifier: -1
+  burnDamageModifier: 0
   burnImmunityChance: 0
   attackBonus: 0
   miningPowerBonus: 0
@@ -26,3 +26,11 @@ MonoBehaviour:
   resourceMultiplierBonus: 0
   monsterAttackBonus: 0
   monsterSpawnRateBonus: 0
+  rarity: 0
+  tags:
+  - 6
+  - 2
+  effects:
+  - effectType: 5
+    value: -1
+  isUnique: 1

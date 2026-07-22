@@ -95,6 +95,25 @@ namespace DeepEarth.Combat
             PostCombat:
             ClearActiveMonsters();
 
+            // 유물: 응급 붕대 — 전투 종료 후 HP 회복
+            int postHeal = RelicManager.Instance?.GetPostCombatHealBonus() ?? 0;
+            if (postHeal > 0)
+            {
+                StatManager.Instance.Heal(postHeal);
+                EffectSystem.Instance.SpawnDamageText(spawnPoint.position + Vector3.up, $"+{postHeal} HP", Color.green);
+            }
+
+            // 유물: 자동 수리 키트 — 처치 시 내구도 회복
+            int repair = RelicManager.Instance?.GetPickaxeRepairOnKill() ?? 0;
+            if (repair > 0) PickaxeDurabilityManager.Instance?.RepairOnKill(repair);
+
+            // 유물: 채굴 허가증 — 20% 확률 철 +1
+            if (RelicManager.Instance?.CheckKillIronChance() ?? false)
+            {
+                InventoryManager.Instance.AddItem("Item_Iron", 1);
+                EffectSystem.Instance.SpawnDamageText(spawnPoint.position + Vector3.up * 0.5f, "+1 철", new Color(0.7f, 0.7f, 0.75f));
+            }
+
             // Healing item drop (35%)
             if (UnityEngine.Random.value < 0.35f)
             {

@@ -49,6 +49,11 @@ namespace DeepEarth.Map
         public IReadOnlyList<(int floor, int)>  Branches        => _branches;
         public int                              LastBranchFloor { get; private set; } = -1;
 
+        public int[] GetMainPathCols(int pathIndex) =>
+            _mainPathCols != null && pathIndex >= 0 && pathIndex < _pathCount
+                ? _mainPathCols[pathIndex]
+                : null;
+
         // ─── Construction ──────────────────────────────────────────────────
 
         public PathGenerator(GridTemplate template, IRandomProvider rng)

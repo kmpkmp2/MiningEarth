@@ -14,6 +14,7 @@ namespace DeepEarth.Core
         private StatusEffectData _burnData;
         private StatusEffectData _miningPowerDownData;
         private StatusEffectData _miningPowerUpData;
+        private const string     PoisonEffectID = "Poison";
 
         private void Awake()
         {
@@ -104,6 +105,68 @@ namespace DeepEarth.Core
             EffectManager.Instance?.RemoveEffect(_burnData.effectID);
             Debug.Log("[Status]\nBurn Cured");
             return true;
+        }
+
+        // ── Poison ──────────────────────────────────────────────────────────
+
+        public void ApplyPoison(int turns = 6)
+        {
+            // 유물: 독 해독제 — 중독 면역
+            if (RelicManager.Instance?.HasPoisonImmunity() ?? false)
+            {
+                Debug.Log("[Status]\nPoison Blocked by Relic Immunity");
+                return;
+            }
+            var existing = _activeEffects.Find(e => e.EffectID == PoisonEffectID);
+            if (existing != null)
+            {
+                _activeEffects.Remove(existing);
+                EffectManager.Instance?.RemoveEffect(PoisonEffectID);
+            }
+
+            var data  = CreatePoisonData();
+            var model = new StatusEffectModel(data, turns, 0);
+            _activeEffects.Add(model);
+            RegisterInEffectManager(model);
+            Debug.Log($"[Status]\nPoison Applied\nDuration : {turns}\nAttack Mod : -10%");
+        }
+
+        public bool HasPoison() => _activeEffects.Exists(e => e.EffectID == PoisonEffectID);
+
+        public bool CurePoison()
+        {
+            var existing = _activeEffects.Find(e => e.EffectID == PoisonEffectID);
+            if (existing == null) return false;
+            _activeEffects.Remove(existing);
+            EffectManager.Instance?.RemoveEffect(PoisonEffectID);
+            Debug.Log("[Status]\nPoison Cured");
+            return true;
+        }
+
+        public float GetTotalAttackModifier()
+        {
+            float total = 0f;
+            foreach (var effect in _activeEffects)
+                if (effect.Data.effectType == StatusEffectID.Poison)
+                    total += effect.AttackModifier;
+            return total;
+        }
+
+        private StatusEffectData CreatePoisonData()
+        {
+            var d = ScriptableObject.CreateInstance<StatusEffectData>();
+            d.effectType        = StatusEffectID.Poison;
+            d.effectID          = PoisonEffectID;
+            d.nameLocKey        = "status_poison_name";
+            d.descLocKey        = "status_poison_desc";
+            d.damagePerTurn     = 0;
+            d.attackModifier    = -0.10f;
+            d.miningPowerModifier = 0f;
+            d.baseDuration      = 6;
+            d.systemType        = EffectSystemType.StatusEffect;
+            d.iconKey           = "Effect_Debuff_Poison";
+            d.source            = "Event";
+            return d;
         }
 
         // ── Mining Power Effects ─────────────────────────────────────────
@@ -232,6 +295,10 @@ namespace DeepEarth.Core
         {
             if (model.DamagePerTurn > 0)
                 return $"{model.RemainingTurns}턴 (-{model.DamagePerTurn})";
+            if (model.AttackModifier < 0)
+                return $"{model.RemainingTurns}턴 (공격{(int)(model.AttackModifier * 100)}%)";
+            if (model.AttackModifier > 0)
+                return $"{model.RemainingTurns}턴 (공격+{(int)(model.AttackModifier * 100)}%)";
             if (model.MiningPowerModifier < 0)
                 return $"{model.RemainingTurns}턴 ({(int)(model.MiningPowerModifier * 100)}%)";
             if (model.MiningPowerModifier > 0)

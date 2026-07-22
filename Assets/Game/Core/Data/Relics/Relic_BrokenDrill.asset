@@ -21,8 +21,18 @@ MonoBehaviour:
   burnDamageModifier: 0
   burnImmunityChance: 0
   attackBonus: 0
-  miningPowerBonus: 3
-  maxHPBonus: -5
+  miningPowerBonus: 0
+  maxHPBonus: 0
   resourceMultiplierBonus: 0
   monsterAttackBonus: 0
   monsterSpawnRateBonus: 0
+  rarity: 1
+  tags:
+  - 0
+  - 2
+  effects:
+  - effectType: 1
+    value: 3
+  - effectType: 2
+    value: -5
+  isUnique: 1

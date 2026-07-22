@@ -17,8 +17,8 @@ MonoBehaviour:
   descLocKey: relic_firefighter_helmet_desc
   iconKey: Effect_Relic_FirefighterHelmet
   isTombstone: 0
-  burnDurationModifier: -2
-  burnDamageModifier: -1
+  burnDurationModifier: 0
+  burnDamageModifier: 0
   burnImmunityChance: 0
   attackBonus: 0
   miningPowerBonus: 0
@@ -26,3 +26,13 @@ MonoBehaviour:
   resourceMultiplierBonus: 0
   monsterAttackBonus: 0
   monsterSpawnRateBonus: 0
+  rarity: 1
+  tags:
+  - 6
+  - 2
+  effects:
+  - effectType: 4
+    value: -2
+  - effectType: 5
+    value: -1
+  isUnique: 1

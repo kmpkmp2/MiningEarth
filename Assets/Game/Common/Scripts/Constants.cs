@@ -19,7 +19,15 @@ namespace DeepEarth.Common
         SmallSlime,
         Skeleton,
         ArmoredSkeleton,
-        Mimic
+        Mimic,
+
+        // Elite monsters
+        BigSlime,
+        SkeletonMiner,
+        IronPlateSpider,
+        MerchantMimic,
+        CursedKnight,
+        CursedPriest
     }
 
     public enum GameState
@@ -116,12 +124,31 @@ namespace DeepEarth.Common
         public const string MonsterSpawnTableKey   = "Monster_SpawnTable";
         public const string MimicRewardTableKey    = "Monster_MimicRewardTable";
 
+        // Elite Monster Prefabs
+        public const string EliteBigSlime       = "Combat_Elite_BigSlime";
+        public const string EliteSkeletonMiner  = "Combat_Elite_SkeletonMiner";
+        public const string EliteIronPlateSpider = "Combat_Elite_IronPlateSpider";
+        public const string EliteMerchantMimic  = "Combat_Elite_MerchantMimic";
+        public const string EliteCursedKnight   = "Combat_Elite_CursedKnight";
+        public const string EliteCursedPriest   = "Combat_Elite_CursedPriest";
+
+        // Elite System Data
+        public const string EliteSpawnTableKey  = "Elite_SpawnTable";
+        public const string LabelEliteData      = "EliteData";
+
         // Pickaxe
         public const string PickaxeDefault = "Pickaxe_Default";
         public const string PickaxeConfig  = "Pickaxe_Config";
 
         // Achievement
         public const string LabelAchievement = "Achievement";
+
+        // Node Event System
+        public const string LabelNodeEvent = "NodeEvent";
+
+        // Relic System (unified label — replaces Relic_Treasure / Relic_Tombstone)
+        public const string LabelRelic           = "Relic";
+        public const string RelicRewardConfigKey = "Relic_RewardConfig";
 
         // Pickaxe label (multi-load)
         public const string LabelPickaxe = "Pickaxe";

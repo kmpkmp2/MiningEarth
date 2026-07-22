@@ -112,8 +112,17 @@ namespace DeepEarth.Core
         public void OnOreHit(BlockType type, int depth)
         {
             if (_model == null || _configData == null || _model.IsBroken) return;
+            // 유물: 내구도 감소 없음 (InfiniteWhetstone 등)
+            if (RelicManager.Instance?.HasPickaxeNoDurabilityLoss() ?? false) return;
+
             int loss = _configData.GetPerHitDurabilityLoss(type, depth);
             if (loss <= 0) return;
+
+            // 유물: 내구도 감소율 배율 (OilBottle, LeatherHandle 등)
+            float rateModifier = RelicManager.Instance?.GetPickaxeDurabilityRateModifier() ?? 1.0f;
+            if (rateModifier != 1.0f)
+                loss = Mathf.Max(1, Mathf.RoundToInt(loss * rateModifier));
+
             _model.LoseDurability(loss);
             Debug.Log($"[Pickaxe]\nHit Durability Loss\nOre : {type}\nDepth : {depth}\nLoss : {loss}\nCurrent : {_model.CurrentDurability}/{_model.MaxDurability}");
         }
@@ -150,6 +159,26 @@ namespace DeepEarth.Core
             _model.LoseDurability(-delta);
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             Debug.Log($"[Pickaxe]\nRelic Durability Penalty\nDelta : {delta}\nCurrent : {_model.CurrentDurability}/{_model.MaxDurability}");
+#endif
+        }
+
+        // 유물: 최대 내구도 증가 (ReinforcedHandle 등)
+        public void AddMaxDurabilityBonus(int amount)
+        {
+            if (_model == null || amount <= 0) return;
+            _model.AddMaxDurability(amount);
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            Debug.Log($"[Pickaxe]\nRelic MaxDurability Bonus\n+{amount}\nMax : {_model.MaxDurability}");
+#endif
+        }
+
+        // 유물: 처치 시 내구도 회복 (AutoRepairKit 등)
+        public void RepairOnKill(int amount)
+        {
+            if (_model == null || amount <= 0) return;
+            _model.Repair(amount);
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            Debug.Log($"[Pickaxe]\nRelic Repair On Kill\n+{amount}\nCurrent : {_model.CurrentDurability}/{_model.MaxDurability}");
 #endif
         }
 

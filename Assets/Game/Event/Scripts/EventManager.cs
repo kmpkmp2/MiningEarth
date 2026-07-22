@@ -116,6 +116,26 @@ namespace DeepEarth.Event
             }
         }
 
+        /// Shows an event popup for NodeEventManager-driven events.
+        /// Returns the chosen option index. Effects are applied by the caller.
+        public async UniTask<int> ShowEventChoiceAsync(EventData data)
+        {
+            _choiceTcs = new UniTaskCompletionSource<int>();
+
+            GameManager.Instance.PauseForEvent();
+            OnEventTriggered?.Invoke(data);
+
+            int choice = await _choiceTcs.Task;
+
+            StatusEffectManager.Instance?.ProcessActionTurn();
+            OnEventCompleted?.Invoke();
+
+            if (StatManager.Instance.CurrentHP > 0)
+                GameManager.Instance.SetGameState(GameState.Playing);
+
+            return choice;
+        }
+
         public void SelectOption(int index)
         {
             _choiceTcs?.TrySetResult(index);

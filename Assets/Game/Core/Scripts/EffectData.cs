@@ -6,12 +6,15 @@ namespace DeepEarth.Core
 {
     public enum EffectSystemType
     {
-        CharacterPassive,
-        BossReward,
-        Buff,
-        Debuff,
-        StatusEffect,  // Turn-based status effects (Burn, Poison, ...)
-        Special
+        CharacterPassive,  // 0 – blue border
+        BossReward,        // 1 – gold border
+        Buff,              // 2 – green border
+        Debuff,            // 3 – red border
+        StatusEffect,      // 4 – orange border  (Burn, Poison …)
+        Special,           // 5 – purple border
+        RelicCommon,       // 6 – gray border
+        RelicRare,         // 7 – blue border
+        RelicLegendary     // 8 – orange-gold border
     }
 
     [Serializable]

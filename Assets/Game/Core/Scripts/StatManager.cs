@@ -64,6 +64,10 @@ namespace DeepEarth.Core
         public int RelicMonsterAttackBonus { get; set; } = 0;
         // Relic modifier: mining power bonus
         public int RelicMiningModifier { get; set; } = 0;
+        // Relic modifier: inventory slot bonus (SturdyBackpack 등)
+        public int RelicInventoryBonus { get; set; } = 0;
+        // Relic modifier: healing multiplier (GreedyCoin 등, 기본값 1.0)
+        public float RelicHealMultiplier { get; set; } = 1.0f;
 
         // Buff / Curse stacks (Limited to max 3 per effect type)
         private readonly Dictionary<EffectType, int> _effectStacks = new Dictionary<EffectType, int>();
@@ -100,6 +104,8 @@ namespace DeepEarth.Core
             BossRareEventDouble = false;
             RelicMonsterAttackBonus = 0;
             RelicMiningModifier = 0;
+            RelicInventoryBonus = 0;
+            RelicHealMultiplier = 1.0f;
 
             // Apply GlobalUpgrade and Character base stats
             var meta = MetaProgressionManager.Instance;
@@ -129,6 +135,21 @@ namespace DeepEarth.Core
 
             OnHPChanged?.Invoke();
             OnStatsUpdated?.Invoke();
+        }
+
+        public void RemoveEffect(EffectType type, int count = 1)
+        {
+            if (!_effectStacks.ContainsKey(type) || _effectStacks[type] <= 0) return;
+
+            _effectStacks[type] = Mathf.Max(0, _effectStacks[type] - count);
+
+            if (_effectStacks[type] == 0)
+                EffectManager.Instance?.RemoveEffect(type.ToString());
+            else
+                RegisterEffectToManager(type, _effectStacks[type]);
+
+            OnStatsUpdated?.Invoke();
+            OnHPChanged?.Invoke();
         }
 
         public void AddEffect(EffectType type)
@@ -290,11 +311,17 @@ namespace DeepEarth.Core
 
         public int GetAttackDamage()
         {
-            var selectedChar = CharacterManager.Instance.SelectedCharacterID;
-            int passiveBonus = CharacterManager.Instance.GetPassiveAttackBonus(selectedChar);
-            int buffModifier = GetEffectStack(EffectType.BuffAttackDamage) * 1;
+            var selectedChar  = CharacterManager.Instance.SelectedCharacterID;
+            int passiveBonus  = CharacterManager.Instance.GetPassiveAttackBonus(selectedChar);
+            int buffModifier  = GetEffectStack(EffectType.BuffAttackDamage) * 1;
             int curseModifier = GetEffectStack(EffectType.CurseAttackDamage) * 1;
-            return Mathf.Max(1, BaseAttackDamage + passiveBonus + buffModifier - curseModifier + BossAttackModifier);
+            int baseResult    = Mathf.Max(1, BaseAttackDamage + passiveBonus + buffModifier - curseModifier + BossAttackModifier);
+            float statusMod   = StatusEffectManager.Instance?.GetTotalAttackModifier() ?? 0f;
+            int statusAdjust  = Mathf.RoundToInt(baseResult * statusMod);
+            // 유물: 전체 몬스터 피해 배율 (DragonFang 등)
+            float relicDmgMult  = RelicManager.Instance?.GetDamageMultiplierBonus() ?? 0f;
+            int relicMultAdjust = Mathf.RoundToInt(baseResult * relicDmgMult);
+            return Mathf.Max(1, baseResult + statusAdjust + relicMultAdjust);
         }
 
         public int GetMiningPower()
@@ -306,13 +333,15 @@ namespace DeepEarth.Core
             int baseResult    = BaseMiningPower + passiveBonus + buffModifier - curseModifier + BossMiningModifier + RelicMiningModifier;
             float statusMod   = StatusEffectManager.Instance?.GetTotalMiningModifier() ?? 0f;
             int statusAdjust  = Mathf.RoundToInt(baseResult * statusMod);
-            return Mathf.Max(1, baseResult + statusAdjust);
+            // 유물: 내구도 조건부 채굴력 보너스 (WorkGlove 등)
+            int conditionalBonus = RelicManager.Instance?.GetConditionalMiningBonus() ?? 0;
+            return Mathf.Max(1, baseResult + statusAdjust + conditionalBonus);
         }
 
         public int GetInventorySize()
         {
             int upgradeBonus = (MetaProgressionManager.Instance != null) ? MetaProgressionManager.Instance.InventorySizeLevel * 4 : 0;
-            return BaseInventorySize + upgradeBonus;
+            return BaseInventorySize + upgradeBonus + RelicInventoryBonus;
         }
 
         public float GetMonsterSpawnRateMultiplier()
@@ -371,6 +400,10 @@ namespace DeepEarth.Core
 
         public void Heal(int amount)
         {
+            if (amount <= 0) return;
+            // 유물: 회복량 배율 적용 (GreedyCoin -50% 등)
+            amount = Mathf.RoundToInt(amount * RelicHealMultiplier);
+            if (amount <= 0) return;
             int max = GetMaxHP();
             CurrentHP = Mathf.Min(max, CurrentHP + amount);
             OnHPChanged?.Invoke();

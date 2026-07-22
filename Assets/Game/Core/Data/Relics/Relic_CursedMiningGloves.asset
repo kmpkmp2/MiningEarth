@@ -16,13 +16,23 @@ MonoBehaviour:
   nameLocKey: relic_cursed_mining_gloves_name
   descLocKey: relic_cursed_mining_gloves_desc
   iconKey: Effect_Relic_CursedMiningGloves
-  isTombstone: 1
+  isTombstone: 0
   burnDurationModifier: 0
   burnDamageModifier: 0
   burnImmunityChance: 0
   attackBonus: 0
-  miningPowerBonus: 1
-  maxHPBonus: -3
+  miningPowerBonus: 0
+  maxHPBonus: 0
   resourceMultiplierBonus: 0
   monsterAttackBonus: 0
   monsterSpawnRateBonus: 0
+  rarity: 0
+  tags:
+  - 0
+  - 2
+  effects:
+  - effectType: 1
+    value: 1
+  - effectType: 2
+    value: -3
+  isUnique: 1

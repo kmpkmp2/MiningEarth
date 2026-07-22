@@ -40,5 +40,14 @@ namespace DeepEarth.Core
             if (wasBroken && !IsBroken)
                 OnPickaxeRepaired?.Invoke();
         }
+
+        // 유물: 최대 내구도 증가 (PickaxeMaxDurabilityBonus)
+        public void AddMaxDurability(int amount)
+        {
+            if (amount <= 0) return;
+            MaxDurability += amount;
+            CurrentDurability = Mathf.Min(CurrentDurability + amount, MaxDurability);
+            OnDurabilityChanged?.Invoke();
+        }
     }
 }

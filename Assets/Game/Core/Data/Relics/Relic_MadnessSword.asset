@@ -16,14 +16,24 @@ MonoBehaviour:
   nameLocKey: relic_madness_sword_name
   descLocKey: relic_madness_sword_desc
   iconKey: Effect_Relic_MadnessSword
-  isTombstone: 1
+  isTombstone: 0
   burnDurationModifier: 0
   burnDamageModifier: 0
   burnImmunityChance: 0
-  attackBonus: 2
+  attackBonus: 0
   miningPowerBonus: 0
   maxHPBonus: 0
   resourceMultiplierBonus: 0
   monsterAttackBonus: 0
   monsterSpawnRateBonus: 0
-  pickaxeDurabilityModifier: -3
+  pickaxeDurabilityModifier: 0
+  rarity: 1
+  tags:
+  - 1
+  - 4
+  effects:
+  - effectType: 0
+    value: 2
+  - effectType: 9
+    value: -3
+  isUnique: 1

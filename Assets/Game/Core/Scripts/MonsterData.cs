@@ -1,5 +1,6 @@
 using UnityEngine;
 using DeepEarth.Common;
+using DeepEarth.Combat;
 
 namespace DeepEarth.Core
 {
@@ -10,6 +11,17 @@ namespace DeepEarth.Core
         public MonsterType monsterType;
         public string nameLocKey;
         public string addressableKey;
+
+        [Header("Grade")]
+        public MonsterGrade grade = MonsterGrade.Normal;
+
+        [Header("Elite: Spawn Depth Range")]
+        [Min(0)] public int spawnDepthMin = 0;
+        [Min(-1)] public int spawnDepthMax = -1; // -1 = no upper limit
+
+        [Header("Elite: Skill")]
+        public EliteSkillType eliteSkillType = EliteSkillType.None;
+        public EliteRewardTable eliteRewardTable;
 
         [Header("Base Stats")]
         [Min(1)] public int baseMaxHP = 3;

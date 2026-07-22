@@ -7,6 +7,7 @@ namespace DeepEarth.Core
         Burn,
         MiningPowerDown,
         MiningPowerUp,
+        Poison,         // time-limited attack debuff (-10% per stack for N turns)
     }
 
     [CreateAssetMenu(fileName = "StatusEffect_New", menuName = "DeepEarth/StatusEffect/StatusEffect")]
@@ -20,6 +21,7 @@ namespace DeepEarth.Core
         [Min(1)] public int baseDuration = 8;
         public int damagePerTurn = 0;
         [Range(-1f, 1f)] public float miningPowerModifier = 0f;
+        [Range(-1f, 1f)] public float attackModifier      = 0f;
         public EffectSystemType systemType = EffectSystemType.StatusEffect;
         public string source = "";
     }

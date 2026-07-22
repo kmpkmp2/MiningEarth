@@ -14,7 +14,104 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
   m_GroupName: Event
   m_GUID: 59d29c31a0801dc448540017f630e001
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 9b2aa2ab97d14f8f89fbd205a4280fae
+    m_Address: NodeEvent_Rockfall
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - NodeEvent
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8311be77e08645619132b2049caabe50
+    m_Address: NodeEvent_PoisonMist
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - NodeEvent
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e02dc73090d843cc9cdcc8f1c63a0459
+    m_Address: NodeEvent_SpikeTrap
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - NodeEvent
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1451716d3ac1478496f6a7c091eb5463
+    m_Address: NodeEvent_CollapsedTunnel
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - NodeEvent
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9c69d8c97f8744d6a22d9c206f3b8fac
+    m_Address: NodeEvent_DarkAltar
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - NodeEvent
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 85d0c44634af45af819b7196b3dd5673
+    m_Address: NodeEvent_LostSpirit
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - NodeEvent
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 163a6806d7094c55a048a2af5a61f5c4
+    m_Address: NodeEvent_AbandonedCamp
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - NodeEvent
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 40973e0b01794dd2b6a260f41bdb003b
+    m_Address: NodeEvent_RichOreVein
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - NodeEvent
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 989e896ea10f4d9b80b634f542b2eba7
+    m_Address: NodeEvent_WanderingMerchant
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - NodeEvent
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eb0fbb3ac0144386b14833aa8d8d4610
+    m_Address: NodeEvent_HotSpring
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - NodeEvent
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 07dbcd6ea84c44dbbd9f64e3258f36f5
+    m_Address: NodeEvent_AbandonedEquipment
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - NodeEvent
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 788e353b833d4926a322e9211159397b
+    m_Address: NodeEvent_MinersJournal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - NodeEvent
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a389941411f5464bab917671ddb05708
+    m_Address: NodeEvent_CrystalShrine
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - NodeEvent
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e5538590cdb44929d73063507136623
+    m_Address: NodeEvent_AncientForge
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - NodeEvent
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 417e10c49a2b493db82497ccf01f48ec
+    m_Address: NodeEvent_DevilContract
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - NodeEvent
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ad0a04e3aa45464993e42e63eee5d85f
+    m_Address: NodeEvent_MineGodBlessing
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - NodeEvent
+    FlaggedDuringContentUpdateRestriction: 0
+
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: bf53922257c85cf45b1d5828a500e7b9, type: 2}
   m_SchemaSet:

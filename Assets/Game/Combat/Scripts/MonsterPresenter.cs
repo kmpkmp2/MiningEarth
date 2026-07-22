@@ -25,7 +25,7 @@ namespace DeepEarth.Combat
             StartAttackLoop().Forget();
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             _cts.Cancel();
             _cts.Dispose();
@@ -35,7 +35,7 @@ namespace DeepEarth.Combat
             }
         }
 
-        private void HandleTouched()
+        protected virtual void HandleTouched()
         {
             if (Model.IsDead) return;
 
@@ -59,7 +59,7 @@ namespace DeepEarth.Combat
             }
         }
 
-        private async UniTaskVoid StartAttackLoop()
+        protected virtual async UniTaskVoid StartAttackLoop()
         {
             try
             {

@@ -57,6 +57,13 @@ namespace DeepEarth.Core
                 sys.Initialize(monsterSpawnPoint);
             }
 
+            if (FindAnyObjectByType<EliteCombatSystem>() == null)
+            {
+                var go = new GameObject("EliteCombatSystem");
+                var sys = go.AddComponent<EliteCombatSystem>();
+                sys.Initialize(monsterSpawnPoint);
+            }
+
             if (FindAnyObjectByType<EventManager>() == null)
             {
                 var go = new GameObject("EventManager");
@@ -103,6 +110,12 @@ namespace DeepEarth.Core
             {
                 var go = new GameObject("AchievementManager");
                 go.AddComponent<AchievementManager>();
+            }
+
+            if (FindAnyObjectByType<NodeEventManager>() == null)
+            {
+                var go = new GameObject("NodeEventManager");
+                go.AddComponent<NodeEventManager>();
             }
 
             // Initialize Map and Theme systems
@@ -173,6 +186,9 @@ namespace DeepEarth.Core
             if (RelicManager.Instance != null)
             {
                 await RelicManager.Instance.InitializeAsync();
+                var save = SaveManager.CurrentData;
+                if (save?.ActiveRelicIDs != null && save.ActiveRelicIDs.Count > 0)
+                    RelicManager.Instance.RestoreRelicsFromSave(save.ActiveRelicIDs);
             }
 
             if (PickaxeManager.Instance != null)

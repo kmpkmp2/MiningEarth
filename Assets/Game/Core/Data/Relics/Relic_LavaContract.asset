@@ -16,13 +16,23 @@ MonoBehaviour:
   nameLocKey: relic_lava_contract_name
   descLocKey: relic_lava_contract_desc
   iconKey: Effect_Relic_LavaContract
-  isTombstone: 1
+  isTombstone: 0
   burnDurationModifier: 0
-  burnDamageModifier: 1
+  burnDamageModifier: 0
   burnImmunityChance: 0
   attackBonus: 0
   miningPowerBonus: 0
   maxHPBonus: 0
-  resourceMultiplierBonus: 0.25
+  resourceMultiplierBonus: 0
   monsterAttackBonus: 0
   monsterSpawnRateBonus: 0
+  rarity: 2
+  tags:
+  - 6
+  - 3
+  effects:
+  - effectType: 5
+    value: 1
+  - effectType: 3
+    value: 0.25
+  isUnique: 1
