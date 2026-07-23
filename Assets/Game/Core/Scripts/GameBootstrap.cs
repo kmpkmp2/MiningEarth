@@ -191,6 +191,9 @@ namespace DeepEarth.Core
                     RelicManager.Instance.RestoreRelicsFromSave(save.ActiveRelicIDs);
             }
 
+            await InventoryManager.Instance.InitializeAsync();
+            await GameBalanceData.LoadAsync();
+
             if (PickaxeManager.Instance != null)
             {
                 await PickaxeManager.Instance.InitializeAsync();

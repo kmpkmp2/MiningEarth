@@ -17,7 +17,10 @@ namespace DeepEarth.Combat
         Revive,
         BossDamage,
         Mineral50,
-        DoubleEvent
+        DoubleEvent,
+
+        // Item Reward (very low chance)
+        ImmortalityPotion
     }
 
     public class BossRewardChoice
@@ -45,6 +48,7 @@ namespace DeepEarth.Combat
                 BossRewardType.BossDamage => true,
                 BossRewardType.Mineral50 => true,
                 BossRewardType.DoubleEvent => true,
+                BossRewardType.ImmortalityPotion => true,
                 _ => false
             };
 
@@ -61,6 +65,7 @@ namespace DeepEarth.Combat
                 BossRewardType.BossDamage => "boss_rare_boss_dmg",
                 BossRewardType.Mineral50 => "boss_rare_mineral_50",
                 BossRewardType.DoubleEvent => "boss_rare_event_double",
+                BossRewardType.ImmortalityPotion => "boss_rare_immortality_potion",
                 _ => "boss_buff_atk"
             };
 
@@ -77,6 +82,7 @@ namespace DeepEarth.Combat
                 BossRewardType.BossDamage => "boss_rare_boss_dmg_desc",
                 BossRewardType.Mineral50 => "boss_rare_mineral_50_desc",
                 BossRewardType.DoubleEvent => "boss_rare_event_double_desc",
+                BossRewardType.ImmortalityPotion => "boss_rare_immortality_potion_desc",
                 _ => "boss_buff_atk_desc"
             };
         }

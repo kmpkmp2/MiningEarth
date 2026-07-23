@@ -58,6 +58,36 @@ namespace DeepEarth.UI
             CountUpAsync(count, ct).Forget();
         }
 
+        public async UniTask AbsorbToAsync(RectTransform target, CancellationToken ct = default)
+        {
+            if (_rt == null || target == null)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+
+            // 축소 + 이동 + 빛 효과(알파 감쇠)를 거쳐 Will 아이콘으로 흡수된다
+            const float dur = 0.35f;
+            Vector3 startPos = _rt.position;
+            Vector3 targetPos = target.position;
+            Vector3 startScale = _rt.localScale;
+            float elapsed = 0f;
+
+            while (elapsed < dur)
+            {
+                if (ct.IsCancellationRequested) return;
+                float t = elapsed / dur;
+                float eased = t * t;
+                _rt.position = Vector3.Lerp(startPos, targetPos, eased);
+                _rt.localScale = Vector3.Lerp(startScale, Vector3.zero, eased);
+                if (_cg != null) _cg.alpha = Mathf.Lerp(1f, 0f, Mathf.Clamp01((t - 0.6f) / 0.4f));
+                elapsed += Time.unscaledDeltaTime;
+                await UniTask.Yield(PlayerLoopTiming.Update, ct);
+            }
+
+            gameObject.SetActive(false);
+        }
+
         private async UniTaskVoid CountUpAsync(int target, CancellationToken ct)
         {
             const float dur = 0.5f;

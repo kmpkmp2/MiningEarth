@@ -104,24 +104,15 @@ namespace DeepEarth.UI
 
             // Cost Text
             string costText = "";
-            if (!isUnlocked && staticData.UnlockCost.Count > 0)
+            int willCost = CharacterManager.Instance.GetUnlockWillCost(_selectedInPopupID);
+            if (!isUnlocked && willCost > 0)
             {
-                List<string> costItems = new List<string>();
-                foreach (var kvp in staticData.UnlockCost)
-                {
-                    string resourceName = loc.GetTranslation("hud_" + kvp.Key.ToString().ToLower());
-                    costItems.Add($"{resourceName}: {kvp.Value}");
-                }
-                costText = $"{loc.GetTranslation("char_cost_label")} {string.Join(" / ", costItems)}";
+                costText = $"{loc.GetTranslation("char_cost_label")} {loc.GetFormatted("go_will_cost", willCost)}";
             }
 
             // Owned resources text
-            var save = SaveManager.CurrentData;
-            string ownedText = $"{loc.GetTranslation("char_owned_resources")} " +
-                               $"{loc.GetFormatted("hud_iron", save.PersistentIron)} | " +
-                               $"{loc.GetFormatted("hud_silver", save.PersistentSilver)} | " +
-                               $"{loc.GetFormatted("hud_gold", save.PersistentGold)} | " +
-                               $"{loc.GetFormatted("hud_diamond", save.PersistentDiamond)}";
+            int ownedWill = MetaProgressionManager.Instance?.Will ?? 0;
+            string ownedText = $"{loc.GetTranslation("char_owned_resources")} {loc.GetFormatted("menu_will", ownedWill)}";
 
             _view.UpdateInfo(charName, charDesc, costText, ownedText, isUnlocked, isSelected, canUnlock);
             _view.SetActiveCharacterHighlight(_selectedInPopupID);

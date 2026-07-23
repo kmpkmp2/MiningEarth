@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine.UI;
 using DeepEarth.Common;
 using DeepEarth.Core;
+using DeepEarth.Audio;
 
 namespace DeepEarth.UI
 {
@@ -19,6 +20,9 @@ namespace DeepEarth.UI
 
         [Header("Resource Row")]
         [SerializeField] private ResourceEarnedRowView resourceEarnedRow;
+
+        [Header("Will Conversion")]
+        [SerializeField] private Image willIcon;
 
         [Header("Actions")]
         [SerializeField] private Button restartButton;
@@ -80,7 +84,7 @@ namespace DeepEarth.UI
 
         public async UniTask PlayResultAnimationAsync(
             int depth, int willEarned, int totalWill, int bestDepth,
-            int iron, int silver, int gold, int diamond)
+            int iron, int silver, int gold, int diamond, int totalWillBefore)
         {
             _cts?.Cancel();
             _cts?.Dispose();
@@ -97,6 +101,7 @@ namespace DeepEarth.UI
                 SetTextActive(bestDepthText, false);
                 SetTextActive(totalWillText, false);
                 if (resourceEarnedRow != null) resourceEarnedRow.gameObject.SetActive(false);
+                ResetWillIcon();
                 if (_restartBtnCG != null)
                 {
                     _restartBtnCG.alpha = 0f;
@@ -116,19 +121,45 @@ namespace DeepEarth.UI
 
                 await UniTask.Delay(200, ignoreTimeScale: true, cancellationToken: ct);
 
-                if (willEarnedText != null)
-                {
-                    willEarnedText.text = LocalizationManager.Instance.GetFormatted("go_will_earned", willEarned);
-                    SetTextActive(willEarnedText, true);
-                }
-
-                await UniTask.Delay(200, ignoreTimeScale: true, cancellationToken: ct);
-
+                // ①~④ 철/은/금/다이아 카운트 연출
                 if (resourceEarnedRow != null)
                 {
                     resourceEarnedRow.gameObject.SetActive(true);
                     await resourceEarnedRow.AnimateAsync(iron, silver, gold, diamond, ct);
                 }
+
+                // ⑤ 잠시 대기
+                await UniTask.Delay(300, ignoreTimeScale: true, cancellationToken: ct);
+
+                // ⑥ 광물이 Will 아이콘으로 흡수되는 연출
+                if (resourceEarnedRow != null && willIcon != null)
+                {
+                    AudioManager.Instance?.PlaySFX("Will_Convert");
+                    await resourceEarnedRow.AnimateAbsorbToAsync(willIcon.rectTransform, ct);
+                }
+
+                // ⑦ Will 아이콘 등장 (확대 → Glow → 반짝임)
+                if (willIcon != null)
+                {
+                    await ShowWillIconAsync(ct);
+                }
+
+                // ⑧ 획득 Will 0 → 최종값 카운트업
+                if (willEarnedText != null)
+                {
+                    SetTextActive(willEarnedText, true);
+                    AudioManager.Instance?.PlaySFX("Will_CountUp");
+                    await CountUpTextAsync(willEarnedText, "go_will_earned", 0, willEarned, 0.8f, ct);
+                }
+
+                // ⑨ 총 보유 Will 기존값 → 새로운값 카운트업
+                if (totalWillText != null)
+                {
+                    SetTextActive(totalWillText, true);
+                    await CountUpTextAsync(totalWillText, "go_total_will", totalWillBefore, totalWill, 0.8f, ct);
+                }
+
+                AudioManager.Instance?.PlaySFX("Will_Complete");
 
                 await UniTask.Delay(150, ignoreTimeScale: true, cancellationToken: ct);
 
@@ -136,14 +167,6 @@ namespace DeepEarth.UI
                 {
                     bestDepthText.text = LocalizationManager.Instance.GetFormatted("go_best_depth", bestDepth);
                     SetTextActive(bestDepthText, true);
-                }
-
-                await UniTask.Delay(150, ignoreTimeScale: true, cancellationToken: ct);
-
-                if (totalWillText != null)
-                {
-                    totalWillText.text = LocalizationManager.Instance.GetFormatted("go_total_will", totalWill);
-                    SetTextActive(totalWillText, true);
                 }
 
                 await UniTask.Delay(200, ignoreTimeScale: true, cancellationToken: ct);
@@ -157,6 +180,55 @@ namespace DeepEarth.UI
                 }
             }
             catch (OperationCanceledException) { }
+        }
+
+        private void ResetWillIcon()
+        {
+            if (willIcon == null) return;
+            willIcon.rectTransform.localScale = Vector3.one;
+            willIcon.gameObject.SetActive(false);
+        }
+
+        private async UniTask ShowWillIconAsync(CancellationToken ct)
+        {
+            willIcon.gameObject.SetActive(true);
+            var rt = willIcon.rectTransform;
+            Color baseColor = willIcon.color;
+            const float dur = 0.35f;
+            float elapsed = 0f;
+
+            while (elapsed < dur)
+            {
+                if (ct.IsCancellationRequested) return;
+                float t = elapsed / dur;
+                float scale = t < 0.6f
+                    ? Mathf.Lerp(0.5f, 1.3f, t / 0.6f)
+                    : Mathf.Lerp(1.3f, 1.0f, (t - 0.6f) / 0.4f);
+                rt.localScale = Vector3.one * scale;
+                float glow = t < 0.6f ? t / 0.6f : 1f - (t - 0.6f) / 0.4f;
+                willIcon.color = Color.Lerp(baseColor, Color.white, glow);
+                elapsed += Time.unscaledDeltaTime;
+                await UniTask.Yield(PlayerLoopTiming.Update, ct);
+            }
+
+            rt.localScale = Vector3.one;
+            willIcon.color = baseColor;
+        }
+
+        private static async UniTask CountUpTextAsync(TextMeshProUGUI text, string locKey, int from, int to, float duration, CancellationToken ct)
+        {
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                if (ct.IsCancellationRequested) return;
+                float t = elapsed / duration;
+                float eased = 1f - (1f - t) * (1f - t);
+                int value = Mathf.RoundToInt(Mathf.Lerp(from, to, eased));
+                text.text = LocalizationManager.Instance.GetFormatted(locKey, value);
+                elapsed += Time.unscaledDeltaTime;
+                await UniTask.Yield(PlayerLoopTiming.Update, ct);
+            }
+            text.text = LocalizationManager.Instance.GetFormatted(locKey, to);
         }
 
         private static void SetTextActive(TextMeshProUGUI text, bool active)

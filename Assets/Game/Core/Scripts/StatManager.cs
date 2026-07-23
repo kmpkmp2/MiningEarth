@@ -381,6 +381,29 @@ namespace DeepEarth.Core
             CurrentHP = Mathf.Max(0, CurrentHP - amount);
             OnHPChanged?.Invoke();
 
+            if (CurrentHP <= 0 && InventoryManager.Instance.GetItemCount(AddressableKeys.ItemImmortalityPotion) > 0)
+            {
+                InventoryManager.Instance.RemoveItem(AddressableKeys.ItemImmortalityPotion, 1);
+                var itemData = InventoryManager.Instance.GetTemplate(AddressableKeys.ItemImmortalityPotion);
+                int reviveHP = itemData != null ? itemData.reviveHP : 0;
+                Heal(reviveHP);
+
+                // 연출: 화면 암전 후 복귀, 황금빛 부활 이펙트, 카메라 강조 (실제 전용 이펙트/사운드 에셋은 후속 작업)
+                EffectSystem.Instance.FlashScreen(new Color(1f, 0.85f, 0.2f, 0.6f), 0.6f);
+                EffectSystem.Instance.ShakeCamera(0.4f, 0.2f);
+
+                Vector3 revivePos = Camera.main != null
+                    ? Camera.main.transform.position + Camera.main.transform.forward * 1.5f
+                    : transform.position + Vector3.up;
+                EffectSystem.Instance.SpawnDamageText(revivePos, "REVIVED!", new Color(1f, 0.85f, 0.2f));
+
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                Debug.Log($"[Item]\nImmortality Potion Activated\nHP Restored : {reviveHP}");
+                Debug.Log("[Item]\nRevive Completed");
+#endif
+                return; // BossReviveCount 체크로 내려가지 않음 — 중복 부활 방지
+            }
+
             if (CurrentHP <= 0 && BossReviveCount > 0)
             {
                 BossReviveCount--;

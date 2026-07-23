@@ -81,6 +81,19 @@ namespace DeepEarth.Core
             return GetCharacterProgress(id).IsUnlocked;
         }
 
+        public int GetUnlockWillCost(CharacterID id)
+        {
+            var staticData = CharacterDatabase.Get(id);
+            if (staticData == null || staticData.UnlockCost == null) return 0;
+
+            staticData.UnlockCost.TryGetValue(BlockType.Iron, out int iron);
+            staticData.UnlockCost.TryGetValue(BlockType.Silver, out int silver);
+            staticData.UnlockCost.TryGetValue(BlockType.Gold, out int gold);
+            staticData.UnlockCost.TryGetValue(BlockType.Diamond, out int diamond);
+
+            return GameBalanceData.Instance.CalculateOreWillValue(iron, silver, gold, diamond);
+        }
+
         public bool CanUnlock(CharacterID id)
         {
             if (IsUnlocked(id)) return false;
@@ -88,13 +101,9 @@ namespace DeepEarth.Core
             var staticData = CharacterDatabase.Get(id);
             if (staticData == null) return false;
 
-            foreach (var kvp in staticData.UnlockCost)
-            {
-                int owned = GetPersistentResource(kvp.Key);
-                if (owned < kvp.Value) return false;
-            }
-
-            return true;
+            int willCost = GetUnlockWillCost(id);
+            int ownedWill = MetaProgressionManager.Instance?.Will ?? 0;
+            return ownedWill >= willCost;
         }
 
         public bool UnlockCharacter(CharacterID id)
@@ -104,11 +113,9 @@ namespace DeepEarth.Core
             var staticData = CharacterDatabase.Get(id);
             if (staticData == null) return false;
 
-            // Deduct resources
-            foreach (var kvp in staticData.UnlockCost)
-            {
-                DeductPersistentResource(kvp.Key, kvp.Value);
-            }
+            int willCost = GetUnlockWillCost(id);
+            if (MetaProgressionManager.Instance == null || !MetaProgressionManager.Instance.TrySpendWill(willCost))
+                return false;
 
             var progress = GetCharacterProgress(id);
             progress.IsUnlocked = true;
@@ -117,50 +124,6 @@ namespace DeepEarth.Core
             SaveManager.Save();
             DeepEarth.Common.GameEvents.FireCharacterUnlocked(id);
             return true;
-        }
-
-        public int GetPersistentResource(BlockType type)
-        {
-            switch (type)
-            {
-                case BlockType.Iron: return SaveManager.CurrentData.PersistentIron;
-                case BlockType.Silver: return SaveManager.CurrentData.PersistentSilver;
-                case BlockType.Gold: return SaveManager.CurrentData.PersistentGold;
-                case BlockType.Diamond: return SaveManager.CurrentData.PersistentDiamond;
-                default: return 0;
-            }
-        }
-
-        private void DeductPersistentResource(BlockType type, int amount)
-        {
-            switch (type)
-            {
-                case BlockType.Iron:
-                    SaveManager.CurrentData.PersistentIron = Mathf.Max(0, SaveManager.CurrentData.PersistentIron - amount);
-                    break;
-                case BlockType.Silver:
-                    SaveManager.CurrentData.PersistentSilver = Mathf.Max(0, SaveManager.CurrentData.PersistentSilver - amount);
-                    break;
-                case BlockType.Gold:
-                    SaveManager.CurrentData.PersistentGold = Mathf.Max(0, SaveManager.CurrentData.PersistentGold - amount);
-                    break;
-                case BlockType.Diamond:
-                    SaveManager.CurrentData.PersistentDiamond = Mathf.Max(0, SaveManager.CurrentData.PersistentDiamond - amount);
-                    break;
-            }
-        }
-
-        public void AddPersistentResource(BlockType type, int amount)
-        {
-            if (amount <= 0) return;
-            switch (type)
-            {
-                case BlockType.Iron: SaveManager.CurrentData.PersistentIron += amount; break;
-                case BlockType.Silver: SaveManager.CurrentData.PersistentSilver += amount; break;
-                case BlockType.Gold: SaveManager.CurrentData.PersistentGold += amount; break;
-                case BlockType.Diamond: SaveManager.CurrentData.PersistentDiamond += amount; break;
-            }
-            SaveManager.Save();
         }
 
         public int GetPassiveAttackBonus(CharacterID id)

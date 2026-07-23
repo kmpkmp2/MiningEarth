@@ -17,6 +17,7 @@ namespace DeepEarth.UI
         [SerializeField] private Button dropButton;
         [SerializeField] private Button discardAllButton;
         [SerializeField] private Button closeButton;
+        [SerializeField] private TextMeshProUGUI autoUseText;
 
         public event Action OnUseClicked;
         public event Action OnDropClicked;
@@ -40,7 +41,7 @@ namespace DeepEarth.UI
             gameObject.SetActive(visible);
         }
 
-        public void SetItem(InventorySlotModel slotModel, Sprite iconSprite)
+        public void SetItem(InventorySlotModel slotModel, Sprite iconSprite, bool useEnabled = true)
         {
             if (slotModel == null)
             {
@@ -56,13 +57,13 @@ namespace DeepEarth.UI
                 itemIcon.gameObject.SetActive(iconSprite != null);
             }
 
-            string translatedName = LocalizationManager.Instance.GetTranslation(slotModel.Item.NameKey);
-            string translatedDesc = LocalizationManager.Instance.GetTranslation(slotModel.Item.DescriptionKey);
+            string translatedName = LocalizationManager.Instance.GetTranslation(slotModel.Item.nameLocKey);
+            string translatedDesc = LocalizationManager.Instance.GetTranslation(slotModel.Item.descLocKey);
 
             if (itemNameText != null)
             {
                 itemNameText.text = translatedName;
-                itemNameText.color = GetRarityColor(slotModel.Item.Rarity);
+                itemNameText.color = GetRarityColor(slotModel.Item.rarity);
             }
 
             if (itemDescriptionText != null)
@@ -71,10 +72,21 @@ namespace DeepEarth.UI
             if (itemQuantityText != null)
                 itemQuantityText.text = $"{slotModel.Count}";
 
-            bool isConsumable = slotModel.Item.Type == ItemType.Consumable;
+            bool isConsumable = slotModel.Item.type == ItemType.Consumable;
+            bool isAutoUseOnly = slotModel.Item.autoUseOnDeath;
 
             if (useButton != null)
-                useButton.gameObject.SetActive(isConsumable);
+            {
+                useButton.gameObject.SetActive(isConsumable && !isAutoUseOnly);
+                useButton.interactable = useEnabled;
+            }
+
+            if (autoUseText != null)
+            {
+                autoUseText.gameObject.SetActive(isConsumable && isAutoUseOnly);
+                if (isAutoUseOnly)
+                    autoUseText.text = LocalizationManager.Instance.GetTranslation("item_auto_use");
+            }
 
             if (dropButton != null)
                 dropButton.gameObject.SetActive(true);

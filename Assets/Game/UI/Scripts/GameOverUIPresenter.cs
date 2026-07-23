@@ -13,6 +13,8 @@ namespace DeepEarth.UI
 
         // 런 종료 시점에 인벤토리에서 캡처한 자원 수량 (ClearRunInventory 전)
         private int _runIron, _runSilver, _runGold, _runDiamond;
+        // Will 지급 전 보유량 (RunEnd Step2의 AddWill 호출 전 시점, 카운트업 연출의 시작값으로 사용)
+        private int _totalWillBefore;
 
         public GameOverUIPresenter(GameOverUIView view, GameManager gameManager)
         {
@@ -45,6 +47,7 @@ namespace DeepEarth.UI
             _runSilver  = InventoryManager.Instance?.GetItemCount("Item_Silver")  ?? 0;
             _runGold    = InventoryManager.Instance?.GetItemCount("Item_Gold")    ?? 0;
             _runDiamond = InventoryManager.Instance?.GetItemCount("Item_Diamond") ?? 0;
+            _totalWillBefore = MetaProgressionManager.Instance?.Will ?? 0;
 
             PlayResultAnimationAsync().Forget();
         }
@@ -63,7 +66,7 @@ namespace DeepEarth.UI
 
             await _view.PlayResultAnimationAsync(
                 depth, willEarned, totalWill, bestDepth,
-                _runIron, _runSilver, _runGold, _runDiamond);
+                _runIron, _runSilver, _runGold, _runDiamond, _totalWillBefore);
         }
 
         private void HandleLanguageChanged()

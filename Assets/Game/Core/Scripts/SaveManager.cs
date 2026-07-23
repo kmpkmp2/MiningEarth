@@ -54,10 +54,6 @@ namespace DeepEarth.Core
         public CharacterID SelectedCharacterID;
         public int PersistentStone;
         public int PersistentWood;
-        public int PersistentIron;
-        public int PersistentSilver;
-        public int PersistentGold;
-        public int PersistentDiamond;
 
         // Character unlock tracking only (no per-character upgrade data)
         public System.Collections.Generic.List<CharacterSaveEntry> CharacterProgress = new System.Collections.Generic.List<CharacterSaveEntry>();
@@ -93,10 +89,6 @@ namespace DeepEarth.Core
             SelectedCharacterID = CharacterID.Prisoner;
             PersistentStone = 0;
             PersistentWood = 0;
-            PersistentIron = 0;
-            PersistentSilver = 0;
-            PersistentGold = 0;
-            PersistentDiamond = 0;
 
             CharacterProgress = new System.Collections.Generic.List<CharacterSaveEntry>
             {

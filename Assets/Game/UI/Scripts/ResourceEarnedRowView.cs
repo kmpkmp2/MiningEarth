@@ -44,6 +44,18 @@ namespace DeepEarth.UI
             await UniTask.WhenAll(tasks);
         }
 
+        public async UniTask AnimateAbsorbToAsync(RectTransform target, CancellationToken ct = default)
+        {
+            var items = new[] { ironItem, silverItem, goldItem, diamondItem };
+            var tasks = new UniTask[items.Length];
+            for (int i = 0; i < items.Length; i++)
+            {
+                var item = items[i];
+                tasks[i] = item != null ? item.AbsorbToAsync(target, ct) : UniTask.CompletedTask;
+            }
+            await UniTask.WhenAll(tasks);
+        }
+
         private async UniTask ShowItemWithDelayAsync(ResourceItemView item, int count, float delay, CancellationToken ct)
         {
             if (item == null) return;

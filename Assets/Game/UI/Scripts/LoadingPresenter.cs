@@ -110,6 +110,7 @@ namespace DeepEarth.UI
 
             // 8. 런 전용 데이터 초기화
             Step(ref step, N, Loc("loading_step_runreset") ?? "Initializing run state...");
+            await InventoryManager.Instance.InitializeAsync();
             InventoryManager.Instance?.ClearRunInventory();
             EffectManager.Instance?.ClearRunEffects();
             StatusEffectManager.Instance?.ClearAll();

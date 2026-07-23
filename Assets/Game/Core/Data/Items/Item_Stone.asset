@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2156dc11ba645619a21aa7cef6d4b9b, type: 3}
+  m_Name: Item_Stone
+  m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.UI.ItemData
+  itemID: Item_Stone
+  nameLocKey: item_stone_name
+  descLocKey: item_stone_desc
+  type: 0
+  rarity: 0
+  iconKey: Item_Stone
+  maxStack: 9
+  healAmount: 0
+  repairAmount: 0
+  reviveHP: 0
+  autoUseOnDeath: 0
+  cureBurn: 0

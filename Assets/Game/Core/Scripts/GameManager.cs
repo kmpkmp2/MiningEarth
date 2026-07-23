@@ -785,9 +785,11 @@ namespace DeepEarth.Core
 
                 // Step 2: Reward Calculate
                 Debug.Log("[Run]\nReward Calculate");
-                // Will reward formula: Depth/3 + Resources value/2
-                int resourceValue = (IronCount * 1) + (SilverCount * 2) + (GoldCount * 3) + (DiamondCount * 5);
-                WillEarnedThisRun = (CurrentDepth / 3) + (resourceValue / 2);
+                // Will reward formula: Depth/3 + Ore-to-Will conversion (GameBalanceData)
+                int ironForWill = IronCount, silverForWill = SilverCount, goldForWill = GoldCount, diamondForWill = DiamondCount;
+                int resourceValue = GameBalanceData.Instance.CalculateOreWillValue(ironForWill, silverForWill, goldForWill, diamondForWill);
+                int depthBonus = CurrentDepth / 3;
+                WillEarnedThisRun = depthBonus + resourceValue;
 
                 // Update personal best depth
                 if (CurrentDepth > SaveManager.CurrentData.BestDepth)
@@ -795,7 +797,21 @@ namespace DeepEarth.Core
                     SaveManager.CurrentData.BestDepth = CurrentDepth;
                 }
 
+                int willBeforeGrant = MetaProgressionManager.Instance.Will;
                 MetaProgressionManager.Instance.AddWill(WillEarnedThisRun);
+
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                var balance = GameBalanceData.Instance;
+                System.Text.StringBuilder resultLog = new System.Text.StringBuilder();
+                resultLog.AppendLine("[Run Result]");
+                resultLog.AppendLine($"Iron {ironForWill}\n  Will +{ironForWill * balance.ironToWill}");
+                resultLog.AppendLine($"Silver {silverForWill}\n  Will +{silverForWill * balance.silverToWill}");
+                resultLog.AppendLine($"Gold {goldForWill}\n  Will +{goldForWill * balance.goldToWill}");
+                resultLog.AppendLine($"Diamond {diamondForWill}\n  Will +{diamondForWill * balance.diamondToWill}");
+                resultLog.AppendLine($"Total Will\n  +{WillEarnedThisRun}");
+                resultLog.Append($"Current Will\n  {willBeforeGrant} -> {willBeforeGrant + WillEarnedThisRun}");
+                Debug.Log(resultLog.ToString());
+#endif
 
                 // Step 3: Transfer Currency
                 int runStone = 0, runWood = 0, runIron = 0, runSilver = 0, runGold = 0, runDiamond = 0;

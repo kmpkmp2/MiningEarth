@@ -65,6 +65,17 @@ namespace DeepEarth.Core
             OnMetaUpdated?.Invoke();
         }
 
+        public bool TrySpendWill(int amount)
+        {
+            if (amount <= 0) return true;
+            if (Will < amount) return false;
+
+            SaveManager.CurrentData.Will -= amount;
+            SaveManager.Save();
+            OnMetaUpdated?.Invoke();
+            return true;
+        }
+
         public int GetUpgradeCost(UpgradeType type)
         {
             switch (type)

@@ -27,17 +27,17 @@ namespace DeepEarth.UI
         }
 
         // maxSlotCapacity: total stack slot limit. Pass int.MaxValue for unlimited (MetaCollection).
-        public bool AddItem(InventoryItemData item, int quantity, int maxSlotCapacity = int.MaxValue)
+        public bool AddItem(ItemData item, int quantity, int maxSlotCapacity = int.MaxValue)
         {
             if (item == null || quantity <= 0) return false;
 
             int remaining = quantity;
-            string cleanName = item.Id.Replace("Item_", "");
+            string cleanName = item.itemID.Replace("Item_", "");
 
             // Fill existing partial stacks first (no new slot consumed)
             foreach (var slot in Slots)
             {
-                if (slot.ItemID != item.Id || slot.IsFull) continue;
+                if (slot.ItemID != item.itemID || slot.IsFull) continue;
                 int toAdd = Mathf.Min(remaining, slot.Available);
                 slot.Count += toAdd;
                 remaining -= toAdd;
@@ -49,13 +49,13 @@ namespace DeepEarth.UI
             while (remaining > 0)
             {
                 if (Slots.Count >= maxSlotCapacity) break;
-                int stackSize = Mathf.Min(remaining, item.MaxStack);
+                int stackSize = Mathf.Min(remaining, item.maxStack);
                 var newSlot = new InventorySlotModel
                 {
-                    ItemID = item.Id,
+                    ItemID = item.itemID,
                     Item = item,
                     Count = stackSize,
-                    MaxStack = item.MaxStack,
+                    MaxStack = item.maxStack,
                     SlotIndex = Slots.Count
                 };
                 Slots.Add(newSlot);

@@ -112,52 +112,19 @@ namespace DeepEarth.UI
 
         private static string BuildCostString(CharacterStaticData data, LocalizationManager loc)
         {
-            if (data.UnlockCost == null || data.UnlockCost.Count == 0) return "";
+            int willCost = CharacterManager.Instance?.GetUnlockWillCost(data.ID) ?? 0;
+            if (willCost <= 0) return "";
 
-            var sb = new StringBuilder();
-            if (loc != null)
-            {
-                sb.Append(loc.GetTranslation("char_cost_label"));
-                sb.Append(' ');
-            }
-
-            foreach (var cost in data.UnlockCost)
-            {
-                if (sb.Length > 0 && sb[sb.Length - 1] != ' ') sb.Append("  ");
-                string resourceName = loc?.GetTranslation(GetItemNameKey(cost.Key)) ?? cost.Key.ToString();
-                sb.Append(resourceName);
-                sb.Append(" x");
-                sb.Append(cost.Value);
-            }
-
-            return sb.ToString();
+            string costValue = loc?.GetFormatted("go_will_cost", willCost) ?? $"{willCost} Will";
+            return loc != null ? $"{loc.GetTranslation("char_cost_label")} {costValue}" : costValue;
         }
 
         private static string BuildOwnedResourcesText(LocalizationManager loc)
         {
-            var save = SaveManager.CurrentData;
-            if (loc == null)
-            {
-                return $"Iron {save.PersistentIron} | Silver {save.PersistentSilver} | Gold {save.PersistentGold} | Diamond {save.PersistentDiamond}";
-            }
+            int ownedWill = MetaProgressionManager.Instance?.Will ?? 0;
+            if (loc == null) return $"Will {ownedWill}";
 
-            return $"{loc.GetTranslation("char_owned_resources")} " +
-                   $"{loc.GetFormatted("hud_iron", save.PersistentIron)} | " +
-                   $"{loc.GetFormatted("hud_silver", save.PersistentSilver)} | " +
-                   $"{loc.GetFormatted("hud_gold", save.PersistentGold)} | " +
-                   $"{loc.GetFormatted("hud_diamond", save.PersistentDiamond)}";
-        }
-
-        private static string GetItemNameKey(BlockType type)
-        {
-            return type switch
-            {
-                BlockType.Iron    => "item_iron_name",
-                BlockType.Silver  => "item_silver_name",
-                BlockType.Gold    => "item_gold_name",
-                BlockType.Diamond => "item_diamond_name",
-                _                 => type.ToString()
-            };
+            return $"{loc.GetTranslation("char_owned_resources")} {loc.GetFormatted("menu_will", ownedWill)}";
         }
     }
 }

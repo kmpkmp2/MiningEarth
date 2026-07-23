@@ -103,10 +103,14 @@ namespace DeepEarth.Common
         public const string ItemGold = "Item_Gold";
         public const string ItemDiamond = "Item_Diamond";
         public const string ItemPotion = "Item_Potion";
+        public const string ItemPotionMedium = "Item_Potion_Medium";
+        public const string ItemPotionLarge = "Item_Potion_Large";
         public const string ItemBurnCure = "Item_BurnCure";
         public const string ItemKey = "Item_Key";
         public const string ItemChest = "Item_Chest";
         public const string ItemSpecial = "Item_Special";
+        public const string ItemPortableAnvil = "Item_PortableAnvil";
+        public const string ItemImmortalityPotion = "Item_ImmortalityPotion";
 
         public const string StatusEffectBurn       = "StatusEffect_Burn";
         public const string StatusEffectMiningDown = "StatusEffect_MiningPowerDown";
@@ -152,6 +156,12 @@ namespace DeepEarth.Common
 
         // Pickaxe label (multi-load)
         public const string LabelPickaxe = "Pickaxe";
+
+        // Item label (multi-load)
+        public const string LabelItemData = "ItemData";
+
+        // Game Balance (single config asset)
+        public const string GameBalanceDataKey = "GameBalanceData";
 
         // Relic Addressable Labels (label-based load — no per-relic key needed)
         public const string LabelRelicTreasure = "Relic_Treasure";

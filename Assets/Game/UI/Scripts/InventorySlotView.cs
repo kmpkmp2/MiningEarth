@@ -52,12 +52,12 @@ namespace DeepEarth.UI
 
             if (itemNameText != null)
             {
-                itemNameText.text = LocalizationManager.Instance.GetTranslation(slotModel.Item.NameKey) ?? slotModel.ItemID;
+                itemNameText.text = LocalizationManager.Instance.GetTranslation(slotModel.Item.nameLocKey) ?? slotModel.ItemID;
             }
 
             if (borderOutline != null)
             {
-                borderOutline.color = GetRarityColor(slotModel.Item.Rarity);
+                borderOutline.color = GetRarityColor(slotModel.Item.rarity);
             }
         }
 

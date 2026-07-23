@@ -4,7 +4,7 @@ namespace DeepEarth.UI
     public class InventorySlotModel
     {
         public string ItemID;
-        public InventoryItemData Item;
+        public ItemData Item;
         public int Count;
         public int MaxStack;
         public int SlotIndex;

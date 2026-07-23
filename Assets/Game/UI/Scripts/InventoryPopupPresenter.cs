@@ -120,7 +120,7 @@ namespace DeepEarth.UI
                 var slotModel = slotsCopy[i];
                 Debug.Log($"[Inventory]\nCreate Slot : {slotModel.ItemID.Replace("Item_", "")} ({slotModel.Count}/{slotModel.MaxStack})");
 
-                Sprite iconSprite = await LoadIconSpriteAsync(slotModel.Item.IconKey);
+                Sprite iconSprite = await LoadIconSpriteAsync(slotModel.Item.iconKey);
 
                 if (refreshId != _currentRefreshId) return;
 
@@ -142,7 +142,7 @@ namespace DeepEarth.UI
                 if (matchingSlot != null)
                 {
                     _selectedSlotModel = matchingSlot;
-                    Sprite iconSprite = await LoadIconSpriteAsync(matchingSlot.Item.IconKey);
+                    Sprite iconSprite = await LoadIconSpriteAsync(matchingSlot.Item.iconKey);
                     if (refreshId == _currentRefreshId) ShowDetailPanel(matchingSlot, iconSprite);
                 }
                 else
@@ -175,7 +175,17 @@ namespace DeepEarth.UI
         private void ShowDetailPanel(InventorySlotModel slotModel, Sprite iconSprite)
         {
             var detailPanel = _view.GetDetailPanel();
-            if (detailPanel != null) detailPanel.SetItem(slotModel, iconSprite);
+            if (detailPanel != null) detailPanel.SetItem(slotModel, iconSprite, GetUseEnabled(slotModel));
+        }
+
+        private bool GetUseEnabled(InventorySlotModel slotModel)
+        {
+            if (slotModel.ItemID == AddressableKeys.ItemPortableAnvil)
+            {
+                var mgr = PickaxeDurabilityManager.Instance;
+                return mgr != null && mgr.CurrentDurability < mgr.MaxDurability;
+            }
+            return true;
         }
 
         private void HandleCloseDetailPanel()
@@ -189,22 +199,38 @@ namespace DeepEarth.UI
         {
             if (_selectedSlotModel == null) return;
 
-            if (_selectedSlotModel.Item.Type == ItemType.Resource)
+            var item = _selectedSlotModel.Item;
+            string itemId = _selectedSlotModel.ItemID;
+
+            if (item.type == ItemType.Resource)
             {
+                if (itemId == "Item_Wood")
+                {
+                    StatManager.Instance.Heal(1);
+                    TriggerFloatingText($"+1 {LocalizationManager.Instance.GetTranslation("hud_hp_heal") ?? "HP Healed!"}", Color.green);
+                    _collection.RemoveItem("Item_Wood", 1);
+                    GameManager.Instance.TriggerStatsOrResourcesChanged();
+                    return;
+                }
+
                 HandleRepairWithOre();
                 return;
             }
 
-            if (_selectedSlotModel.Item.Type != ItemType.Consumable) return;
+            if (item.type != ItemType.Consumable) return;
+            if (item.autoUseOnDeath) return; // 불사 물약: 수동 사용 불가, 사망 시 자동 소비만
 
-            string itemId = _selectedSlotModel.ItemID;
-
-            if (itemId == "Item_Potion")
+            if (itemId == AddressableKeys.ItemPortableAnvil)
             {
-                StatManager.Instance.Heal(5);
-                TriggerFloatingText($"+5 {LocalizationManager.Instance.GetTranslation("hud_hp_heal") ?? "HP Healed!"}", Color.green);
+                HandlePortableAnvil(item);
+                return;
             }
-            else if (itemId == AddressableKeys.ItemBurnCure)
+
+            if (itemId == "Item_Chest")
+            {
+                HandleChestReward();
+            }
+            else if (item.cureBurn)
             {
                 if (StatusEffectManager.Instance != null && StatusEffectManager.Instance.CureBurn())
                 {
@@ -216,32 +242,10 @@ namespace DeepEarth.UI
                     return;
                 }
             }
-            else if (itemId == "Item_Special")
+            else if (item.healAmount > 0)
             {
-                StatManager.Instance.Heal(10);
-                TriggerFloatingText($"+10 {LocalizationManager.Instance.GetTranslation("hud_hp_heal") ?? "HP Healed!"}", Color.green);
-            }
-            else if (itemId == "Item_Chest")
-            {
-                StatManager.Instance.Heal(2);
-                float rnd = UnityEngine.Random.value;
-                string rewardText;
-                if (rnd < 0.5f)
-                {
-                    InventoryManager.Instance.AddItem("Item_Iron", 5);
-                    rewardText = "+5 Iron";
-                }
-                else if (rnd < 0.85f)
-                {
-                    InventoryManager.Instance.AddItem("Item_Silver", 2);
-                    rewardText = "+2 Silver";
-                }
-                else
-                {
-                    InventoryManager.Instance.AddItem("Item_Gold", 1);
-                    rewardText = "+1 Gold";
-                }
-                TriggerFloatingText($"+2 HP, {rewardText}", Color.yellow);
+                StatManager.Instance.Heal(item.healAmount);
+                TriggerFloatingText($"+{item.healAmount} {LocalizationManager.Instance.GetTranslation("hud_hp_heal") ?? "HP Healed!"}", Color.green);
             }
             else
             {
@@ -250,6 +254,56 @@ namespace DeepEarth.UI
 
             _collection.RemoveItem(itemId, 1);
             GameManager.Instance.TriggerStatsOrResourcesChanged();
+        }
+
+        private void HandleChestReward()
+        {
+            StatManager.Instance.Heal(2);
+            float anvilChance = GameBalanceData.Instance.portableAnvilChestChance;
+            float rnd = UnityEngine.Random.value;
+            string rewardText;
+            if (rnd < 0.5f)
+            {
+                InventoryManager.Instance.AddItem("Item_Iron", 5);
+                rewardText = "+5 Iron";
+            }
+            else if (rnd < 0.85f)
+            {
+                InventoryManager.Instance.AddItem("Item_Silver", 2);
+                rewardText = "+2 Silver";
+            }
+            else if (rnd < 0.85f + anvilChance)
+            {
+                InventoryManager.Instance.AddItem(AddressableKeys.ItemPortableAnvil, 1);
+                rewardText = "+1 Portable Anvil";
+            }
+            else
+            {
+                InventoryManager.Instance.AddItem("Item_Gold", 1);
+                rewardText = "+1 Gold";
+            }
+            TriggerFloatingText($"+2 HP, {rewardText}", Color.yellow);
+        }
+
+        private void HandlePortableAnvil(ItemData item)
+        {
+            var mgr = PickaxeDurabilityManager.Instance;
+            if (mgr == null) return;
+
+            if (mgr.CurrentDurability >= mgr.MaxDurability)
+            {
+                TriggerFloatingText(LocalizationManager.Instance.GetTranslation("item_anvil_full"), Color.yellow);
+                return;
+            }
+
+            mgr.Repair(item.repairAmount); // Repair()가 MaxDurability 클램프 처리
+            _collection.RemoveItem(item.itemID, 1);
+            GameManager.Instance.TriggerStatsOrResourcesChanged();
+
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            Debug.Log($"[Item]\nPortable Anvil Used\nDurability +{item.repairAmount}");
+#endif
+            TriggerFloatingText($"⛏ +{item.repairAmount}", new Color(0.6f, 1f, 0.6f));
         }
 
         private void HandleRepairWithOre()
@@ -280,7 +334,7 @@ namespace DeepEarth.UI
             _collection.RemoveItem(itemId, recipe.itemCostPerUse);
             manager.Repair(gain);
 
-            string oreName = LocalizationManager.Instance.GetTranslation(_selectedSlotModel.Item.NameKey) ?? itemId;
+            string oreName = LocalizationManager.Instance.GetTranslation(_selectedSlotModel.Item.nameLocKey) ?? itemId;
             Debug.Log($"[Pickaxe]\nRepair\nOre : {oreName}\nConsumed : {recipe.itemCostPerUse}\nRecovered : {gain}\nCurrent : {manager.CurrentDurability} / {manager.MaxDurability}");
 
             TriggerFloatingText($"⛏ +{gain}", new Color(0.6f, 1f, 0.6f));
@@ -330,7 +384,7 @@ namespace DeepEarth.UI
 
             if (_pendingDiscardAll)
             {
-                string cleanName = LocalizationManager.Instance?.GetTranslation(_selectedSlotModel.Item.NameKey) ?? _selectedSlotModel.ItemID;
+                string cleanName = LocalizationManager.Instance?.GetTranslation(_selectedSlotModel.Item.nameLocKey) ?? _selectedSlotModel.ItemID;
                 int count = _selectedSlotModel.Count;
 
                 _collection.RemoveSlot(_selectedSlotModel);
@@ -347,7 +401,7 @@ namespace DeepEarth.UI
             }
             else
             {
-                string cleanName = LocalizationManager.Instance?.GetTranslation(_selectedSlotModel.Item.NameKey) ?? _selectedSlotModel.ItemID;
+                string cleanName = LocalizationManager.Instance?.GetTranslation(_selectedSlotModel.Item.nameLocKey) ?? _selectedSlotModel.ItemID;
 
                 _collection.RemoveFromSlot(_selectedSlotModel, 1);
                 _view.HideConfirmation();

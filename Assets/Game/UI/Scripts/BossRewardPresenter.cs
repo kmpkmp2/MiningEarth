@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using DeepEarth.Common;
 using DeepEarth.Core;
 using DeepEarth.UI;
 
@@ -52,7 +53,14 @@ namespace DeepEarth.Combat
             _activeChoices.Add(new BossRewardChoice(BossRewardType.HealHP));
             chosenTypes.Add(BossRewardType.HealHP);
 
-            // 나머지 2개를 랜덤 선택
+            // 불사 물약: 별도의 초저확률 체크 (기존 일반/레어 확률과 무관하게 독립 판정)
+            if (UnityEngine.Random.value < GameBalanceData.Instance.immortalityPotionBossChance)
+            {
+                _activeChoices.Add(new BossRewardChoice(BossRewardType.ImmortalityPotion));
+                chosenTypes.Add(BossRewardType.ImmortalityPotion);
+            }
+
+            // 나머지를 랜덤 선택
             while (_activeChoices.Count < 3)
             {
                 // 15% chance to roll a Rare reward
@@ -150,6 +158,9 @@ namespace DeepEarth.Combat
                 case BossRewardType.DoubleEvent:
                     stats.BossRareEventDouble = true;
                     break;
+                case BossRewardType.ImmortalityPotion:
+                    InventoryManager.Instance.AddItem(AddressableKeys.ItemImmortalityPotion, 1);
+                    break;
             }
 
             RegisterBossRewardToManager(type);
@@ -246,6 +257,13 @@ namespace DeepEarth.Combat
                     value = 100;
                     display = "2x";
                     iconKey = "Effect_BossReward_DoubleEvent";
+                    break;
+                case BossRewardType.ImmortalityPotion:
+                    nameKey = "effect_boss_immortality_potion_name";
+                    descKey = "effect_boss_immortality_potion_desc";
+                    value = 1;
+                    display = "1";
+                    iconKey = "Effect_BossReward_ImmortalityPotion";
                     break;
             }
 

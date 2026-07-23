@@ -73,17 +73,31 @@ namespace DeepEarth.Core
         public bool IsUnlocked(string pickaxeID) =>
             SaveManager.CurrentData.UnlockedPickaxeIDs?.Contains(pickaxeID) ?? false;
 
+        public int GetUnlockWillCost(PickaxeData data)
+        {
+            if (data == null || data.unlockCost == null) return 0;
+
+            int iron = 0, silver = 0, gold = 0, diamond = 0;
+            foreach (var cost in data.unlockCost)
+            {
+                switch (cost.resourceType)
+                {
+                    case BlockType.Iron:    iron    += cost.amount; break;
+                    case BlockType.Silver:  silver  += cost.amount; break;
+                    case BlockType.Gold:    gold    += cost.amount; break;
+                    case BlockType.Diamond: diamond += cost.amount; break;
+                }
+            }
+
+            return GameBalanceData.Instance.CalculateOreWillValue(iron, silver, gold, diamond);
+        }
+
         public bool CanAfford(PickaxeData data)
         {
             if (data == null || data.isDefault) return false;
-            if (data.unlockCost == null || data.unlockCost.Count == 0) return true;
-            var save = SaveManager.CurrentData;
-            foreach (var cost in data.unlockCost)
-            {
-                if (GetPersistentCount(cost.resourceType, save) < cost.amount)
-                    return false;
-            }
-            return true;
+            int willCost = GetUnlockWillCost(data);
+            int ownedWill = MetaProgressionManager.Instance?.Will ?? 0;
+            return ownedWill >= willCost;
         }
 
         public bool Purchase(PickaxeData data)
@@ -91,10 +105,11 @@ namespace DeepEarth.Core
             if (data == null || IsUnlocked(data.pickaxeID)) return false;
             if (!CanAfford(data)) return false;
 
-            var save = SaveManager.CurrentData;
-            foreach (var cost in data.unlockCost)
-                DeductPersistent(cost.resourceType, cost.amount, save);
+            int willCost = GetUnlockWillCost(data);
+            if (MetaProgressionManager.Instance == null || !MetaProgressionManager.Instance.TrySpendWill(willCost))
+                return false;
 
+            var save = SaveManager.CurrentData;
             save.UnlockedPickaxeIDs.Add(data.pickaxeID);
             SaveManager.Save();
             OnPickaxeStateChanged?.Invoke();
@@ -131,29 +146,6 @@ namespace DeepEarth.Core
         {
             if (data == null) return "Unknown";
             return LocalizationManager.Instance?.GetTranslation(data.nameLocKey) ?? data.nameLocKey;
-        }
-
-        private static int GetPersistentCount(BlockType type, SaveData save)
-        {
-            switch (type)
-            {
-                case BlockType.Iron:    return save.PersistentIron;
-                case BlockType.Silver:  return save.PersistentSilver;
-                case BlockType.Gold:    return save.PersistentGold;
-                case BlockType.Diamond: return save.PersistentDiamond;
-                default:                return 0;
-            }
-        }
-
-        private static void DeductPersistent(BlockType type, int amount, SaveData save)
-        {
-            switch (type)
-            {
-                case BlockType.Iron:    save.PersistentIron    = Mathf.Max(0, save.PersistentIron    - amount); break;
-                case BlockType.Silver:  save.PersistentSilver  = Mathf.Max(0, save.PersistentSilver  - amount); break;
-                case BlockType.Gold:    save.PersistentGold    = Mathf.Max(0, save.PersistentGold    - amount); break;
-                case BlockType.Diamond: save.PersistentDiamond = Mathf.Max(0, save.PersistentDiamond - amount); break;
-            }
         }
     }
 }

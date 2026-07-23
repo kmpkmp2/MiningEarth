@@ -549,6 +549,11 @@ MonoBehaviour:
     - Relic_Tombstone
     - Relic
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 16d3681f8edc4343a2a3a76e92341eca
+    m_Address: GameBalanceData
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: bf53922257c85cf45b1d5828a500e7b9, type: 2}
   m_SchemaSet:
