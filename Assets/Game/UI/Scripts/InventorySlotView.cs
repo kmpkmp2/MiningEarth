@@ -52,7 +52,7 @@ namespace DeepEarth.UI
 
             if (itemNameText != null)
             {
-                itemNameText.text = LocalizationManager.Instance.GetTranslation(slotModel.Item.nameLocKey) ?? slotModel.ItemID;
+                itemNameText.text = LocalizationManager.Instance.GetTranslation(slotModel.Item.nameLocKey);
             }
 
             if (borderOutline != null)

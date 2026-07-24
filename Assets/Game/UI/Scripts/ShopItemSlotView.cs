@@ -58,13 +58,13 @@ namespace DeepEarth.UI
 
             if (data.isUnlocked)
             {
-                actionLabel.text = loc?.GetTranslation("shop_owned") ?? "보유중";
+                actionLabel.text = loc.GetTranslation("shop_owned");
                 if (buttonImage != null) buttonImage.color = BtnDisabled;
                 actionButton.interactable = false;
             }
             else
             {
-                actionLabel.text = GetLabel(data.lockedActionText, loc?.GetTranslation("shop_pickaxe_buy") ?? "BUY");
+                actionLabel.text = GetLabel(data.lockedActionText, loc.GetTranslation("shop_pickaxe_buy"));
                 if (buttonImage != null) buttonImage.color = data.canAfford ? BtnBuy : BtnDisabled;
                 actionButton.interactable = data.canAfford;
                 if (data.canAfford)

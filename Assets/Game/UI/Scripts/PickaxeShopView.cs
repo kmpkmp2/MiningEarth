@@ -55,15 +55,13 @@ namespace DeepEarth.UI
 
                 _slots[i].SetData(new ShopItemDisplayData
                 {
-                    name             = loc?.GetTranslation(data.nameLocKey) ?? data.nameLocKey,
-                    description      = loc?.GetTranslation(data.descLocKey) ?? data.descLocKey,
+                    name             = loc.GetTranslation(data.nameLocKey),
+                    description      = loc.GetTranslation(data.descLocKey),
                     iconKey          = data.iconKey,
-                    stat1Text        = loc?.GetFormatted("shop_pickaxe_mining_power", data.miningPower)
-                                       ?? $"⛏ {data.miningPower}",
-                    stat2Text        = loc?.GetFormatted("shop_pickaxe_durability", data.baseMaxDurability)
-                                       ?? $"♦ {data.baseMaxDurability}",
+                    stat1Text        = loc.GetFormatted("shop_pickaxe_mining_power", data.miningPower),
+                    stat2Text        = loc.GetFormatted("shop_pickaxe_durability", data.baseMaxDurability),
                     costText         = BuildCostString(data, loc),
-                    lockedActionText = loc?.GetTranslation("shop_pickaxe_buy") ?? "BUY",
+                    lockedActionText = loc.GetTranslation("shop_pickaxe_buy"),
                     isUnlocked       = isUnlocked,
                     canAfford        = canAfford,
                     tag              = data,
@@ -89,7 +87,7 @@ namespace DeepEarth.UI
         {
             int willCost = PickaxeManager.Instance?.GetUnlockWillCost(data) ?? 0;
             if (willCost <= 0) return "";
-            return loc?.GetFormatted("go_will_cost", willCost) ?? $"{willCost} Will";
+            return loc.GetFormatted("go_will_cost", willCost);
         }
     }
 }

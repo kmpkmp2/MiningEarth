@@ -120,7 +120,7 @@ namespace DeepEarth.UI
             tmp.fontSize  = 16f;
             tmp.color     = new Color(0.5f, 0.5f, 0.5f);
             tmp.alignment = TextAlignmentOptions.Center;
-            tmp.text      = LocalizationManager.Instance?.GetTranslation("menu_shop_coming_soon") ?? "COMING SOON";
+            tmp.text      = LocalizationManager.Instance.GetTranslation("menu_shop_coming_soon");
         }
     }
 }

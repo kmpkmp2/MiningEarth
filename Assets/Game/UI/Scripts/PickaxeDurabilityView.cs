@@ -28,7 +28,7 @@ namespace DeepEarth.UI
             if (durabilityText != null)
             {
                 if (broken)
-                    durabilityText.text = LocalizationManager.Instance?.GetTranslation("hud_pickaxe_broken") ?? "파손";
+                    durabilityText.text = LocalizationManager.Instance.GetTranslation("hud_pickaxe_broken");
                 else
                     durabilityText.text = $"{current} / {max}";
 
@@ -56,11 +56,9 @@ namespace DeepEarth.UI
             if (brokenAlertPanel == null) return;
 
             if (brokenAlertTitleText != null)
-                brokenAlertTitleText.text = LocalizationManager.Instance?.GetTranslation("pickaxe_broken_alert_title")
-                                            ?? "곡괭이가 파손되었습니다.";
+                brokenAlertTitleText.text = LocalizationManager.Instance.GetTranslation("pickaxe_broken_alert_title");
             if (brokenAlertDescText != null)
-                brokenAlertDescText.text = LocalizationManager.Instance?.GetTranslation("pickaxe_broken_alert_desc")
-                                           ?? "이제 채굴 시 체력을 소모합니다.";
+                brokenAlertDescText.text = LocalizationManager.Instance.GetTranslation("pickaxe_broken_alert_desc");
 
             if (_alertCoroutine != null) StopCoroutine(_alertCoroutine);
             _alertCoroutine = StartCoroutine(AlertCoroutine());

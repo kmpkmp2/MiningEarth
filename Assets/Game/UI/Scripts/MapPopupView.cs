@@ -56,7 +56,7 @@ namespace DeepEarth.UI
             _currentMap = mapData;
 
             if (titleText != null)
-                titleText.text = "MAP";
+                titleText.text = LocalizationManager.Instance.GetTranslation("map_title");
 
             // Content 범위: Mine Entrance(하단) → Floor 0..N-1 → Boss(상단)
             float contentHeight = (mapData.Floors + 1) * floorSpacing + startNodeSpacing + bottomPadding + topPadding;

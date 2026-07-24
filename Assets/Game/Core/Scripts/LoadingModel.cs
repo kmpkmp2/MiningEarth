@@ -21,7 +21,7 @@ namespace DeepEarth.Core
         public void SetComplete()
         {
             IsComplete = true;
-            SetProgress(1f, LocalizationManager.Instance?.GetTranslation("loading_ready") ?? "Ready!");
+            SetProgress(1f, LocalizationManager.Instance.GetTranslation("loading_ready"));
         }
     }
 }

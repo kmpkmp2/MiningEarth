@@ -98,8 +98,7 @@ namespace DeepEarth.Core
 
             OnDurabilityChanged?.Invoke();
 
-            string pickaxeName = LocalizationManager.Instance?.GetTranslation(_currentPickaxeData.nameLocKey)
-                ?? _currentPickaxeData.pickaxeID;
+            string pickaxeName = LocalizationManager.Instance.GetTranslation(_currentPickaxeData.nameLocKey);
             Debug.Log($"[Pickaxe]\nRun Start\nPickaxe : {pickaxeName}\nDurability : {maxDurability}/{maxDurability}");
         }
 

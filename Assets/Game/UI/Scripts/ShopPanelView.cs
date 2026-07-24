@@ -52,7 +52,7 @@ namespace DeepEarth.UI
                     ShopCategory.Special    => "shop_tab_special",
                     _                       => cat.ToString()
                 };
-                label.text = loc?.GetTranslation(key) ?? cat.ToString();
+                label.text = loc.GetTranslation(key);
             }
         }
 

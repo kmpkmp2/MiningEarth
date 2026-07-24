@@ -128,7 +128,7 @@ namespace DeepEarth.Mining
                     bool added = InventoryManager.Instance.AddItem(AddressableKeys.ItemBurnCure, 1);
                     if (added)
                     {
-                        string itemName = LocalizationManager.Instance?.GetTranslation("item_burn_cure_name") ?? "Burn Cure";
+                        string itemName = LocalizationManager.Instance.GetTranslation("item_burn_cure_name");
                         EffectSystem.Instance.SpawnDamageText(spawnPoint.position + Vector3.up * 1.2f, $"+1 {itemName}", new Color(0.4f, 0.9f, 1f));
                     }
                 }

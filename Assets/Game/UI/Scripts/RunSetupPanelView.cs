@@ -11,12 +11,14 @@ namespace DeepEarth.UI
         [SerializeField] private TextMeshProUGUI titleText;
 
         [Header("Character Selection")]
+        [SerializeField] private TextMeshProUGUI charSectionLabel;
         [SerializeField] private TextMeshProUGUI charNameText;
         [SerializeField] private TextMeshProUGUI charDescText;
         [SerializeField] private Button          charPrevButton;
         [SerializeField] private Button          charNextButton;
 
         [Header("Pickaxe Selection")]
+        [SerializeField] private TextMeshProUGUI pickaxeSectionLabel;
         [SerializeField] private TextMeshProUGUI pickaxeNameText;
         [SerializeField] private TextMeshProUGUI pickaxeStatText;
         [SerializeField] private Button          pickaxePrevButton;
@@ -47,6 +49,12 @@ namespace DeepEarth.UI
         public void SetTitle(string text)
         {
             if (titleText != null) titleText.text = text;
+        }
+
+        public void SetSectionLabels(string charLabel, string pickaxeLabel)
+        {
+            if (charSectionLabel != null) charSectionLabel.text = charLabel;
+            if (pickaxeSectionLabel != null) pickaxeSectionLabel.text = pickaxeLabel;
         }
 
         public void SetCharacter(string name, string desc)

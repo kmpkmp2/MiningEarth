@@ -31,7 +31,7 @@ namespace DeepEarth.UI
             {
                 if (data.isUnlocked)
                 {
-                    statusText.text  = loc?.GetTranslation("shop_owned") ?? "보유중";
+                    statusText.text  = loc.GetTranslation("shop_owned");
                     statusText.color = new Color(0.5f, 0.8f, 0.5f);
                 }
                 else

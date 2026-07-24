@@ -5272,10 +5272,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.UI.RunSetupPanelView
   titleText: {fileID: 634343403}
+  charSectionLabel: {fileID: 1059530630}
   charNameText: {fileID: 429825821}
   charDescText: {fileID: 1955600131}
   charPrevButton: {fileID: 1917400399}
   charNextButton: {fileID: 1797139846}
+  pickaxeSectionLabel: {fileID: 75370963}
   pickaxeNameText: {fileID: 1561749279}
   pickaxeStatText: {fileID: 305252288}
   pickaxePrevButton: {fileID: 1128839520}

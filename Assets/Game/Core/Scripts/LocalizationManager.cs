@@ -127,6 +127,7 @@ namespace DeepEarth.Core
                 { "char_miner_flavor",       "Specialized in block breaking." },
                 { "char_graverobber_flavor", "Specialized in rare resource farming." },
                 { "run_setup_passive_label", "Passive" },
+                { "run_setup_passive_level_fmt", "Lv.{0} / {1}" },
 
                 // Event titles
                 { "event_chest_title", "Treasure Chest" },
@@ -206,8 +207,22 @@ namespace DeepEarth.Core
                 { "hud_quantity_label", "Quantity:" },
                 { "hud_hp_heal", "HP Healed!" },
                 { "inv_confirm_drop_title", "Really drop?" },
+                { "inv_confirm_discard_all_title", "Discard all?" },
                 { "inv_confirm_yes", "Confirm" },
                 { "inv_confirm_no", "Cancel" },
+                { "inv_empty_message", "No items in inventory." },
+                { "inv_dropped_fmt", "Dropped {0}" },
+                { "item_used_generic_fmt", "Used {0}" },
+                { "chest_reward_result_fmt", "+{0} HP, {1}" },
+                { "chest_reward_iron_fmt", "+{0} Iron" },
+                { "chest_reward_silver_fmt", "+{0} Silver" },
+                { "chest_reward_anvil_fmt", "+{0} Portable Anvil" },
+                { "chest_reward_gold_fmt", "+{0} Gold" },
+                { "map_title", "MAP" },
+                { "passive_max_level", "MAX" },
+                { "passive_not_upgraded", "Not upgraded" },
+                { "status_burn_applied_msg", "Burned!" },
+                { "upgrade_passive_btn", "Upgrade" },
                 { "item_stone_name", "Stone" },
                 { "item_stone_desc", "A heavy piece of stone." },
                 { "item_wood_name", "Root" },
@@ -245,6 +260,8 @@ namespace DeepEarth.Core
                 
                 { "effect_passive_miner_desc", "Mining Power +1" },
                 { "effect_passive_mercenary_desc", "Attack Power +1" },
+                { "effect_passive_miner_value_fmt", "Mining Power +{0}" },
+                { "effect_passive_mercenary_value_fmt", "Attack Power +{0}" },
                 { "effect_passive_graverobber_desc", "10% chance for +10% extra resource" },
                 
                 { "effect_buff_attack_name", "Attack Power Up" },
@@ -441,6 +458,8 @@ namespace DeepEarth.Core
                 // Run Setup
                 { "run_setup_title",  "Run Setup" },
                 { "run_setup_start",  "Start Run!" },
+                { "run_setup_char_label",    "CHARACTER" },
+                { "run_setup_pickaxe_label", "PICKAXE" },
 
                 // Loading steps
                 { "loading_init",               "Initializing..." },
@@ -796,6 +815,7 @@ namespace DeepEarth.Core
                 { "char_miner_flavor",       "블록 파괴에 특화된 캐릭터." },
                 { "char_graverobber_flavor", "희귀 자원 수급에 특화된 캐릭터." },
                 { "run_setup_passive_label", "패시브" },
+                { "run_setup_passive_level_fmt", "Lv.{0} / {1}" },
 
                 // Event titles
                 { "event_chest_title", "보물 상자" },
@@ -875,8 +895,22 @@ namespace DeepEarth.Core
                 { "hud_quantity_label", "보유 수량:" },
                 { "hud_hp_heal", "체력 회복!" },
                 { "inv_confirm_drop_title", "정말 버리시겠습니까?" },
+                { "inv_confirm_discard_all_title", "전부 버리시겠습니까?" },
                 { "inv_confirm_yes", "확인" },
                 { "inv_confirm_no", "취소" },
+                { "inv_empty_message", "보유 중인 아이템이 없습니다." },
+                { "inv_dropped_fmt", "{0} 버림" },
+                { "item_used_generic_fmt", "{0} 사용" },
+                { "chest_reward_result_fmt", "체력 +{0}, {1}" },
+                { "chest_reward_iron_fmt", "철 +{0}" },
+                { "chest_reward_silver_fmt", "은 +{0}" },
+                { "chest_reward_anvil_fmt", "간이 모루 +{0}" },
+                { "chest_reward_gold_fmt", "금 +{0}" },
+                { "map_title", "지도" },
+                { "passive_max_level", "MAX" },
+                { "passive_not_upgraded", "미강화" },
+                { "status_burn_applied_msg", "화상!" },
+                { "upgrade_passive_btn", "강화" },
                 { "item_stone_name", "돌" },
                 { "item_stone_desc", "단단한 돌멩이다." },
                 { "item_wood_name", "뿌리" },
@@ -914,6 +948,8 @@ namespace DeepEarth.Core
                 
                 { "effect_passive_miner_desc", "채굴력 +1" },
                 { "effect_passive_mercenary_desc", "공격력 +1" },
+                { "effect_passive_miner_value_fmt", "채굴력 +{0}" },
+                { "effect_passive_mercenary_value_fmt", "공격력 +{0}" },
                 { "effect_passive_graverobber_desc", "철/은/금/다이아 획득 시 10% 확률로 10% 추가 획득" },
                 
                 { "effect_buff_attack_name", "공격력 증가" },
@@ -1110,6 +1146,8 @@ namespace DeepEarth.Core
                 // Run Setup
                 { "run_setup_title",  "탐험 준비" },
                 { "run_setup_start",  "탐험 시작!" },
+                { "run_setup_char_label",    "캐릭터" },
+                { "run_setup_pickaxe_label", "곡괭이" },
 
                 // Loading steps
                 { "loading_init",               "초기화 중..." },

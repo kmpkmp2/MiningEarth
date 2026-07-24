@@ -90,13 +90,13 @@ namespace DeepEarth.UI
             var loc = LocalizationManager.Instance;
 
             if (headerText != null)
-                headerText.text = loc?.GetTranslation("achievement_unlocked_header") ?? "업적 달성!";
+                headerText.text = loc.GetTranslation("achievement_unlocked_header");
 
             if (nameText != null)
-                nameText.text = loc?.GetTranslation(model.Data.nameLocKey) ?? model.Data.nameLocKey;
+                nameText.text = loc.GetTranslation(model.Data.nameLocKey);
 
             if (descText != null)
-                descText.text = loc?.GetTranslation(model.Data.descLocKey) ?? model.Data.descLocKey;
+                descText.text = loc.GetTranslation(model.Data.descLocKey);
 
             if (panel != null) panel.SetActive(true);
 

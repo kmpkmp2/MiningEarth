@@ -61,13 +61,13 @@ namespace DeepEarth.UI
 
                 var displayData = new ShopItemDisplayData
                 {
-                    name             = loc?.GetTranslation(data.NameKey) ?? data.NameKey,
-                    description      = loc?.GetTranslation(data.DescKey) ?? data.DescKey,
+                    name             = loc.GetTranslation(data.NameKey),
+                    description      = loc.GetTranslation(data.DescKey),
                     iconKey          = "",
                     stat1Text        = BuildPassiveText(data, loc),
                     stat2Text        = BuildOwnedResourcesText(loc),
                     costText         = BuildCostString(data, loc),
-                    lockedActionText = loc?.GetTranslation("char_unlock") ?? "Unlock",
+                    lockedActionText = loc.GetTranslation("char_unlock"),
                     isUnlocked       = isUnlocked,
                     canAfford        = canUnlock,
                     tag              = data,
@@ -115,8 +115,8 @@ namespace DeepEarth.UI
             int willCost = CharacterManager.Instance?.GetUnlockWillCost(data.ID) ?? 0;
             if (willCost <= 0) return "";
 
-            string costValue = loc?.GetFormatted("go_will_cost", willCost) ?? $"{willCost} Will";
-            return loc != null ? $"{loc.GetTranslation("char_cost_label")} {costValue}" : costValue;
+            string costValue = loc.GetFormatted("go_will_cost", willCost);
+            return $"{loc.GetTranslation("char_cost_label")} {costValue}";
         }
 
         private static string BuildOwnedResourcesText(LocalizationManager loc)

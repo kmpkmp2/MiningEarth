@@ -145,7 +145,7 @@ namespace DeepEarth.Core
         private string GetLocalizedName(PickaxeData data)
         {
             if (data == null) return "Unknown";
-            return LocalizationManager.Instance?.GetTranslation(data.nameLocKey) ?? data.nameLocKey;
+            return LocalizationManager.Instance.GetTranslation(data.nameLocKey);
         }
     }
 }

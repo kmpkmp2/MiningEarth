@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using DeepEarth.Core;
 
 namespace DeepEarth.UI
 {
@@ -44,7 +45,7 @@ namespace DeepEarth.UI
                 emptyMessageText.fontSize = 24;
                 emptyMessageText.color = Color.white;
                 emptyMessageText.alignment = TextAlignmentOptions.Center;
-                emptyMessageText.text = "보유 중인 아이템이 없습니다.";
+                emptyMessageText.text = LocalizationManager.Instance.GetTranslation("inv_empty_message");
                 
                 var rect = go.GetComponent<RectTransform>();
                 rect.anchorMin = new Vector2(0.5f, 0.5f);

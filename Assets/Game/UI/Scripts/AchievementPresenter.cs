@@ -70,7 +70,7 @@ namespace DeepEarth.UI
             _isLoadingMore = false;
 
             var loc = LocalizationManager.Instance;
-            _view.SetTitle(loc?.GetTranslation("achievement_popup_title") ?? "업적");
+            _view.SetTitle(loc.GetTranslation("achievement_popup_title"));
             _view.SetCount(completedCount, totalCount);
 
             LoadBatch(isInitial: true);
@@ -132,12 +132,12 @@ namespace DeepEarth.UI
             bool hidden = model.Data.isHidden && !model.IsCompleted;
 
             name = hidden
-                ? (loc?.GetTranslation("achievement_hidden_name") ?? "???")
-                : (loc?.GetTranslation(model.Data.nameLocKey) ?? model.Data.nameLocKey);
+                ? loc.GetTranslation("achievement_hidden_name")
+                : loc.GetTranslation(model.Data.nameLocKey);
 
             desc = hidden
-                ? (loc?.GetTranslation("achievement_hidden_desc") ?? "???")
-                : (loc?.GetTranslation(model.Data.descLocKey) ?? model.Data.descLocKey);
+                ? loc.GetTranslation("achievement_hidden_desc")
+                : loc.GetTranslation(model.Data.descLocKey);
 
             progress = hidden
                 ? ""

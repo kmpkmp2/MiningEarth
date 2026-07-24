@@ -66,7 +66,7 @@ namespace DeepEarth.UI
                 upgradeButton.interactable = canAfford;
             }
             if (upgradeButtonText != null && LocalizationManager.Instance != null)
-                upgradeButtonText.text = LocalizationManager.Instance.GetTranslation("upgrade_passive_btn") ?? "강화";
+                upgradeButtonText.text = LocalizationManager.Instance.GetTranslation("upgrade_passive_btn");
         }
 
         private void SetPassiveContentActive(bool active)

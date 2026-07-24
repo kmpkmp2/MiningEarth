@@ -39,29 +39,27 @@ namespace DeepEarth.UI
             int cost     = meta.GetPassiveUpgradeCost(_currentCharacterID);
             bool canAfford = meta.Will >= cost;
 
-            string passiveName = loc?.GetTranslation(staticData.PassiveNameKey) ?? staticData.PassiveNameKey;
+            string passiveName = loc.GetTranslation(staticData.PassiveNameKey);
 
             string currentDesc;
             if (level <= 0)
             {
-                currentDesc = loc?.GetTranslation("passive_not_upgraded") ?? "미강화";
+                currentDesc = loc.GetTranslation("passive_not_upgraded");
             }
             else
             {
                 int curIdx = Mathf.Min(level - 1, staticData.PassiveLevels.Count - 1);
-                currentDesc = loc?.GetTranslation(staticData.PassiveLevels[curIdx].DescKey)
-                              ?? staticData.PassiveLevels[curIdx].DescKey;
+                currentDesc = loc.GetTranslation(staticData.PassiveLevels[curIdx].DescKey);
             }
 
             string nextDesc;
             if (level >= maxLevel)
             {
-                nextDesc = loc?.GetTranslation("passive_max_level") ?? "MAX";
+                nextDesc = loc.GetTranslation("passive_max_level");
             }
             else
             {
-                nextDesc = loc?.GetTranslation(staticData.PassiveLevels[level].DescKey)
-                           ?? staticData.PassiveLevels[level].DescKey;
+                nextDesc = loc.GetTranslation(staticData.PassiveLevels[level].DescKey);
             }
 
             _view.SetPassiveData(passiveName, level, maxLevel, currentDesc, nextDesc, cost, canAfford);

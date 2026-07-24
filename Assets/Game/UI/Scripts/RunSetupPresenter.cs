@@ -88,8 +88,11 @@ namespace DeepEarth.UI
         {
             var loc = LocalizationManager.Instance;
 
-            _view.SetTitle(loc?.GetTranslation("run_setup_title") ?? "Run Setup");
-            _view.SetStartButtonLabel(loc?.GetTranslation("run_setup_start") ?? "Start Run!");
+            _view.SetTitle(loc.GetTranslation("run_setup_title"));
+            _view.SetStartButtonLabel(loc.GetTranslation("run_setup_start"));
+            _view.SetSectionLabels(
+                loc.GetTranslation("run_setup_char_label"),
+                loc.GetTranslation("run_setup_pickaxe_label"));
 
             RefreshCharDisplay();
             RefreshPickaxeDisplay();
@@ -101,7 +104,7 @@ namespace DeepEarth.UI
 
             var charID  = _unlockedChars[_charIndex];
             var loc     = LocalizationManager.Instance;
-            string name = loc?.GetTranslation($"char_{charID.ToString().ToLower()}_name") ?? charID.ToString();
+            string name = loc.GetTranslation($"char_{charID.ToString().ToLower()}_name");
             string desc = BuildCharDesc(charID, loc);
 
             string label = _unlockedChars.Count > 1
@@ -115,14 +118,18 @@ namespace DeepEarth.UI
             if (_unlockedPickaxes.Count == 0) return;
 
             var pkxID = _unlockedPickaxes[_pickaxeIndex];
-            int power = PickaxeManager.Instance != null
-                ? (PickaxeManager.Instance.GetPickaxeByID(pkxID)?.miningPower ?? 1)
-                : 1;
+            var loc = LocalizationManager.Instance;
+            var pickaxeData = PickaxeManager.Instance?.GetPickaxeByID(pkxID);
+            int power = pickaxeData?.miningPower ?? 1;
+
+            string pickaxeName = pickaxeData != null
+                ? loc.GetTranslation(pickaxeData.nameLocKey)
+                : pkxID;
 
             string label = _unlockedPickaxes.Count > 1
-                ? $"{pkxID}  [{_pickaxeIndex + 1}/{_unlockedPickaxes.Count}]"
-                : pkxID;
-            _view.SetPickaxe(label, $"Mining Power: {power}");
+                ? $"{pickaxeName}  [{_pickaxeIndex + 1}/{_unlockedPickaxes.Count}]"
+                : pickaxeName;
+            _view.SetPickaxe(label, loc.GetFormatted("shop_pickaxe_mining_power", power));
         }
 
         private string BuildCharDesc(CharacterID charID, LocalizationManager loc)
@@ -141,18 +148,19 @@ namespace DeepEarth.UI
 
             if (level <= 0) return flavor;
 
-            int   idx    = Mathf.Clamp(level - 1, 0, maxLevel - 1);
-            float value  = staticData.PassiveLevels[idx].Value;
-            string label = loc.GetTranslation("run_setup_passive_label");
+            int    idx       = Mathf.Clamp(level - 1, 0, maxLevel - 1);
+            int    value     = (int)staticData.PassiveLevels[idx].Value;
+            string label     = loc.GetTranslation("run_setup_passive_label");
+            string levelText = loc.GetFormatted("run_setup_passive_level_fmt", level, maxLevel);
 
             string passiveLine = staticData.Passive switch
             {
                 PassiveType.AttackBonus =>
-                    $"{label} Lv{level} / {maxLevel} : {loc.GetTranslation("effect_passive_mercenary_desc").Replace("1", ((int)value).ToString())}",
+                    $"{label} {levelText} : {loc.GetFormatted("effect_passive_mercenary_value_fmt", value)}",
                 PassiveType.MiningBonus =>
-                    $"{label} Lv{level} / {maxLevel} : {loc.GetTranslation("effect_passive_miner_desc").Replace("1", ((int)value).ToString())}",
+                    $"{label} {levelText} : {loc.GetFormatted("effect_passive_miner_value_fmt", value)}",
                 PassiveType.GraveRobberPassive =>
-                    $"{label} Lv{level} / {maxLevel} : {loc.GetTranslation("effect_passive_graverobber_desc")}",
+                    $"{label} {levelText} : {loc.GetTranslation("effect_passive_graverobber_desc")}",
                 _ => string.Empty
             };
 

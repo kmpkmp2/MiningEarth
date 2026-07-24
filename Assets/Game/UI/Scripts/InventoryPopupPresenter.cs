@@ -90,7 +90,7 @@ namespace DeepEarth.UI
             {
                 if (emptyTxt != null)
                 {
-                    emptyTxt.text = "보유 중인 아이템이 없습니다.";
+                    emptyTxt.text = LocalizationManager.Instance.GetTranslation("inv_empty_message");
                     emptyTxt.gameObject.SetActive(true);
                 }
             }
@@ -207,7 +207,7 @@ namespace DeepEarth.UI
                 if (itemId == "Item_Wood")
                 {
                     StatManager.Instance.Heal(1);
-                    TriggerFloatingText($"+1 {LocalizationManager.Instance.GetTranslation("hud_hp_heal") ?? "HP Healed!"}", Color.green);
+                    TriggerFloatingText($"+1 {LocalizationManager.Instance.GetTranslation("hud_hp_heal")}", Color.green);
                     _collection.RemoveItem("Item_Wood", 1);
                     GameManager.Instance.TriggerStatsOrResourcesChanged();
                     return;
@@ -245,11 +245,12 @@ namespace DeepEarth.UI
             else if (item.healAmount > 0)
             {
                 StatManager.Instance.Heal(item.healAmount);
-                TriggerFloatingText($"+{item.healAmount} {LocalizationManager.Instance.GetTranslation("hud_hp_heal") ?? "HP Healed!"}", Color.green);
+                TriggerFloatingText($"+{item.healAmount} {LocalizationManager.Instance.GetTranslation("hud_hp_heal")}", Color.green);
             }
             else
             {
-                TriggerFloatingText($"Used {itemId}", Color.white);
+                string usedName = LocalizationManager.Instance.GetTranslation(item.nameLocKey);
+                TriggerFloatingText(LocalizationManager.Instance.GetFormatted("item_used_generic_fmt", usedName), Color.white);
             }
 
             _collection.RemoveItem(itemId, 1);
@@ -258,31 +259,32 @@ namespace DeepEarth.UI
 
         private void HandleChestReward()
         {
-            StatManager.Instance.Heal(2);
+            const int chestHealAmount = 2;
+            StatManager.Instance.Heal(chestHealAmount);
             float anvilChance = GameBalanceData.Instance.portableAnvilChestChance;
             float rnd = UnityEngine.Random.value;
             string rewardText;
             if (rnd < 0.5f)
             {
                 InventoryManager.Instance.AddItem("Item_Iron", 5);
-                rewardText = "+5 Iron";
+                rewardText = LocalizationManager.Instance.GetFormatted("chest_reward_iron_fmt", 5);
             }
             else if (rnd < 0.85f)
             {
                 InventoryManager.Instance.AddItem("Item_Silver", 2);
-                rewardText = "+2 Silver";
+                rewardText = LocalizationManager.Instance.GetFormatted("chest_reward_silver_fmt", 2);
             }
             else if (rnd < 0.85f + anvilChance)
             {
                 InventoryManager.Instance.AddItem(AddressableKeys.ItemPortableAnvil, 1);
-                rewardText = "+1 Portable Anvil";
+                rewardText = LocalizationManager.Instance.GetFormatted("chest_reward_anvil_fmt", 1);
             }
             else
             {
                 InventoryManager.Instance.AddItem("Item_Gold", 1);
-                rewardText = "+1 Gold";
+                rewardText = LocalizationManager.Instance.GetFormatted("chest_reward_gold_fmt", 1);
             }
-            TriggerFloatingText($"+2 HP, {rewardText}", Color.yellow);
+            TriggerFloatingText(LocalizationManager.Instance.GetFormatted("chest_reward_result_fmt", chestHealAmount, rewardText), Color.yellow);
         }
 
         private void HandlePortableAnvil(ItemData item)
@@ -334,7 +336,7 @@ namespace DeepEarth.UI
             _collection.RemoveItem(itemId, recipe.itemCostPerUse);
             manager.Repair(gain);
 
-            string oreName = LocalizationManager.Instance.GetTranslation(_selectedSlotModel.Item.nameLocKey) ?? itemId;
+            string oreName = LocalizationManager.Instance.GetTranslation(_selectedSlotModel.Item.nameLocKey);
             Debug.Log($"[Pickaxe]\nRepair\nOre : {oreName}\nConsumed : {recipe.itemCostPerUse}\nRecovered : {gain}\nCurrent : {manager.CurrentDurability} / {manager.MaxDurability}");
 
             TriggerFloatingText($"⛏ +{gain}", new Color(0.6f, 1f, 0.6f));
@@ -361,7 +363,7 @@ namespace DeepEarth.UI
         {
             if (_selectedSlotModel == null) return;
             _pendingDiscardAll = false;
-            string msg = LocalizationManager.Instance?.GetTranslation("inv_confirm_drop_title") ?? "Really Drop?";
+            string msg = LocalizationManager.Instance.GetTranslation("inv_confirm_drop_title");
             _view.ShowConfirmation(msg);
         }
 
@@ -369,7 +371,7 @@ namespace DeepEarth.UI
         {
             if (_selectedSlotModel == null) return;
             _pendingDiscardAll = true;
-            string msg = LocalizationManager.Instance?.GetTranslation("inv_confirm_discard_all_title") ?? "전부 버리기?";
+            string msg = LocalizationManager.Instance.GetTranslation("inv_confirm_discard_all_title");
             _view.ShowConfirmation(msg);
         }
 
@@ -384,7 +386,7 @@ namespace DeepEarth.UI
 
             if (_pendingDiscardAll)
             {
-                string cleanName = LocalizationManager.Instance?.GetTranslation(_selectedSlotModel.Item.nameLocKey) ?? _selectedSlotModel.ItemID;
+                string cleanName = LocalizationManager.Instance.GetTranslation(_selectedSlotModel.Item.nameLocKey);
                 int count = _selectedSlotModel.Count;
 
                 _collection.RemoveSlot(_selectedSlotModel);
@@ -401,7 +403,7 @@ namespace DeepEarth.UI
             }
             else
             {
-                string cleanName = LocalizationManager.Instance?.GetTranslation(_selectedSlotModel.Item.nameLocKey) ?? _selectedSlotModel.ItemID;
+                string cleanName = LocalizationManager.Instance.GetTranslation(_selectedSlotModel.Item.nameLocKey);
 
                 _collection.RemoveFromSlot(_selectedSlotModel, 1);
                 _view.HideConfirmation();
@@ -409,7 +411,7 @@ namespace DeepEarth.UI
                 int remaining = _selectedSlotModel.Count;
                 Debug.Log($"[Inventory]\nDiscard\n{cleanName}\nRemaining : {remaining}");
 
-                TriggerFloatingText($"Dropped {cleanName}", Color.red);
+                TriggerFloatingText(LocalizationManager.Instance.GetFormatted("inv_dropped_fmt", cleanName), Color.red);
                 GameManager.Instance?.TriggerStatsOrResourcesChanged();
             }
         }

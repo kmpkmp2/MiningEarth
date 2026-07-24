@@ -38,9 +38,9 @@ namespace DeepEarth.UI
 
             var loc = LocalizationManager.Instance;
 
-            if (nameText)        nameText.text        = loc?.GetTranslation(data.nameLocKey) ?? data.nameLocKey;
-            if (miningPowerText) miningPowerText.text = loc?.GetFormatted("shop_pickaxe_mining_power", data.miningPower) ?? $"⛏ {data.miningPower}";
-            if (durabilityText)  durabilityText.text  = loc?.GetFormatted("shop_pickaxe_durability", data.baseMaxDurability) ?? $"♦ {data.baseMaxDurability}";
+            if (nameText)        nameText.text        = loc.GetTranslation(data.nameLocKey);
+            if (miningPowerText) miningPowerText.text = loc.GetFormatted("shop_pickaxe_mining_power", data.miningPower);
+            if (durabilityText)  durabilityText.text  = loc.GetFormatted("shop_pickaxe_durability", data.baseMaxDurability);
 
             if (costText)
             {
@@ -58,20 +58,20 @@ namespace DeepEarth.UI
                 actionButton.onClick.RemoveAllListeners();
                 if (isEquipped)
                 {
-                    actionButtonLabel.text  = loc?.GetTranslation("shop_pickaxe_equipped") ?? "EQUIPPED";
+                    actionButtonLabel.text  = loc.GetTranslation("shop_pickaxe_equipped");
                     actionButton.GetComponent<Image>().color = BtnEquipped;
                     actionButton.interactable = false;
                 }
                 else if (isUnlocked)
                 {
-                    actionButtonLabel.text  = loc?.GetTranslation("shop_pickaxe_equip") ?? "EQUIP";
+                    actionButtonLabel.text  = loc.GetTranslation("shop_pickaxe_equip");
                     actionButton.GetComponent<Image>().color = BtnEquip;
                     actionButton.interactable = true;
                     actionButton.onClick.AddListener(() => OnActionClicked?.Invoke(_data, PickaxeSlotAction.Equip));
                 }
                 else
                 {
-                    actionButtonLabel.text  = loc?.GetTranslation("shop_pickaxe_buy") ?? "BUY";
+                    actionButtonLabel.text  = loc.GetTranslation("shop_pickaxe_buy");
                     actionButton.GetComponent<Image>().color = canAfford ? BtnBuy : BtnBuyDisabled;
                     actionButton.interactable = canAfford;
                     if (canAfford)
@@ -87,7 +87,7 @@ namespace DeepEarth.UI
             foreach (var cost in data.unlockCost)
             {
                 if (parts.Length > 0) parts.Append("  ");
-                string resName = loc?.GetTranslation($"item_{cost.resourceType.ToString().ToLower()}_name") ?? cost.resourceType.ToString();
+                string resName = loc.GetTranslation($"item_{cost.resourceType.ToString().ToLower()}_name");
                 parts.Append($"{resName} x{cost.amount}");
             }
             return parts.ToString();

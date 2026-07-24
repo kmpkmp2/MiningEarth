@@ -25,8 +25,8 @@ namespace DeepEarth.UI
 
             if (hidden)
             {
-                if (nameText != null) nameText.text = loc?.GetTranslation("achievement_hidden_name") ?? "???";
-                if (descText != null) descText.text  = loc?.GetTranslation("achievement_hidden_desc") ?? "???";
+                if (nameText != null) nameText.text = loc.GetTranslation("achievement_hidden_name");
+                if (descText != null) descText.text  = loc.GetTranslation("achievement_hidden_desc");
                 if (progressText != null) progressText.text = "";
                 if (progressSlider != null) progressSlider.value = 0f;
                 if (completedOverlay != null) completedOverlay.gameObject.SetActive(false);
@@ -34,14 +34,14 @@ namespace DeepEarth.UI
             }
 
             if (nameText != null)
-                nameText.text = loc?.GetTranslation(model.Data.nameLocKey) ?? model.Data.nameLocKey;
+                nameText.text = loc.GetTranslation(model.Data.nameLocKey);
 
             if (descText != null)
-                descText.text = loc?.GetTranslation(model.Data.descLocKey) ?? model.Data.descLocKey;
+                descText.text = loc.GetTranslation(model.Data.descLocKey);
 
             if (progressText != null)
                 progressText.text = model.IsCompleted
-                    ? loc?.GetTranslation("achievement_completed_label") ?? "달성"
+                    ? loc.GetTranslation("achievement_completed_label")
                     : $"{model.CurrentProgress} / {model.Data.targetValue}";
 
             if (progressSlider != null)
