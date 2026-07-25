@@ -7,20 +7,6 @@ namespace DeepEarth.Core
         Legendary = 2
     }
 
-    public enum RelicTag
-    {
-        Mining   = 0,
-        Combat   = 1,
-        Defense  = 2,
-        Economy  = 3,
-        Pickaxe  = 4,
-        Healing  = 5,
-        Status   = 6,
-        Boss     = 7,
-        Elite    = 8,
-        Utility  = 9
-    }
-
     public enum RelicEffectType
     {
         // ── 기존 ───────────────────────────────────────────────────────────

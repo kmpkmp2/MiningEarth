@@ -88,18 +88,6 @@ namespace DeepEarth.Core
 
         // ── Rarity-weighted random selection ─────────────────────────────────
 
-        public RelicData SelectByRarity(RelicRewardContext ctx = RelicRewardContext.Standard)
-        {
-            var pool = GetAvailable(ctx);
-            if (pool.Count == 0) return null;
-
-            var target    = RollRarity(ctx);
-            var rarityPool = pool.Where(x => x.rarity == target).ToList();
-            if (rarityPool.Count == 0) rarityPool = pool; // fallback: any
-
-            return rarityPool[Random.Range(0, rarityPool.Count)];
-        }
-
         // Returns up to `count` distinct relics, respecting rarity weighting.
         public List<RelicData> GetRandomRelicChoices(int count,
             RelicRewardContext ctx = RelicRewardContext.Standard)

@@ -4,8 +4,6 @@ using UnityEngine;
 
 namespace DeepEarth.Core
 {
-    public enum EliteRelicFilter { Any }
-
     [Serializable]
     public class EliteAutoReward
     {
@@ -42,7 +40,6 @@ namespace DeepEarth.Core
         [Header("Relic Choice Reward")]
         public bool giveRelicChoice;
         [Min(1)] public int relicChoiceCount = 3;
-        public EliteRelicFilter relicChoiceFilter = EliteRelicFilter.Any;
 
         public EliteDepthRewardEntry PickDepthDrop(int depth)
         {

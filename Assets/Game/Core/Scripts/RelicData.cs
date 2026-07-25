@@ -14,13 +14,9 @@ namespace DeepEarth.Core
 
         [Header("Classification")]
         public RelicRarity rarity;
-        public List<RelicTag> tags = new List<RelicTag>();
 
         [Header("Effects")]
         public List<RelicEffectData> effects = new List<RelicEffectData>();
-
-        [Header("Misc")]
-        public bool isUnique = true;
 
         // ── Backward-Compatibility Legacy Fields ─────────────────────────────
         // Kept so existing .asset files (pre-migration) still deserialize without error.
