@@ -15,7 +15,6 @@ namespace DeepEarth.Event
         // Positive events
         AbandonedCamp     = 7,
         RichOreVein       = 8,
-        WanderingMerchant = 9,
         HotSpring         = 10,
         AbandonedEquipment = 11,
         MinersJournal     = 12,

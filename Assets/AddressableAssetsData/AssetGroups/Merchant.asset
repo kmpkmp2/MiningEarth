@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Merchant
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Merchant
+  m_GUID: 2f1284649f2c46a98667cadf7090135e
+  m_SerializeEntries:
+  - m_GUID: 410fef99920e4083823ae37db216d42f
+    m_Address: UI_Panel_Merchant
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Merchant
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fc7f0dddaccd4b38ad29d554b2630370
+    m_Address: MerchantBalanceData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Merchant
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7031836558474fcb8bb79f4d155843e1
+    m_Address: MerchantQuoteData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Merchant
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: bf53922257c85cf45b1d5828a500e7b9, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 7dc8702910fa4b1fbbc525aaab25b16c, type: 2}
+    - {fileID: 11400000, guid: 9784eea928f64bb5ae03fd0f4f6c1f59, type: 2}

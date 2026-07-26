@@ -46,6 +46,14 @@ namespace DeepEarth.Combat
             }
 
             int damage = StatManager.Instance.GetAttackDamage();
+            ApplyExternalDamage(damage);
+        }
+
+        // 플레이어 터치 공격 외의 경로(예: 폭탄류 소모 아이템)에서 이 몬스터에게 피해를 주기 위한 공용 진입점.
+        public void ApplyExternalDamage(int damage)
+        {
+            if (Model.IsDead) return;
+
             Model.TakeDamage(damage);
 
             EffectSystem.Instance.SpawnDamageText(View.transform.position + Vector3.up * 0.5f, damage.ToString(), Color.white);

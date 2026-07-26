@@ -91,6 +91,7 @@ namespace DeepEarth.Common
         public const string UIPanelRelicPopup = "UI_Panel_RelicPopup";
         public const string UIPanelInventoryPopup = "UI_Panel_InventoryPopup";
         public const string UIPanelEventReveal = "UI_Panel_EventReveal";
+        public const string UIPanelMerchant = "UI_Panel_Merchant";
         public const string UIEffectIcon = "UI_EffectIcon";
         public const string UIEffectCard = "UI_EffectCard";
         public const string UIInventorySlot = "UI_Prefab_InventorySlot";
@@ -111,6 +112,15 @@ namespace DeepEarth.Common
         public const string ItemSpecial = "Item_Special";
         public const string ItemPortableAnvil = "Item_PortableAnvil";
         public const string ItemImmortalityPotion = "Item_ImmortalityPotion";
+        public const string ItemRepairKit = "Item_RepairKit";
+        public const string ItemAntidotePotion = "Item_AntidotePotion";
+        public const string ItemBomb = "Item_Bomb";
+        public const string ItemHolyWater = "Item_HolyWater";
+        public const string ItemEnhancedRepairKit = "Item_EnhancedRepairKit";
+        public const string ItemEnhancedBomb = "Item_EnhancedBomb";
+        public const string ItemAngelFeather = "Item_AngelFeather";
+        public const string ItemFullRepairKit = "Item_FullRepairKit";
+        public const string ItemGuardianHeart = "Item_GuardianHeart";
 
         public const string StatusEffectBurn       = "StatusEffect_Burn";
         public const string StatusEffectMiningDown = "StatusEffect_MiningPowerDown";
@@ -162,6 +172,18 @@ namespace DeepEarth.Common
 
         // Game Balance (single config asset)
         public const string GameBalanceDataKey = "GameBalanceData";
+
+        // Merchant System (label + config assets)
+        public const string LabelMerchant           = "Merchant";
+        public const string MerchantBalanceDataKey  = "MerchantBalanceData";
+        public const string MerchantQuoteDataKey    = "MerchantQuoteData";
+
+        // Merchant art/audio — reserved keys, real assets not yet produced (loads no-op until then)
+        public const string MerchantPortrait        = "Merchant_Portrait";
+        public const string MerchantBGM             = "Merchant_BGM";
+        public const string MerchantSFXBuy          = "Merchant_SFX_Buy";
+        public const string MerchantSFXDiscount     = "Merchant_SFX_Discount";
+        public const string MerchantLegendaryGlow   = "Merchant_LegendaryGlow";
 
         // Relic Addressable Labels (label-based load — no per-relic key needed)
         public const string LabelRelicTreasure = "Relic_Treasure";

@@ -93,13 +93,6 @@ namespace DeepEarth.Event
             await ExecutePickedEventAsync(pool, depth);
         }
 
-        /// For RoomType.Merchant → always WanderingMerchant.
-        public async UniTask TriggerMerchantAsync(int depth)
-        {
-            await EnsureDataLoadedAsync();
-            await ExecuteWanderingMerchantAsync(depth);
-        }
-
         /// For RoomType.Rest → pick from Positive events only.
         public async UniTask TriggerRestAsync(int depth)
         {
@@ -163,9 +156,6 @@ namespace DeepEarth.Event
             {
                 case NodeEventID.CrystalShrine:
                     await ExecuteCrystalShrineAsync(depth);
-                    return;
-                case NodeEventID.WanderingMerchant:
-                    await ExecuteWanderingMerchantAsync(depth);
                     return;
                 case NodeEventID.AncientForge:
                     await ExecuteAncientForgeAsync(depth);
@@ -411,62 +401,6 @@ namespace DeepEarth.Event
                     await EliteCombatSystem.Instance.StartEliteCombatAsync(depth);
                 }
             }
-        }
-
-        // ── 9. Wandering Merchant (dynamic) ────────────────────────────────
-        // HP+3 (3×Iron) / Repair+20% (2×Silver) / Attack+1 (4×Gold) / Leave
-        private async UniTask ExecuteWanderingMerchantAsync(int depth)
-        {
-            _lastTriggerFloor[NodeEventID.WanderingMerchant] = depth;
-
-            var opts = new List<EventOption>
-            {
-                new EventOption("event_merchant_hp_title",     "event_merchant_hp_desc",     new List<EffectType>()),
-                new EventOption("event_merchant_repair_title", "event_merchant_repair_desc", new List<EffectType>()),
-                new EventOption("event_merchant_atk_title",   "event_merchant_atk_desc",    new List<EffectType>()),
-                new EventOption("event_merchant_leave_title", "event_merchant_leave_desc",  new List<EffectType>())
-            };
-            var eventData = new EventData("event_merchant_title", "event_merchant_desc", false, opts);
-            int choice = await EventManager.Instance.ShowEventChoiceAsync(eventData);
-            if (StatManager.Instance.CurrentHP <= 0) return;
-
-            string noFunds = LocalizationManager.Instance.GetTranslation("event_merchant_no_funds");
-            switch (choice)
-            {
-                case 0:
-                    if (InventoryManager.Instance.GetItemCount("Item_Iron") >= 3)
-                    {
-                        InventoryManager.Instance.RemoveItem("Item_Iron", 3);
-                        StatManager.Instance.Heal(3);
-                        ShowFeedback("-3 Iron  +3 HP", Color.green);
-                    }
-                    else ShowFeedback(noFunds, Color.red);
-                    break;
-                case 1:
-                    if (InventoryManager.Instance.GetItemCount("Item_Silver") >= 2)
-                    {
-                        InventoryManager.Instance.RemoveItem("Item_Silver", 2);
-                        int rep = Mathf.Max(1, Mathf.RoundToInt((PickaxeDurabilityManager.Instance?.MaxDurability ?? 10) * 0.2f));
-                        PickaxeDurabilityManager.Instance?.Repair(rep);
-                        ShowFeedback("-2 Silver  내구도 회복", new Color(0.8f, 0.8f, 0.9f));
-                    }
-                    else ShowFeedback(noFunds, Color.red);
-                    break;
-                case 2:
-                    if (InventoryManager.Instance.GetItemCount("Item_Gold") >= 4)
-                    {
-                        InventoryManager.Instance.RemoveItem("Item_Gold", 4);
-                        StatManager.Instance.AddEffect(EffectType.BuffAttackDamage);
-                        ShowFeedback("-4 Gold  공격력+1", Color.yellow);
-                    }
-                    else ShowFeedback(noFunds, Color.red);
-                    break;
-                // case 3: leave
-            }
-
-#if DEVELOPMENT_BUILD || UNITY_EDITOR
-            Debug.Log($"[Event]\nWandering Merchant\nChoice : {choice}\nDepth : {depth}");
-#endif
         }
 
         // ── 10. Hot Spring ──────────────────────────────────────────────────

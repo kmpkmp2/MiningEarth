@@ -85,6 +85,14 @@ namespace DeepEarth.Core
             return null;
         }
 
+        // Merchant 등 랜덤 상품 풀 구성을 위한 전체 템플릿 조회(타입 필터).
+        public IEnumerable<ItemData> GetTemplatesByType(ItemType type)
+        {
+            foreach (var item in _itemTemplates.Values)
+                if (item.type == type)
+                    yield return item;
+        }
+
         public bool AddItem(string itemId, int quantity)
         {
             var template = GetTemplate(itemId);

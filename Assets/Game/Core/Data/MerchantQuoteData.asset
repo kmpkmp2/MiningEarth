@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9767b5379b7a448db9c851d3636b46c7, type: 3}
+  m_Name: MerchantQuoteData
+  m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.Core.MerchantQuoteData
+  quoteLocKeys:
+  - merchant_quote_01
+  - merchant_quote_02
+  - merchant_quote_03
+  - merchant_quote_04
+  - merchant_quote_05
+  - merchant_quote_06
+  - merchant_quote_07
+  - merchant_quote_08
+  - merchant_quote_09
+  - merchant_quote_10
+  - merchant_quote_11
+  - merchant_quote_12
+  - merchant_quote_13
+  - merchant_quote_14
+  - merchant_quote_15
+  - merchant_quote_16
+  - merchant_quote_17
+  - merchant_quote_18
+  - merchant_quote_19
+  - merchant_quote_20
+  - merchant_quote_21
+  - merchant_quote_22
+  - merchant_quote_23
+  - merchant_quote_24
+  legendaryRelicQuoteKey: merchant_quote_legendary_relic
+  legendaryItemQuoteKey: merchant_quote_legendary_item
+  noFundsQuoteKey: merchant_quote_no_funds

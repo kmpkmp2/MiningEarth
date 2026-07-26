@@ -105,6 +105,60 @@ MonoBehaviour:
     m_SerializedLabels:
     - ItemData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 01aa8b80d41542fc94b15ad1f9ffaf8c
+    m_Address: Item_RepairKit
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d22f8dfd06244eac93b8ffe9fec3ae5f
+    m_Address: Item_AntidotePotion
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b73cfe31332b4d0a87c3c8500aba2106
+    m_Address: Item_Bomb
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e728d5ed163440a1a6f48af345eb7a93
+    m_Address: Item_HolyWater
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: af0b7d5e35dd4d20b81332a3d63fc6ab
+    m_Address: Item_EnhancedRepairKit
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e013c3a87d4a4bafb5330f2027cd9ce3
+    m_Address: Item_EnhancedBomb
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 31e7f296bf8441deb8797470da2b6f36
+    m_Address: Item_AngelFeather
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c4a7bf870fbb41b2b6e2924b6ba47244
+    m_Address: Item_FullRepairKit
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 335297e7929f415e9584965de22d89bc
+    m_Address: Item_GuardianHeart
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: bf53922257c85cf45b1d5828a500e7b9, type: 2}
   m_SchemaSet:

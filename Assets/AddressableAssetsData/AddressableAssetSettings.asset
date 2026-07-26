@@ -73,6 +73,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0a3efff92b588e14a8acadcfb595e008, type: 2}
   - {fileID: 11400000, guid: bc39e148772890a418b11efd80ae3eb6, type: 2}
   - {fileID: 11400000, guid: b957b680718a49129829e239d436f017, type: 2}
+  - {fileID: 11400000, guid: f5ca580c530b43ef88d4c3014a52b239, type: 2}
   m_BuildSettings:
     m_LogResourceManagerExceptions: 1
     m_BundleBuildPath: Temp/com.unity.addressables/AssetBundles
@@ -120,6 +121,7 @@ MonoBehaviour:
     - Relic
     - NodeEvent
     - ItemData
+    - Merchant
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 128d54ee930ac6f46a387c24186080be, type: 2}

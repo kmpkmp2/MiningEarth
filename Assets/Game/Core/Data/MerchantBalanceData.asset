@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf10cfd5578841dba6c5c26a61e1770f, type: 3}
+  m_Name: MerchantBalanceData
+  m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.Core.MerchantBalanceData
+  relicSlotCount: 4
+  consumableSlotCount: 2
+  relicRarityByDepth:
+  - minDepth: 0
+    commonChance: 0.75
+    rareChance: 0.24
+    legendaryChance: 0.01
+  - minDepth: 50
+    commonChance: 0.65
+    rareChance: 0.3
+    legendaryChance: 0.05
+  - minDepth: 100
+    commonChance: 0.55
+    rareChance: 0.38
+    legendaryChance: 0.07
+  - minDepth: 150
+    commonChance: 0.45
+    rareChance: 0.45
+    legendaryChance: 0.1
+  consumableRarityByDepth:
+  - minDepth: 0
+    commonChance: 0.95
+    rareChance: 0.05
+    legendaryChance: 0
+  - minDepth: 50
+    commonChance: 0.9
+    rareChance: 0.1
+    legendaryChance: 0
+  - minDepth: 100
+    commonChance: 0.88
+    rareChance: 0.11
+    legendaryChance: 0.01
+  - minDepth: 150
+    commonChance: 0.8
+    rareChance: 0.18
+    legendaryChance: 0.02
+  relicPriceCommon: 3
+  relicPriceRare: 3
+  relicPriceLegendary: 3
+  consumablePriceCommon: 2
+  consumablePriceRare: 2
+  consumablePriceLegendary: 2
+  potionSmallRootPrice: 8
+  potionMediumRootPrice: 15
+  potionLargeRootPrice: 30
+  discountEventChance: 0.05
+  discountAllPercent: 0.2
+  discountRareRelicPercent: 0.5
+  featuredSlotDiscountMin: 0.2
+  featuredSlotDiscountMax: 0.3
+  featuredLegendaryChance: 0.03

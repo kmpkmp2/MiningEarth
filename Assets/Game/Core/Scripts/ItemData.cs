@@ -33,5 +33,7 @@ namespace DeepEarth.UI
         public int reviveHP;
         public bool autoUseOnDeath;
         public bool cureBurn;
+        public bool curePoison;
+        public int combatDamage;
     }
 }

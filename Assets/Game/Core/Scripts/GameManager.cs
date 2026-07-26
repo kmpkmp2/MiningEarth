@@ -53,6 +53,7 @@ namespace DeepEarth.Core
         private GameObject _inventoryPopupObject;
         private GameObject _eventRevealObject;
         private GameObject _mapPopupObject;
+        private GameObject _merchantObject;
 
         private GameUIPresenter _hudPresenter;
         private GameOverUIPresenter _gameOverPresenter;
@@ -61,6 +62,7 @@ namespace DeepEarth.Core
         private RelicPopupPresenter _relicPopupPresenter;
         private InventoryPresenter _inventoryPopupPresenter;
         private EventRevealPresenter _eventRevealPresenter;
+        private MerchantPresenter _merchantPresenter;
         private DeepEarth.Map.RouteMapPresenter _routeMapPresenter;
 
         private GameState _previousState;
@@ -156,6 +158,8 @@ namespace DeepEarth.Core
             _eventRevealPresenter = null;
             _routeMapPresenter?.Dispose();
             _routeMapPresenter = null;
+            _merchantPresenter?.Dispose();
+            _merchantPresenter = null;
         }
 
         public void SetGameState(GameState state)
@@ -242,6 +246,9 @@ namespace DeepEarth.Core
                     SetRef(fallbackView, "inventoryStatsText", statsText);
                 }
 
+                // Load Merchant panel — UI_Panel_Event와 완전히 분리된 전용 상점 팝업
+                _merchantObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelMerchant, canvas.transform);
+
                 // Load Event Reveal panel
                 _eventRevealObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelEventReveal, canvas.transform);
 
@@ -304,6 +311,21 @@ namespace DeepEarth.Core
                 else
                 {
                     Debug.LogWarning("[GameManager] UI_Panel_MapPopup not found — Addressables에 등록 필요");
+                }
+
+                // Merchant (떠돌이 상점) UI — UI_Panel_Event와 완전히 분리된 전용 팝업
+                if (_merchantObject != null)
+                {
+                    var merchantPopupView = _merchantObject.GetComponent<MerchantPopupView>();
+                    if (merchantPopupView != null)
+                    {
+                        _merchantPresenter = new MerchantPresenter(merchantPopupView);
+                        merchantPopupView.SetVisible(false);
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("[GameManager] UI_Panel_Merchant not found — Addressables에 등록 필요");
                 }
 
                 // Initially hide panels and show Main HUD
@@ -702,7 +724,8 @@ namespace DeepEarth.Core
                     break;
 
                 case DeepEarth.Map.RoomType.Merchant:
-                    await NodeEventManager.Instance.TriggerMerchantAsync(CurrentDepth);
+                    if (_merchantPresenter != null)
+                        await _merchantPresenter.OpenAsync(CurrentDepth);
                     if (StatManager.Instance.CurrentHP <= 0) return;
                     await _routeMapPresenter.OnNonMineNodeCompleted();
                     break;

@@ -63,12 +63,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - NodeEvent
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 989e896ea10f4d9b80b634f542b2eba7
-    m_Address: NodeEvent_WanderingMerchant
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - NodeEvent
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: eb0fbb3ac0144386b14833aa8d8d4610
     m_Address: NodeEvent_HotSpring
     m_ReadOnly: 0

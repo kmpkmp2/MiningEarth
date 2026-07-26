@@ -5,6 +5,7 @@ using UnityEngine;
 using DeepEarth.Core;
 using DeepEarth.Map;
 using DeepEarth.Common;
+using DeepEarth.Combat;
 
 namespace DeepEarth.UI
 {
@@ -180,7 +181,7 @@ namespace DeepEarth.UI
 
         private bool GetUseEnabled(InventorySlotModel slotModel)
         {
-            if (slotModel.ItemID == AddressableKeys.ItemPortableAnvil)
+            if (slotModel.Item.repairAmount > 0)
             {
                 var mgr = PickaxeDurabilityManager.Instance;
                 return mgr != null && mgr.CurrentDurability < mgr.MaxDurability;
@@ -220,9 +221,15 @@ namespace DeepEarth.UI
             if (item.type != ItemType.Consumable) return;
             if (item.autoUseOnDeath) return; // 불사 물약: 수동 사용 불가, 사망 시 자동 소비만
 
-            if (itemId == AddressableKeys.ItemPortableAnvil)
+            if (item.repairAmount > 0)
             {
-                HandlePortableAnvil(item);
+                HandleRepairItem(item);
+                return;
+            }
+
+            if (item.combatDamage > 0)
+            {
+                HandleCombatItem(item, itemId);
                 return;
             }
 
@@ -230,29 +237,71 @@ namespace DeepEarth.UI
             {
                 HandleChestReward();
             }
-            else if (item.cureBurn)
-            {
-                if (StatusEffectManager.Instance != null && StatusEffectManager.Instance.CureBurn())
-                {
-                    TriggerFloatingText(LocalizationManager.Instance.GetTranslation("item_burn_cure_used"), new Color(0.4f, 0.9f, 1f));
-                }
-                else
-                {
-                    TriggerFloatingText(LocalizationManager.Instance.GetTranslation("item_burn_cure_no_burn"), Color.yellow);
-                    return;
-                }
-            }
-            else if (item.healAmount > 0)
-            {
-                StatManager.Instance.Heal(item.healAmount);
-                TriggerFloatingText($"+{item.healAmount} {LocalizationManager.Instance.GetTranslation("hud_hp_heal")}", Color.green);
-            }
             else
             {
-                string usedName = LocalizationManager.Instance.GetTranslation(item.nameLocKey);
-                TriggerFloatingText(LocalizationManager.Instance.GetFormatted("item_used_generic_fmt", usedName), Color.white);
+                // 화상치료/해독/회복 효과는 한 아이템에 동시에 여러 개 설정될 수 있어(예: 정화의 성수 = 화상+중독 치료)
+                // 상호 배타적인 else-if 대신 각 효과를 독립적으로 검사한다.
+                bool effectApplied = false;
+                bool blockConsume  = false;
+
+                if (item.cureBurn)
+                {
+                    if (StatusEffectManager.Instance != null && StatusEffectManager.Instance.CureBurn())
+                    {
+                        TriggerFloatingText(LocalizationManager.Instance.GetTranslation("item_burn_cure_used"), new Color(0.4f, 0.9f, 1f));
+                        effectApplied = true;
+                    }
+                    else if (!item.curePoison && item.healAmount <= 0)
+                    {
+                        TriggerFloatingText(LocalizationManager.Instance.GetTranslation("item_burn_cure_no_burn"), Color.yellow);
+                        blockConsume = true;
+                    }
+                }
+
+                if (item.curePoison)
+                {
+                    if (StatusEffectManager.Instance != null && StatusEffectManager.Instance.CurePoison())
+                    {
+                        TriggerFloatingText(LocalizationManager.Instance.GetTranslation("item_poison_cure_used"), new Color(0.6f, 0.9f, 0.4f));
+                        effectApplied = true;
+                    }
+                    else if (!item.cureBurn && item.healAmount <= 0)
+                    {
+                        TriggerFloatingText(LocalizationManager.Instance.GetTranslation("item_poison_cure_no_poison"), Color.yellow);
+                        blockConsume = true;
+                    }
+                }
+
+                if (item.healAmount > 0)
+                {
+                    StatManager.Instance.Heal(item.healAmount);
+                    TriggerFloatingText($"+{item.healAmount} {LocalizationManager.Instance.GetTranslation("hud_hp_heal")}", Color.green);
+                    effectApplied = true;
+                }
+
+                if (blockConsume && !effectApplied) return; // 치료할 상태이상이 없어 아무 효과도 없었다 — 소모하지 않음
+
+                if (!effectApplied && !blockConsume)
+                {
+                    string usedName = LocalizationManager.Instance.GetTranslation(item.nameLocKey);
+                    TriggerFloatingText(LocalizationManager.Instance.GetFormatted("item_used_generic_fmt", usedName), Color.white);
+                }
             }
 
+            _collection.RemoveItem(itemId, 1);
+            GameManager.Instance.TriggerStatsOrResourcesChanged();
+        }
+
+        private void HandleCombatItem(ItemData item, string itemId)
+        {
+            if (CombatSystem.Instance == null || !CombatSystem.Instance.HasActiveMonsters)
+            {
+                TriggerFloatingText(LocalizationManager.Instance.GetTranslation("item_combat_only"), Color.yellow);
+                return;
+            }
+
+            CombatSystem.Instance.ApplyItemDamageToActiveMonsters(item.combatDamage);
+            TriggerFloatingText($"-{item.combatDamage} HP", Color.red);
             _collection.RemoveItem(itemId, 1);
             GameManager.Instance.TriggerStatsOrResourcesChanged();
         }
@@ -287,7 +336,7 @@ namespace DeepEarth.UI
             TriggerFloatingText(LocalizationManager.Instance.GetFormatted("chest_reward_result_fmt", chestHealAmount, rewardText), Color.yellow);
         }
 
-        private void HandlePortableAnvil(ItemData item)
+        private void HandleRepairItem(ItemData item)
         {
             var mgr = PickaxeDurabilityManager.Instance;
             if (mgr == null) return;
@@ -303,7 +352,7 @@ namespace DeepEarth.UI
             GameManager.Instance.TriggerStatsOrResourcesChanged();
 
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
-            Debug.Log($"[Item]\nPortable Anvil Used\nDurability +{item.repairAmount}");
+            Debug.Log($"[Item]\nRepair Item Used\nDurability +{item.repairAmount}");
 #endif
             TriggerFloatingText($"⛏ +{item.repairAmount}", new Color(0.6f, 1f, 0.6f));
         }
