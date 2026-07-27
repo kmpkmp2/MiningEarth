@@ -16,13 +16,18 @@ namespace DeepEarth.Combat
 
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
 
-        public MonsterPresenter(MonsterModel model, MonsterView view)
+        // startRealTimeLoop: false — 턴제 전투(일반 몬스터)에서는 실시간 터치공격/자동공격 루프를 켜지 않는다.
+        // 엘리트(EliteMonsterPresenter)는 이 파라미터를 넘기지 않아 기존 실시간 동작을 그대로 유지한다.
+        public MonsterPresenter(MonsterModel model, MonsterView view, bool startRealTimeLoop = true)
         {
             Model = model;
             View = view;
 
-            View.OnTouched += HandleTouched;
-            StartAttackLoop().Forget();
+            if (startRealTimeLoop)
+            {
+                View.OnTouched += HandleTouched;
+                StartAttackLoop().Forget();
+            }
         }
 
         public virtual void Dispose()

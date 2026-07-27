@@ -185,6 +185,24 @@ namespace DeepEarth.Common
         public const string MerchantSFXDiscount     = "Merchant_SFX_Discount";
         public const string MerchantLegendaryGlow   = "Merchant_LegendaryGlow";
 
+        // Turn-Based Battle System (1단계: 일반 몬스터 한정)
+        public const string LabelMonsterPattern     = "MonsterPattern";
+        public const string BattleBalanceDataKey    = "BattleBalanceData";
+        public const string MonsterIntentDataKey    = "MonsterIntentData";
+        public const string UIPanelBattle           = "UI_Panel_Battle";
+
+        // Battle art/audio — reserved keys, real assets not yet produced (loads no-op until then)
+        public const string BattleDefenseEffect        = "Battle_DefenseEffect";
+        public const string BattleTurnChangeEffect     = "Battle_TurnChangeEffect";
+        public const string BattleSFXPlayerTurn        = "Battle_SFX_PlayerTurn";
+        public const string BattleSFXMonsterTurn       = "Battle_SFX_MonsterTurn";
+        public const string BattleSFXAttack            = "Battle_SFX_Attack";
+        public const string BattleSFXDefend            = "Battle_SFX_Defend";
+        public const string BattleSFXDebuff            = "Battle_SFX_Debuff";
+        public const string BattleSFXBuff              = "Battle_SFX_Buff";
+        public const string BattleSFXHeavyAttack       = "Battle_SFX_HeavyAttack";
+        public const string BattleSFXIntentChange      = "Battle_SFX_IntentChange";
+
         // Relic Addressable Labels (label-based load — no per-relic key needed)
         public const string LabelRelicTreasure = "Relic_Treasure";
         public const string LabelRelicTombstone = "Relic_Tombstone";

@@ -16,6 +16,9 @@ namespace DeepEarth.Combat
         public int Damage { get; private set; }
         public bool CanSplit { get; private set; }
 
+        // 턴제 전투(1단계, 일반 몬스터): 몬스터 자신의 방어 패턴 스텝 중 true.
+        public bool IsDefending { get; set; }
+
         public bool IsDead => CurrentHP <= 0;
 
         public MonsterModel(MonsterData data, int depth)

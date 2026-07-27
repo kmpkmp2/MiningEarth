@@ -18,6 +18,7 @@ namespace DeepEarth.Combat
         private readonly List<MonsterPresenter> _activePresenters    = new List<MonsterPresenter>();
         private readonly List<GameObject>        _activeMonsterObjects = new List<GameObject>();
         private readonly Dictionary<MonsterType, MonsterData>          _monsterDataCache = new Dictionary<MonsterType, MonsterData>();
+        private readonly Dictionary<MonsterType, MonsterPatternData>   _patternDataCache = new Dictionary<MonsterType, MonsterPatternData>();
         private readonly Dictionary<MonsterPresenter, Action<MonsterPresenter>> _killHandlers = new Dictionary<MonsterPresenter, Action<MonsterPresenter>>();
 
         private UniTaskCompletionSource _combatTcs;
@@ -26,21 +27,44 @@ namespace DeepEarth.Combat
         private int _pendingSpawns;
         private bool _dataLoaded;
 
+        private DeepEarth.UI.BattleView _battleView;
+        private DeepEarth.Battle.BattlePresenter _battlePresenter;
+
         private void Awake()
         {
             if (_instance == null) _instance = this;
             else Destroy(gameObject);
         }
 
-        public void Initialize(Transform monsterSpawnPoint)
+        public void Initialize(Transform monsterSpawnPoint, Transform canvasTransform = null)
         {
             spawnPoint = monsterSpawnPoint;
             EnsureDataLoadedAsync().Forget();
+            if (canvasTransform != null) SetupBattleUIAsync(canvasTransform).Forget();
+        }
+
+        private async UniTaskVoid SetupBattleUIAsync(Transform canvasTransform)
+        {
+            var go = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelBattle, canvasTransform);
+            if (go == null)
+            {
+                Debug.LogWarning("[CombatSystem] UI_Panel_Battle not found — Addressables 등록 필요");
+                return;
+            }
+
+            _battleView = go.GetComponent<DeepEarth.UI.BattleView>();
+            if (_battleView == null) return;
+
+            var intentData = await ResourceManager.Instance.LoadAssetAsync<MonsterIntentData>(AddressableKeys.MonsterIntentDataKey);
+            _battlePresenter = new DeepEarth.Battle.BattlePresenter(_battleView, intentData, _battleView.IntentViewPrefab, _battleView.IntentLayer);
+            _battleView.SetVisible(false);
         }
 
         // ── Public API ───────────────────────────────────────────────────
 
         public bool HasActiveMonsters => _activePresenters.Count > 0;
+
+        public IReadOnlyList<MonsterPresenter> ActivePresenters => _activePresenters;
 
         // 폭탄류 소모 아이템 전용 진입점 — 현재 전투 중인 몬스터 전체에게 즉시 피해를 준다.
         public void ApplyItemDamageToActiveMonsters(int amount)
@@ -99,7 +123,10 @@ namespace DeepEarth.Combat
                 await UniTask.WhenAll(spawnTasks.ToArray());
             }
 
-            await _combatTcs.Task;
+            if (_battlePresenter != null)
+                await _battlePresenter.RunTurnLoopAsync(this, GetPatternData);
+            else
+                await _combatTcs.Task; // BattleUI 미구성(Addressables 미등록 등) 시 안전한 폴백 — 실시간 자동 처치 없이 대기만 함
 
             PostCombat:
             ClearActiveMonsters();
@@ -174,7 +201,7 @@ namespace DeepEarth.Combat
             Debug.Log($"[Battle]\nSpawn Monster\nType : {data.monsterType}\nIndex : {spawnIdx}\nPosition : {worldPos.x:F2},{worldPos.y:F2},{worldPos.z:F2}");
 
             var model     = new MonsterModel(data, depth);
-            var presenter = new MonsterPresenter(model, view);
+            var presenter = new MonsterPresenter(model, view, startRealTimeLoop: false);
             _activePresenters.Add(presenter);
 
             Action<MonsterPresenter> handler = p => HandleMonsterKilled(p, data, depth);
@@ -315,7 +342,19 @@ namespace DeepEarth.Combat
                     if (d != null) _monsterDataCache[d.monsterType] = d;
             }
 
-            Debug.Log($"[CombatSystem]\nData Loaded\nMonster Types : {_monsterDataCache.Count}\nSpawnTable : {(_spawnTable != null ? "OK" : "MISSING")}");
+            var allPatterns = await ResourceManager.Instance.LoadAllByLabelAsync<MonsterPatternData>(AddressableKeys.LabelMonsterPattern);
+            if (allPatterns != null)
+            {
+                foreach (var p in allPatterns)
+                    if (p != null) _patternDataCache[p.monsterType] = p;
+            }
+
+            Debug.Log($"[CombatSystem]\nData Loaded\nMonster Types : {_monsterDataCache.Count}\nSpawnTable : {(_spawnTable != null ? "OK" : "MISSING")}\nPatterns : {_patternDataCache.Count}");
+        }
+
+        public MonsterPatternData GetPatternData(MonsterType type)
+        {
+            return _patternDataCache.TryGetValue(type, out var data) ? data : null;
         }
 
         public string GetMonsterNameLocKey(MonsterType type)

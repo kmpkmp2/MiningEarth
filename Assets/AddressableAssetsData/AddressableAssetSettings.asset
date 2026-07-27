@@ -122,6 +122,7 @@ MonoBehaviour:
     - NodeEvent
     - ItemData
     - Merchant
+    - MonsterPattern
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 128d54ee930ac6f46a387c24186080be, type: 2}

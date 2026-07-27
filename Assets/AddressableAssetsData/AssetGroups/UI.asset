@@ -290,6 +290,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9fe47f7675704777af90c62f0b1b8c61
+    m_Address: UI_Panel_Battle
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b998f63ae6af5a648b750b22251faea1
     m_Address: Effect_BossReward_MiningPower
     m_ReadOnly: 0

@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1e4762602c64e52badc3090bfd7dda4, type: 3}
+  m_Name: MonsterIntentData
+  m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.Core.MonsterIntentData
+  entries:
+  - type: 0
+    iconKey:
+    iconGlyph: ⚔
+    descLocKey: intent_attack_desc
+  - type: 1
+    iconKey:
+    iconGlyph: 💥
+    descLocKey: intent_heavy_attack_desc
+  - type: 2
+    iconKey:
+    iconGlyph: 🛡
+    descLocKey: intent_defend_desc
+  - type: 3
+    iconKey:
+    iconGlyph: ⬆
+    descLocKey: intent_buff_desc
+  - type: 4
+    iconKey:
+    iconGlyph: ☠
+    descLocKey: intent_debuff_desc
+  - type: 5
+    iconKey:
+    iconGlyph: ❤
+    descLocKey: intent_heal_desc
+  - type: 6
+    iconKey:
+    iconGlyph: 👥
+    descLocKey: intent_summon_desc
+  - type: 7
+    iconKey:
+    iconGlyph: ✨
+    descLocKey: intent_special_desc

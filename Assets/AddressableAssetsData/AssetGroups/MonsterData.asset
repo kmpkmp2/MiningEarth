@@ -67,6 +67,48 @@ MonoBehaviour:
     m_SerializedLabels:
     - MonsterData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 865c89620681493288e7c1aa7c54c12e
+    m_Address: MonsterPattern_CaveRat
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MonsterPattern
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ac9958989df847988800efbbbd959401
+    m_Address: MonsterPattern_CaveSpider
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MonsterPattern
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 20c4f2350d7d4d3da5610d6205e6ed16
+    m_Address: MonsterPattern_Slime
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MonsterPattern
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9da351f6cd2e45179d4d68cb6b8d962b
+    m_Address: MonsterPattern_SmallSlime
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MonsterPattern
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 13526f1d2f4e4fce98cfb63a7868716b
+    m_Address: MonsterPattern_Skeleton
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MonsterPattern
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 194eda6659af4982996a64558fee109c
+    m_Address: MonsterPattern_ArmoredSkeleton
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MonsterPattern
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8ba5005daf3f438e939b70ee3250a8e9
+    m_Address: MonsterPattern_Mimic
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MonsterPattern
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: bf53922257c85cf45b1d5828a500e7b9, type: 2}
   m_SchemaSet:

@@ -54,7 +54,7 @@ namespace DeepEarth.Core
             {
                 var go = new GameObject("CombatSystem");
                 var sys = go.AddComponent<CombatSystem>();
-                sys.Initialize(monsterSpawnPoint);
+                sys.Initialize(monsterSpawnPoint, canvas != null ? canvas.transform : null);
             }
 
             if (FindAnyObjectByType<EliteCombatSystem>() == null)
