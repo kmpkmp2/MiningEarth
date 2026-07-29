@@ -27,7 +27,14 @@ namespace DeepEarth.Common
         IronPlateSpider,
         MerchantMimic,
         CursedKnight,
-        CursedPriest
+        CursedPriest,
+
+        // Boss bodies (턴제 전환) — 세이브에 저장되지 않는 enum이라 끝에 추가해도 안전.
+        StoneGolemBoss,
+        MotherCaveSpiderBoss,
+        SkeletonWarlordBoss,
+        AllMetalColossusBoss,
+        BossCore
     }
 
     public enum GameState
@@ -185,8 +192,10 @@ namespace DeepEarth.Common
         public const string MerchantSFXDiscount     = "Merchant_SFX_Discount";
         public const string MerchantLegendaryGlow   = "Merchant_LegendaryGlow";
 
-        // Turn-Based Battle System (1단계: 일반 몬스터 한정)
+        // Turn-Based Battle System (일반 몬스터 + 엘리트 + 보스 공용)
         public const string LabelMonsterPattern     = "MonsterPattern";
+        public const string LabelElitePattern       = "ElitePattern";
+        public const string LabelBossPattern        = "BossPattern";
         public const string BattleBalanceDataKey    = "BattleBalanceData";
         public const string MonsterIntentDataKey    = "MonsterIntentData";
         public const string UIPanelBattle           = "UI_Panel_Battle";
@@ -202,6 +211,11 @@ namespace DeepEarth.Common
         public const string BattleSFXBuff              = "Battle_SFX_Buff";
         public const string BattleSFXHeavyAttack       = "Battle_SFX_HeavyAttack";
         public const string BattleSFXIntentChange      = "Battle_SFX_IntentChange";
+
+        // Target Select — Target_Ring은 실제 플레이스홀더 스프라이트 등록, 나머지는 예약 키(에셋 없이 no-op)
+        public const string TargetRingIcon          = "Target_Ring";
+        public const string TargetArrowIcon         = "Target_Arrow";
+        public const string BattleSFXTargetSelect   = "Battle_SFX_TargetSelect";
 
         // Relic Addressable Labels (label-based load — no per-relic key needed)
         public const string LabelRelicTreasure = "Relic_Treasure";
@@ -245,7 +259,6 @@ namespace DeepEarth.Common
 
     public static class GameSettings
     {
-        public const float BaseAttackInterval = 1f;
         public const int MaxBuffDebuffStack = 3;
         public const int BossSpawnDepthInterval = 50;
     }

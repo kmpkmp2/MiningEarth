@@ -11,17 +11,14 @@ namespace DeepEarth.Combat
         AllMetalColossus
     }
 
+    // 보스 스탯 공식 소스. HP 추적은 Combat.MonsterModel(BossManager가 이 값들로 생성)이 담당한다.
     public class BossData
     {
         public BossID ID { get; private set; }
         public string BossNameKey { get; private set; }
         public int MaxHP { get; private set; }
-        public int CurrentHP { get; private set; }
         public int Damage { get; private set; }
-        public float AttackInterval { get; private set; }
         public int SpawnDepth { get; private set; }
-
-        public bool IsDead => CurrentHP <= 0;
 
         public BossData(BossID id, int depth)
         {
@@ -38,7 +35,6 @@ namespace DeepEarth.Combat
             };
 
             int tier = depth / 50;
-            // AllMetalColossus scales for each repeat beyond tier 4
             int colossusScale = Mathf.Max(0, tier - 4);
 
             switch (id)
@@ -46,34 +42,20 @@ namespace DeepEarth.Combat
                 case BossID.StoneGolem:
                     MaxHP = 60;
                     Damage = 3;
-                    AttackInterval = 2.5f;
                     break;
                 case BossID.MotherCaveSpider:
                     MaxHP = 80;
                     Damage = 0;
-                    AttackInterval = 99999f; // never attacks directly
                     break;
                 case BossID.SkeletonWarlord:
                     MaxHP = 120;
                     Damage = 3;
-                    AttackInterval = 1.5f;
                     break;
                 case BossID.AllMetalColossus:
                     MaxHP = 200 + colossusScale * 100;
                     Damage = 5 + colossusScale * 2;
-                    AttackInterval = 3.0f;
                     break;
             }
-
-            CurrentHP = MaxHP;
-        }
-
-        public bool TakeDamage(int amount)
-        {
-            if (CurrentHP <= 0) return false;
-            CurrentHP -= amount;
-            if (CurrentHP < 0) CurrentHP = 0;
-            return true;
         }
     }
 }

@@ -44,11 +44,12 @@ namespace DeepEarth.Battle
             }
 
             var entry = _intentData != null ? _intentData.GetEntry(step.intentType) : null;
+            string iconKey = entry != null ? entry.iconKey : string.Empty;
             string glyph = entry != null ? entry.iconGlyph : string.Empty;
             string desc = entry != null ? LocalizationManager.Instance.GetTranslation(entry.descLocKey) : string.Empty;
 
             view.SetVisible(true);
-            view.SetIntent(glyph, step.value, desc);
+            view.SetIntent(iconKey, glyph, monster.GetDisplayValue(step), desc);
             view.SetFollowTarget(monster.CombatPresenter.View.transform);
 
 #if DEVELOPMENT_BUILD || UNITY_EDITOR

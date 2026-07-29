@@ -221,14 +221,21 @@ namespace DeepEarth.Event
         }
 
         // ── 1. Rockfall ─────────────────────────────────────────────────────
-        // ① 대피 (turn +2 penalty) ② 맞기 (HP-2, Iron×2)
+        // ① 대피 (곡괭이 내구도 -10%) ② 맞기 (HP-2, Iron×2)
         private void ApplyRockfall(int choice)
         {
             if (choice == 0)
             {
-                StatusEffectManager.Instance?.ProcessActionTurn();
-                StatusEffectManager.Instance?.ProcessActionTurn();
+                var pdm = PickaxeDurabilityManager.Instance;
+                if (pdm != null)
+                {
+                    int loss = Mathf.Max(1, Mathf.RoundToInt(pdm.MaxDurability * 0.1f));
+                    pdm.ApplyRelicDurabilityModifier(-loss);
+                }
                 ShowFeedback(LocalizationManager.Instance.GetTranslation("event_rockfall_dodge"), Color.yellow);
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                Debug.Log("[Event]\nRockfall\nChoice : Dodge\nDurability : -10%");
+#endif
             }
             else
             {
@@ -263,15 +270,21 @@ namespace DeepEarth.Event
         }
 
         // ── 3. Spike Trap ───────────────────────────────────────────────────
-        // ① 우회 (turn +3 penalty)  ② 돌파 (70% safe, 30% HP-3)
+        // ① 우회 (곡괭이 내구도 -15%)  ② 돌파 (70% safe, 30% HP-3)
         private void ApplySpikeTrap(int choice)
         {
             if (choice == 0)
             {
-                StatusEffectManager.Instance?.ProcessActionTurn();
-                StatusEffectManager.Instance?.ProcessActionTurn();
-                StatusEffectManager.Instance?.ProcessActionTurn();
+                var pdm = PickaxeDurabilityManager.Instance;
+                if (pdm != null)
+                {
+                    int loss = Mathf.Max(1, Mathf.RoundToInt(pdm.MaxDurability * 0.15f));
+                    pdm.ApplyRelicDurabilityModifier(-loss);
+                }
                 ShowFeedback(LocalizationManager.Instance.GetTranslation("event_trap_detour"), Color.yellow);
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                Debug.Log("[Event]\nSpikeTrap\nChoice : Detour\nDurability : -15%");
+#endif
             }
             else
             {

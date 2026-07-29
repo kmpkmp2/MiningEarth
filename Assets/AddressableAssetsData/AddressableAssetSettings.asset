@@ -123,6 +123,9 @@ MonoBehaviour:
     - ItemData
     - Merchant
     - MonsterPattern
+    - ElitePattern
+    - EliteData
+    - BossPattern
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 128d54ee930ac6f46a387c24186080be, type: 2}

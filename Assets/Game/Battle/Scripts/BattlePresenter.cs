@@ -19,6 +19,7 @@ namespace DeepEarth.Battle
         private readonly IntentPresenter _intentPresenter;
         private readonly BattleModel _battleModel = new BattleModel();
 
+        private readonly TargetSelectPresenter _targetSelectPresenter;
         private readonly List<MonsterPresenter> _monsters = new List<MonsterPresenter>();
         private UniTaskCompletionSource<PlayerActionType> _playerActionTcs;
 
@@ -27,6 +28,7 @@ namespace DeepEarth.Battle
             _view = view;
             _turnPresenter = new TurnPresenter(view != null ? view.TurnView : null);
             _intentPresenter = new IntentPresenter(intentData, intentViewPrefab, intentLayer);
+            _targetSelectPresenter = new TargetSelectPresenter(view != null ? view.TargetIndicatorPrefab : null, view != null ? view.TargetIndicatorLayer : null);
 
             if (_view != null)
             {
@@ -44,33 +46,53 @@ namespace DeepEarth.Battle
             }
         }
 
-        public async UniTask RunTurnLoopAsync(CombatSystem combatSystem, System.Func<MonsterType, MonsterPatternData> getPattern)
+        public async UniTask RunTurnLoopAsync(
+            IMonsterSource monsterSource,
+            System.Func<MonsterType, MonsterPatternData> getPattern,
+            System.Func<Combat.MonsterPresenter, MonsterPatternModel, TurnModel, MonsterPresenter> wrapperFactory = null)
         {
             _monsters.Clear();
             _intentPresenter.Clear();
+            _battleModel.Turn.Phase = BattleState.Idle;
 
-            foreach (var cp in combatSystem.ActivePresenters)
+            var makeWrapper = wrapperFactory ?? ((cp, pattern, turn) => new MonsterPresenter(cp, pattern, turn));
+
+            void RegisterMonster(Combat.MonsterPresenter cp)
             {
                 var pattern = getPattern(cp.Model.Type);
-                var wrapper = new MonsterPresenter(cp, new MonsterPatternModel(pattern), _battleModel.Turn);
+                var wrapper = makeWrapper(cp, new MonsterPatternModel(pattern), _battleModel.Turn);
                 _monsters.Add(wrapper);
                 cp.OnMonsterKilled += _ => HandleMonsterKilled(wrapper);
             }
 
-            _view?.SetVisible(true);
+            foreach (var cp in monsterSource.ActivePresenters)
+                RegisterMonster(cp);
 
-            while (combatSystem.HasActiveMonsters)
+            // 전투 중 새로 스폰되는 몬스터(슬라임 분열, 보스 소환 등)도 턴 시스템에 편입시킨다.
+            // 반드시 아래 finally에서 해제 — BattlePresenter는 세션 내내 재사용되는 공유 인스턴스라
+            // 해제하지 않으면 다음 전투부터 구독이 누적되어 몬스터가 중복 등록된다.
+            monsterSource.OnMonsterSpawned += RegisterMonster;
+            try
             {
-                await PlayerTurnAsync();
-                if (StatManager.Instance.CurrentHP <= 0 || !combatSystem.HasActiveMonsters) break;
+                _view?.SetVisible(true);
 
-                await MonsterTurnAsync();
-                StatusEffectManager.Instance?.ProcessActionTurn();
-                if (StatManager.Instance.CurrentHP <= 0) break;
+                while (monsterSource.HasActiveMonsters)
+                {
+                    await PlayerTurnAsync();
+                    if (StatManager.Instance.CurrentHP <= 0 || !monsterSource.HasActiveMonsters) break;
+
+                    await MonsterTurnAsync();
+                    StatusEffectManager.Instance?.ProcessActionTurn();
+                    if (StatManager.Instance.CurrentHP <= 0) break;
+                }
             }
-
-            _intentPresenter.Clear();
-            _view?.SetVisible(false);
+            finally
+            {
+                monsterSource.OnMonsterSpawned -= RegisterMonster;
+                _battleModel.Turn.Phase = BattleState.BattleEnd;
+                _intentPresenter.Clear();
+                _view?.SetVisible(false);
+            }
         }
 
         private void HandleMonsterKilled(MonsterPresenter wrapper)
@@ -81,42 +103,65 @@ namespace DeepEarth.Battle
 
         private async UniTask PlayerTurnAsync()
         {
-            _battleModel.Turn.Phase = TurnPhase.PlayerTurn;
-            await _turnPresenter.ShowPlayerTurnAsync();
-
-            RefreshAllIntents();
-            _view?.SetActionButtonsInteractable(true);
-
-            _playerActionTcs = new UniTaskCompletionSource<PlayerActionType>();
-            PlayerActionType action = await _playerActionTcs.Task;
-
-            _view?.SetActionButtonsInteractable(false);
-
-            if (action == PlayerActionType.Attack)
+            // Cancel 시 턴을 소모하지 않고 이 루프를 재진입한다.
+            while (true)
             {
-                var target = _monsters.FirstOrDefault(m => !m.CombatPresenter.Model.IsDead);
-                target?.ReceivePlayerAttack();
-                _battleModel.Turn.PlayerIsDefending = false;
-            }
-            else
-            {
-                _battleModel.Turn.PlayerIsDefending = true;
-                _view?.PlayDefendEffect();
+                _battleModel.Turn.Phase = BattleState.PlayerTurn;
+                // Fast Turn Battle: 배너는 await하지 않는다 — 입력은 즉시 받을 수 있어야 한다.
+                _turnPresenter.ShowPlayerTurnAsync().Forget();
+
+                RefreshAllIntents();
+                _view?.SetActionButtonsInteractable(true);
+
+                _playerActionTcs = new UniTaskCompletionSource<PlayerActionType>();
+                PlayerActionType action = await _playerActionTcs.Task;
+
+                if (action == PlayerActionType.Defend)
+                {
+                    _view?.SetActionButtonsInteractable(false);
+                    // 방어는 즉시 종료 — 실드 이펙트만 fire-and-forget으로 재생하고 대기 없이 Monster Turn으로 넘어간다.
+                    _battleModel.Turn.PlayerIsDefending = true;
+                    _view?.PlayDefendEffect();
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
-                Debug.Log("[Battle]\nPlayer Defend");
+                    Debug.Log("[Battle]\nPlayer Defend");
 #endif
+                    return;
+                }
+
+                // 공격 선택 → 즉시 실행하지 않고 Target Select 상태로 진입한다.
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                Debug.Log("[Battle]\nAttack Button");
+#endif
+                _battleModel.Turn.Phase = BattleState.TargetSelect;
+
+                var candidates = _monsters.Where(m => !m.CombatPresenter.Model.IsDead && m.IsTargetable).ToList();
+                var target = await _targetSelectPresenter.SelectTargetAsync(candidates, _view);
+
+                if (target == null)
+                {
+                    // 취소 → Player Turn 재진입, 턴 미소모(SetTargetSelectUIVisible(false)가 Defend 버튼을 이미 복원).
+                    continue;
+                }
+
+                _view?.SetActionButtonsInteractable(false);
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                Debug.Log("[Battle]\nAttack");
+#endif
+                await target.ReceivePlayerAttackAsync();
+                _battleModel.Turn.PlayerIsDefending = false;
+                return;
             }
         }
 
         private async UniTask MonsterTurnAsync()
         {
-            _battleModel.Turn.Phase = TurnPhase.MonsterTurn;
-            await _turnPresenter.ShowMonsterTurnAsync();
+            _battleModel.Turn.Phase = BattleState.MonsterTurn;
+            _turnPresenter.ShowMonsterTurnAsync().Forget();
 
             foreach (var monster in _monsters.ToArray())
             {
                 if (monster.CombatPresenter.Model.IsDead) continue;
-                monster.ExecuteTurn();
+                await monster.ExecuteTurnAsync();
                 if (StatManager.Instance.CurrentHP <= 0) break;
             }
 

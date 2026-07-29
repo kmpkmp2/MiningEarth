@@ -375,6 +375,51 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8fd73a5b511d5704c9647033b6f2df94
+    m_Address: Icon_Intent_Attack
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 86f3d622432f50a4eb8b1a1895ee3719
+    m_Address: Icon_Intent_HeavyAttack
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a6c30010ebaac0042b4025335b0e7b6d
+    m_Address: Icon_Intent_Defend
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6b8de5f37938fa34ab2b02a291a92f38
+    m_Address: Icon_Intent_Buff
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c43d18d39bdb2d7499f14e82dcc02c4b
+    m_Address: Icon_Intent_Debuff
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 898a015abb18b154b88415b93696ca8c
+    m_Address: Icon_Intent_Heal
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 75bc9c5cf60bf3a41b01c47a127c1954
+    m_Address: Icon_Intent_Summon
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5d554be5fe4f8334fac21ec65ecc55dc
+    m_Address: Icon_Intent_Special
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b894b00b22a1d7a499b7711f8efa3170
+    m_Address: Target_Ring
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: bf53922257c85cf45b1d5828a500e7b9, type: 2}
   m_SchemaSet:

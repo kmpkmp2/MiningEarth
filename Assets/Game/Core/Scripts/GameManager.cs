@@ -180,11 +180,16 @@ namespace DeepEarth.Core
             try
             {
                 // Instantiate UI views via Addressables
+                // 각 패널은 로드 직후 즉시 비활성화한다 — 이후 남은 패널들의 비동기 로드가
+                // 진행되는 동안 화면에 노출되어 깜빡이는 것을 방지하기 위함(맨 끝에서 일괄 처리하지 않음).
                 _hudObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelHUD, canvas.transform);
                 _gameOverObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelGameOver, canvas.transform);
+                _gameOverObject?.SetActive(false);
                 _eventObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelEvent, canvas.transform);
+                _eventObject?.SetActive(false);
                 _settingsObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelSettings, canvas.transform);
-                
+                _settingsObject?.SetActive(false);
+
                 _relicPopupObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelRelicPopup, canvas.transform);
                 if (_relicPopupObject == null)
                 {
@@ -328,13 +333,8 @@ namespace DeepEarth.Core
                     Debug.LogWarning("[GameManager] UI_Panel_Merchant not found — Addressables에 등록 필요");
                 }
 
-                // Initially hide panels and show Main HUD
+                // Show Main HUD (다른 패널들은 각자 로드 직후 이미 비활성화됨)
                 _hudObject.SetActive(true);
-                _gameOverObject.SetActive(false);
-                _eventObject.SetActive(false);
-                _settingsObject.SetActive(false);
-                _relicPopupObject.SetActive(false);
-                _inventoryPopupObject.SetActive(false);
 
                 StartGame();
             }

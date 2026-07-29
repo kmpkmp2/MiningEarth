@@ -12,9 +12,6 @@ namespace DeepEarth.Core
         public string nameLocKey;
         public string addressableKey;
 
-        [Header("Grade")]
-        public MonsterGrade grade = MonsterGrade.Normal;
-
         [Header("Elite: Spawn Depth Range")]
         [Min(0)] public int spawnDepthMin = 0;
         [Min(-1)] public int spawnDepthMax = -1; // -1 = no upper limit
@@ -26,7 +23,6 @@ namespace DeepEarth.Core
         [Header("Base Stats")]
         [Min(1)] public int baseMaxHP = 3;
         [Min(1)] public int baseDamage = 1;
-        public float attackInterval = 1f;
 
         [Header("Difficulty Scaling (per level above 1)")]
         public int hpPerDifficultyLevel = 0;
@@ -35,10 +31,6 @@ namespace DeepEarth.Core
         [Header("Spawn Configuration")]
         [Min(1)] public int spawnCount = 1;
         public Vector3[] spawnOffsets = new Vector3[0];
-
-        [Header("Multi-Spawn Attack Stagger (0 = no delay)")]
-        [Min(0f)] public float initialAttackDelayMin = 0f;
-        [Min(0f)] public float initialAttackDelayMax = 0f;
 
         [Header("Slime: Split on Death")]
         public bool canSplit = false;

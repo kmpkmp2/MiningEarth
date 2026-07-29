@@ -13,5 +13,13 @@ MonoBehaviour:
   m_Name: BattleBalanceData
   m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.Core.BattleBalanceData
   defenseRate: 0.5
-  turnDelay: 0.5
-  intentAnimationTime: 0.2
+  playerAttackAnimationTime: 0.1
+  playerHitEffectTime: 0.15
+  monsterAttackAnimationTime: 0.25
+  monsterHitEffectTime: 0.15
+  turnTransitionTime: 0.1
+  intentAnimationTime: 0.15
+  defenseAnimationTime: 0.1
+  bossSkillAnimationTime: 0.5
+  targetSelectScaleInTime: 0.1
+  targetSelectFlashTime: 0.1

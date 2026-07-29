@@ -27,7 +27,9 @@ namespace DeepEarth.Core
 
         private EliteSpawnTable _spawnTable;
         private readonly Dictionary<MonsterType, MonsterData> _eliteDataCache = new();
-        private bool _dataLoaded;
+        private readonly Dictionary<MonsterType, MonsterPatternData> _patternDataCache = new();
+        private UniTask _loadTask;
+        private bool _loadStarted;
 
         private void Awake()
         {
@@ -78,7 +80,28 @@ namespace DeepEarth.Core
                 EffectSystem.Instance.FlashScreen(new Color(1f, 0f, 0f, 0.4f), 0.2f);
             }
 
-            // Spawn elite prefab
+            var source = new MonsterSource();
+            await SpawnEliteBodyAsync(data, depth, source);
+
+            // 일반 몬스터와 동일한 공유 턴 루프(BattleView/TurnPresenter/IntentPresenter 포함)를 사용한다.
+            await CombatSystem.Instance.SharedBattlePresenter.RunTurnLoopAsync(source, GetPatternData, EliteWrapperFactory);
+
+            EffectSystem.Instance.FlashScreen(new Color(0.8f, 0.6f, 0f, 0.3f), 0.3f);
+            EffectSystem.Instance.ShakeCamera(0.3f, 0.1f);
+
+            // Give rewards
+            if (data.eliteRewardTable != null)
+                await GiveRewardsAsync(data.eliteRewardTable, depth);
+
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            Debug.Log($"[Elite]\nDefeated\nReward : {(data.eliteRewardTable != null ? data.eliteRewardTable.name : "none")}");
+#endif
+        }
+
+        // ── Spawn ────────────────────────────────────────────────────────────────
+
+        private async UniTask SpawnEliteBodyAsync(MonsterData data, int depth, MonsterSource source)
+        {
             GameObject eliteGo = await PoolSystem.Instance.GetAsync(data.addressableKey, spawnPoint);
             if (eliteGo == null)
             {
@@ -95,33 +118,21 @@ namespace DeepEarth.Core
             if (view == null) view = eliteGo.AddComponent<MonsterView>();
             view.InitializeSpawn(0);
 
-            // Create Model + Presenter
             var model     = new EliteMonsterModel(data, depth);
-            var eliteTcs  = new UniTaskCompletionSource();
             var presenter = new EliteMonsterPresenter(model, view);
-            presenter.OnEliteDefeated += () => eliteTcs.TrySetResult();
 
-            // Wait for the elite to be defeated
-            await eliteTcs.Task;
+            presenter.OnMonsterKilled += _ =>
+            {
+                PoolSystem.Instance.Return(eliteGo);
+                presenter.Dispose();
 
-            // Return object to pool
-            PoolSystem.Instance.Return(eliteGo);
-            presenter.Dispose();
+                // BigSlime: 사망 시 일반 슬라임 3마리로 분열 — 기존 CombatSystem.HandleMonsterKilled의
+                // 슬라임 분열 패턴과 동일하게 사망 이벤트에서 처리한다.
+                if (data.eliteSkillType == EliteSkillType.SplitOnDeath)
+                    SpawnSplitSlimesAsync(depth, source).Forget();
+            };
 
-            EffectSystem.Instance.FlashScreen(new Color(0.8f, 0.6f, 0f, 0.3f), 0.3f);
-            EffectSystem.Instance.ShakeCamera(0.3f, 0.1f);
-
-            // BigSlime: spawn 3 regular Slimes
-            if (data.eliteSkillType == EliteSkillType.SplitOnDeath)
-                await SpawnSplitSlimesAsync(depth);
-
-            // Give rewards
-            if (data.eliteRewardTable != null)
-                await GiveRewardsAsync(data.eliteRewardTable, depth);
-
-#if DEVELOPMENT_BUILD || UNITY_EDITOR
-            Debug.Log($"[Elite]\nDefeated\nReward : {(data.eliteRewardTable != null ? data.eliteRewardTable.name : "none")}");
-#endif
+            source.Add(presenter);
         }
 
         // ── Rewards ──────────────────────────────────────────────────────────────
@@ -220,7 +231,7 @@ namespace DeepEarth.Core
 
         // ── BigSlime split ────────────────────────────────────────────────────────
 
-        private async UniTask SpawnSplitSlimesAsync(int depth)
+        private async UniTaskVoid SpawnSplitSlimesAsync(int depth, MonsterSource source)
         {
             if (!_eliteDataCache.TryGetValue(MonsterType.Slime, out var slimeData))
             {
@@ -234,12 +245,15 @@ namespace DeepEarth.Core
             {
                 float xOff = (i - splitCount / 2f + 0.5f) * 1.5f;
                 Vector3 pos = spawnPoint.position + new Vector3(xOff, 0f, 0f);
-                tasks.Add(SpawnTemporarySlimeAsync(slimeData, pos, depth));
+                tasks.Add(SpawnTemporarySlimeAsync(slimeData, pos, depth, source));
             }
             await UniTask.WhenAll(tasks);
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            Debug.Log($"[Elite]\nSkill Activated\nBigSlime Split : {splitCount} Slimes Spawned");
+#endif
         }
 
-        private async UniTask SpawnTemporarySlimeAsync(MonsterData data, Vector3 worldPos, int depth)
+        private async UniTask SpawnTemporarySlimeAsync(MonsterData data, Vector3 worldPos, int depth, MonsterSource source)
         {
             GameObject go = await PoolSystem.Instance.GetAsync(data.addressableKey, spawnPoint);
             if (go == null) return;
@@ -253,23 +267,32 @@ namespace DeepEarth.Core
 
             // Slime has 50% HP
             int hp = Mathf.Max(1, (data.baseMaxHP + data.hpPerDifficultyLevel) / 2);
-            var model     = new MonsterModel(data.monsterType, hp, data.baseDamage, data.attackInterval);
-            var splitTcs  = new UniTaskCompletionSource();
+            var model     = new MonsterModel(data.monsterType, hp, data.baseDamage);
             var presenter = new MonsterPresenter(model, view);
-            presenter.OnMonsterKilled += _ => splitTcs.TrySetResult();
 
-            await splitTcs.Task;
-            PoolSystem.Instance.Return(go);
-            presenter.Dispose();
+            presenter.OnMonsterKilled += _ =>
+            {
+                PoolSystem.Instance.Return(go);
+                presenter.Dispose();
+            };
+
+            source.Add(presenter);
         }
 
         // ── Data Loading ─────────────────────────────────────────────────────────
 
-        private async UniTask EnsureDataLoadedAsync()
+        private UniTask EnsureDataLoadedAsync()
         {
-            if (_dataLoaded) return;
-            _dataLoaded = true;
+            if (!_loadStarted)
+            {
+                _loadStarted = true;
+                _loadTask = LoadDataAsync().Preserve();
+            }
+            return _loadTask;
+        }
 
+        private async UniTask LoadDataAsync()
+        {
             _spawnTable = await ResourceManager.Instance.LoadAssetAsync<EliteSpawnTable>(
                 AddressableKeys.EliteSpawnTableKey);
             if (_spawnTable == null)
@@ -290,7 +313,37 @@ namespace DeepEarth.Core
                     if (d != null && !_eliteDataCache.ContainsKey(d.monsterType))
                         _eliteDataCache[d.monsterType] = d;
 
-            Debug.Log($"[EliteCombatSystem]\nData Loaded\nElite Types : {_eliteDataCache.Count}\nSpawnTable : {(_spawnTable != null ? "OK" : "MISSING")}");
+            // Elite 패턴(6종) 로드
+            var elitePatterns = await ResourceManager.Instance.LoadAllByLabelAsync<MonsterPatternData>(
+                AddressableKeys.LabelElitePattern);
+            if (elitePatterns != null)
+                foreach (var p in elitePatterns)
+                    if (p != null) _patternDataCache[p.monsterType] = p;
+
+            // 일반 몬스터 패턴도 로드(BigSlime 분열로 생기는 일반 Slime의 패턴 조회용)
+            var regularPatterns = await ResourceManager.Instance.LoadAllByLabelAsync<MonsterPatternData>(
+                AddressableKeys.LabelMonsterPattern);
+            if (regularPatterns != null)
+                foreach (var p in regularPatterns)
+                    if (p != null && !_patternDataCache.ContainsKey(p.monsterType))
+                        _patternDataCache[p.monsterType] = p;
+
+            Debug.Log($"[EliteCombatSystem]\nData Loaded\nElite Types : {_eliteDataCache.Count}\nSpawnTable : {(_spawnTable != null ? "OK" : "MISSING")}\nPatterns : {_patternDataCache.Count}");
+        }
+
+        public MonsterPatternData GetPatternData(MonsterType type)
+        {
+            return _patternDataCache.TryGetValue(type, out var data) ? data : null;
+        }
+
+        // 엘리트 본체는 Battle.EliteMonsterPresenter(스킬 훅 포함)로, 분열된 일반 Slime 등은
+        // 기본 Battle.MonsterPresenter로 감싼다.
+        private static DeepEarth.Battle.MonsterPresenter EliteWrapperFactory(
+            MonsterPresenter cp, DeepEarth.Battle.MonsterPatternModel pattern, DeepEarth.Battle.TurnModel turn)
+        {
+            if (cp is EliteMonsterPresenter elite)
+                return new DeepEarth.Battle.EliteMonsterPresenter(elite, pattern, turn);
+            return new DeepEarth.Battle.MonsterPresenter(cp, pattern, turn);
         }
 
         // ── Fallback ─────────────────────────────────────────────────────────────

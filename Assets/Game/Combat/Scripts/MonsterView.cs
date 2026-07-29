@@ -88,12 +88,14 @@ namespace DeepEarth.Combat
             }
         }
 
-        public void PlayAttackAnimation()
+        // duration: 기본값 0.25f는 기존 실시간 전투(Elite 등, 인자 없이 호출)의 룬지 속도를 그대로 유지하기 위함.
+        // 턴제 전투(Battle 네임스페이스)는 BattleBalanceData.monsterAttackAnimationTime을 명시적으로 전달한다.
+        public void PlayAttackAnimation(float duration = 0.25f)
         {
-            StartCoroutine(CoAttackLunge());
+            StartCoroutine(CoAttackLunge(duration));
         }
 
-        private System.Collections.IEnumerator CoAttackLunge()
+        private System.Collections.IEnumerator CoAttackLunge(float duration)
         {
             Vector3 spawnPos = _spawnWorldPosition;
             Vector3 forwardPos = spawnPos + new Vector3(0f, 0f, -1.5f);
@@ -101,7 +103,6 @@ namespace DeepEarth.Combat
             Debug.Log($"[Battle]\nAttack Start\nPosition : {spawnPos.x:F2},{spawnPos.y:F2},{spawnPos.z:F2}");
 
             float elapsed = 0f;
-            float duration = 0.25f;
 
             while (elapsed < duration * 0.4f)
             {

@@ -8,7 +8,7 @@ using DeepEarth.Map;
 
 namespace DeepEarth.Combat
 {
-    public class CombatSystem : MonoBehaviour
+    public class CombatSystem : MonoBehaviour, DeepEarth.Battle.IMonsterSource
     {
         private static CombatSystem _instance;
         public static CombatSystem Instance => _instance;
@@ -25,10 +25,14 @@ namespace DeepEarth.Combat
         private MonsterSpawnTable _spawnTable;
         private int _spawnCounter;
         private int _pendingSpawns;
-        private bool _dataLoaded;
+        private UniTask _dataLoadTask;
+        private bool _dataLoadStarted;
 
         private DeepEarth.UI.BattleView _battleView;
         private DeepEarth.Battle.BattlePresenter _battlePresenter;
+
+        // 전투 중 새로 스폰되는 몬스터(예: 슬라임 분열) 알림. BattlePresenter가 구독해 턴 시스템에 편입시킨다.
+        public event Action<MonsterPresenter> OnMonsterSpawned;
 
         private void Awake()
         {
@@ -65,6 +69,10 @@ namespace DeepEarth.Combat
         public bool HasActiveMonsters => _activePresenters.Count > 0;
 
         public IReadOnlyList<MonsterPresenter> ActivePresenters => _activePresenters;
+
+        // 엘리트/보스가 동일한 턴 루프(BattleView/TurnPresenter/IntentPresenter 포함)를 공유하기 위한 접근점.
+        // 새 Singleton을 만들지 않고 기존 CombatSystem.Instance를 경유한다.
+        public DeepEarth.Battle.BattlePresenter SharedBattlePresenter => _battlePresenter;
 
         // 폭탄류 소모 아이템 전용 진입점 — 현재 전투 중인 몬스터 전체에게 즉시 피해를 준다.
         public void ApplyItemDamageToActiveMonsters(int amount)
@@ -201,12 +209,14 @@ namespace DeepEarth.Combat
             Debug.Log($"[Battle]\nSpawn Monster\nType : {data.monsterType}\nIndex : {spawnIdx}\nPosition : {worldPos.x:F2},{worldPos.y:F2},{worldPos.z:F2}");
 
             var model     = new MonsterModel(data, depth);
-            var presenter = new MonsterPresenter(model, view, startRealTimeLoop: false);
+            var presenter = new MonsterPresenter(model, view);
             _activePresenters.Add(presenter);
 
             Action<MonsterPresenter> handler = p => HandleMonsterKilled(p, data, depth);
             _killHandlers[presenter] = handler;
             presenter.OnMonsterKilled += handler;
+
+            OnMonsterSpawned?.Invoke(presenter);
         }
 
         // ── Kill Handler ─────────────────────────────────────────────────
@@ -326,11 +336,18 @@ namespace DeepEarth.Combat
 
         // ── Data Loading ─────────────────────────────────────────────────
 
-        private async UniTask EnsureDataLoadedAsync()
+        private UniTask EnsureDataLoadedAsync()
         {
-            if (_dataLoaded) return;
-            _dataLoaded = true;
+            if (!_dataLoadStarted)
+            {
+                _dataLoadStarted = true;
+                _dataLoadTask = LoadDataAsync().Preserve();
+            }
+            return _dataLoadTask;
+        }
 
+        private async UniTask LoadDataAsync()
+        {
             _spawnTable = await ResourceManager.Instance.LoadAssetAsync<MonsterSpawnTable>(AddressableKeys.MonsterSpawnTableKey);
             if (_spawnTable == null)
                 Debug.LogWarning("[CombatSystem] MonsterSpawnTable not found in Addressables.");

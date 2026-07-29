@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6044d954b6a92594d923719bca97ff06, type: 3}
+  m_Name: MonsterData_IronPlateSpider
+  m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.Core.MonsterData
+  monsterType: 9
+  nameLocKey: monster_iron_spider_name
+  addressableKey: Combat_Monster_Spider
+  grade: 1
+  spawnDepthMin: 0
+  spawnDepthMax: -1
+  eliteSkillType: 3
+  eliteRewardTable: {fileID: 0}
+  baseMaxHP: 12
+  baseDamage: 3
+  attackInterval: 1
+  hpPerDifficultyLevel: 2
+  damagePerDifficultyLevel: 1
+  spawnCount: 1
+  spawnOffsets: []
+  initialAttackDelayMin: 0
+  initialAttackDelayMax: 0
+  canSplit: 0
+  splitIntoType: 2
+  splitCount: 2
+  hasDeathDebuff: 0
+  deathDebuffChance: 0.25
+  deathDebuffEffect: {fileID: 0}
+  hasDeathReward: 0
+  rewardTable: {fileID: 0}

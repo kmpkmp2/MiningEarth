@@ -16,8 +16,8 @@ namespace DeepEarth.UI
             if (bannerText != null) bannerText.text = text;
             if (canvasGroup == null) return;
 
-            // 요청서: 턴 변경 시 0.2초 페이드. BattleBalanceData.intentAnimationTime을 공용 연출 기준값으로 재사용한다.
-            float duration = BattleBalanceData.Instance.intentAnimationTime;
+            // Fast Turn Battle: 배너는 BattlePresenter에서 await 없이(Forget) 호출되어 턴 진행을 막지 않는다.
+            float duration = BattleBalanceData.Instance.turnTransitionTime;
             await FadeAsync(0f, 1f, duration);
             await FadeAsync(1f, 0f, duration);
         }

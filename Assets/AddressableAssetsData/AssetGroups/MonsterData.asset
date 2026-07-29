@@ -109,6 +109,113 @@ MonoBehaviour:
     m_SerializedLabels:
     - MonsterPattern
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3b5c3e66919f4ea29921b97173bb103e
+    m_Address: MonsterPattern_BigSlime
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ElitePattern
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 266b7de2a8ce491088b210bfe0fc9343
+    m_Address: MonsterPattern_SkeletonMiner
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ElitePattern
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e68460ff8b9a462e82c057f3c5153bd4
+    m_Address: MonsterPattern_IronPlateSpider
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ElitePattern
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9e7ebd6c91d540198695ac17e3b1eac6
+    m_Address: MonsterPattern_MerchantMimic
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ElitePattern
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: abef2dffc36c4ddfb82e9b7e335fca83
+    m_Address: MonsterPattern_CursedKnight
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ElitePattern
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2289fd08c91e4d2e9131a2444a6011f7
+    m_Address: MonsterPattern_CursedPriest
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ElitePattern
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ca7bd7b98c93483da3b121afb125c917
+    m_Address: MonsterData_BigSlime
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - EliteData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9004c579035d427d8ac0b9818c8857af
+    m_Address: MonsterData_SkeletonMiner
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - EliteData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 96964f60f8cd4043ab3b1ecb2e41ed3e
+    m_Address: MonsterData_IronPlateSpider
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - EliteData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 19ccca33b4534d6ea418be7ae91b7941
+    m_Address: MonsterData_MerchantMimic
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - EliteData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cf91651bf60447e0a2d42db28db46aea
+    m_Address: MonsterData_CursedKnight
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - EliteData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 959022bbe24c470a9ba969055f6e8859
+    m_Address: MonsterData_CursedPriest
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - EliteData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a859b17e3219440395f7dab96957e7b0
+    m_Address: Elite_SpawnTable
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 08837b9527304b97b79fb24397cec560
+    m_Address: MonsterPattern_StoneGolemBoss
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BossPattern
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 19970c2ed8ad440baf8ec1780ed5bfc0
+    m_Address: MonsterPattern_MotherCaveSpiderBoss
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BossPattern
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a43628f5c280433eafda95388a4cde66
+    m_Address: MonsterPattern_SkeletonWarlordBoss
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BossPattern
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cec7b182de5a4eb88483fb0c72d1008b
+    m_Address: MonsterPattern_AllMetalColossusBoss
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BossPattern
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4f6595bdd2224047af13191eb97d3680
+    m_Address: MonsterPattern_BossCore
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BossPattern
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: bf53922257c85cf45b1d5828a500e7b9, type: 2}
   m_SchemaSet:

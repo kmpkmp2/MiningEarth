@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 using DeepEarth.Core;
 
@@ -8,6 +9,7 @@ namespace DeepEarth.UI
     public class IntentView : MonoBehaviour
     {
         [SerializeField] private RectTransform selfRect;
+        [SerializeField] private Image iconImage;
         [SerializeField] private TextMeshProUGUI iconText;
         [SerializeField] private TextMeshProUGUI valueText;
         [SerializeField] private CanvasGroup canvasGroup;
@@ -15,6 +17,7 @@ namespace DeepEarth.UI
 
         private Transform _followTarget;
         private Canvas _rootCanvas;
+        private string _loadedIconKey;
 
         private void Awake()
         {
@@ -31,12 +34,50 @@ namespace DeepEarth.UI
             gameObject.SetActive(visible);
         }
 
-        public void SetIntent(string glyph, int value, string description)
+        // iconKey: 스프라이트 아이콘(Addressables). glyph: 스프라이트 로드 실패 시 폴백용 이모지 텍스트.
+        // 폰트가 이모지 글리프를 지원하지 않아 깨진 네모(□)로 보이는 문제 때문에, 스프라이트를 우선 사용한다.
+        public void SetIntent(string iconKey, string glyph, int value, string description)
         {
-            if (iconText != null) iconText.text = glyph;
             if (valueText != null) valueText.text = value > 0 ? value.ToString() : string.Empty;
             if (canvasGroup != null) PlayChangeAnimAsync().Forget();
             gameObject.name = string.IsNullOrEmpty(description) ? gameObject.name : $"IntentView_{description}";
+
+            if (!string.IsNullOrEmpty(iconKey))
+            {
+                LoadIconAsync(iconKey, glyph).Forget();
+            }
+            else
+            {
+                ShowGlyphFallback(glyph);
+            }
+        }
+
+        private async Cysharp.Threading.Tasks.UniTaskVoid LoadIconAsync(string iconKey, string fallbackGlyph)
+        {
+            _loadedIconKey = iconKey;
+            var sprite = await ResourceManager.Instance.LoadAssetAsync<Sprite>(iconKey);
+            if (_loadedIconKey != iconKey) return; // 로드 도중 다른 아이콘으로 바뀌었으면 이 결과는 버린다.
+
+            if (sprite != null && iconImage != null)
+            {
+                iconImage.sprite = sprite;
+                iconImage.gameObject.SetActive(true);
+                if (iconText != null) iconText.gameObject.SetActive(false);
+            }
+            else
+            {
+                ShowGlyphFallback(fallbackGlyph);
+            }
+        }
+
+        private void ShowGlyphFallback(string glyph)
+        {
+            if (iconImage != null) iconImage.gameObject.SetActive(false);
+            if (iconText != null)
+            {
+                iconText.gameObject.SetActive(true);
+                iconText.text = glyph;
+            }
         }
 
         private async Cysharp.Threading.Tasks.UniTaskVoid PlayChangeAnimAsync()
