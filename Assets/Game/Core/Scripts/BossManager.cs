@@ -79,8 +79,12 @@ namespace DeepEarth.Core
             try
             {
                 // Instantiate UI Views from Addressables
+                // 각 패널은 로드 직후 즉시 비활성화한다 — 다음 패널의 비동기 로드가 진행되는 동안
+                // 화면에 노출되어 깜빡이는 것을 방지하기 위함(GameManager.InitializeUIAsync와 동일 패턴).
                 _bossRoomUIObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelBossRoom, canvasTransform);
+                _bossRoomUIObject?.SetActive(false);
                 _bossRewardUIObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelBossReward, canvasTransform);
+                _bossRewardUIObject?.SetActive(false);
 
                 if (_bossRoomUIObject != null)
                 {

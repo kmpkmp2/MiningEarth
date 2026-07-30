@@ -183,6 +183,10 @@ namespace DeepEarth.Core
                 // 각 패널은 로드 직후 즉시 비활성화한다 — 이후 남은 패널들의 비동기 로드가
                 // 진행되는 동안 화면에 노출되어 깜빡이는 것을 방지하기 위함(맨 끝에서 일괄 처리하지 않음).
                 _hudObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelHUD, canvas.transform);
+                // HUD는 항상 낮은 sibling index에 고정한다 — CombatSystem.SetupBattleUIAsync가 GameBootstrap.Awake()에서
+                // 별도로 먼저 UI_Panel_Battle을 생성하는 것과 경쟁(race)하지 않도록, HUD 스스로 위치를 고정시킨다.
+                // (그렇지 않으면 로드 완료 순서에 따라 HUD가 Battle 위에 그려질 수 있음.)
+                _hudObject?.transform.SetSiblingIndex(1);
                 _gameOverObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelGameOver, canvas.transform);
                 _gameOverObject?.SetActive(false);
                 _eventObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelEvent, canvas.transform);
@@ -191,6 +195,7 @@ namespace DeepEarth.Core
                 _settingsObject?.SetActive(false);
 
                 _relicPopupObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelRelicPopup, canvas.transform);
+                _relicPopupObject?.SetActive(false);
                 if (_relicPopupObject == null)
                 {
                     Debug.LogWarning("UIPanelRelicPopup failed to load. Creating fallback placeholder...");
@@ -221,6 +226,7 @@ namespace DeepEarth.Core
                 }
 
                 _inventoryPopupObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelInventoryPopup, canvas.transform);
+                _inventoryPopupObject?.SetActive(false);
                 if (_inventoryPopupObject == null)
                 {
                     Debug.LogWarning("UIPanelInventoryPopup failed to load. Creating fallback placeholder...");
@@ -253,9 +259,11 @@ namespace DeepEarth.Core
 
                 // Load Merchant panel — UI_Panel_Event와 완전히 분리된 전용 상점 팝업
                 _merchantObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelMerchant, canvas.transform);
+                _merchantObject?.SetActive(false);
 
                 // Load Event Reveal panel
                 _eventRevealObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelEventReveal, canvas.transform);
+                _eventRevealObject?.SetActive(false);
 
                 if (_hudObject == null || _gameOverObject == null || _eventObject == null || _settingsObject == null || _eventRevealObject == null)
                 {
