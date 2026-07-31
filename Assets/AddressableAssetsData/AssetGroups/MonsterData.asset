@@ -216,6 +216,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - BossPattern
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 61f59b2862134f5798ad66f8f964d1e0
+    m_Address: MonsterPattern_CaveRatBoss
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - BossPattern
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: bf53922257c85cf45b1d5828a500e7b9, type: 2}
   m_SchemaSet:

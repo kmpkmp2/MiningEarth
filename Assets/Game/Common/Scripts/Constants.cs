@@ -34,7 +34,8 @@ namespace DeepEarth.Common
         MotherCaveSpiderBoss,
         SkeletonWarlordBoss,
         AllMetalColossusBoss,
-        BossCore
+        BossCore,
+        CaveRatBoss
     }
 
     public enum GameState

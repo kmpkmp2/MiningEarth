@@ -13,7 +13,7 @@ namespace DeepEarth.Battle
     // 전금속 거인 파트 타겟팅)을 훅 오버라이드로 처리한다. 돌 골렘은 기본 동작 그대로.
     public class BossMonsterPresenter : MonsterPresenter
     {
-        public enum Role { StoneGolem, MotherCaveSpider, SkeletonWarlord, ColossusBody, ColossusCore }
+        public enum Role { StoneGolem, MotherCaveSpider, SkeletonWarlord, ColossusBody, ColossusCore, CaveRat }
 
         private readonly Role _role;
         private readonly Combat.MonsterSource _source;
@@ -23,6 +23,9 @@ namespace DeepEarth.Battle
         private readonly CancellationTokenSource _spawnCts = new CancellationTokenSource();
 
         private bool _threshold75, _threshold50, _threshold25;
+
+        // CaveRat: 공격 1회 실행마다 다음 공격에 누적되는 랜덤(1~5) 데미지 보너스.
+        private int _caveRatRageBonus;
 
         public override bool IsTargetable => _role != Role.ColossusBody || !_coordinator.MainBodyIsInvincible;
 
@@ -73,7 +76,26 @@ namespace DeepEarth.Battle
             if (_role == Role.ColossusBody && _coordinator.MainBodyIsInvincible)
                 return CurrentStep;
 
-            return await base.ExecuteTurnAsync();
+            var executedStep = CurrentStep;
+            var result = await base.ExecuteTurnAsync();
+
+            // CaveRat: 공격을 실행할 때마다 다음 공격 데미지에 랜덤(1~5)이 누적된다.
+            if (_role == Role.CaveRat && !CombatPresenter.Model.IsDead && executedStep != null &&
+                (executedStep.intentType == IntentType.Attack || executedStep.intentType == IntentType.HeavyAttack))
+            {
+                _caveRatRageBonus += Random.Range(1, 6);
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                Debug.Log($"[Boss]\nCaveRat Rage\nBonus Damage : {_caveRatRageBonus}");
+#endif
+            }
+
+            return result;
+        }
+
+        protected override int ModifyOutgoingDamage(int baseDamage)
+        {
+            if (_role == Role.CaveRat) return baseDamage + _caveRatRageBonus;
+            return base.ModifyOutgoingDamage(baseDamage);
         }
 
         // ── Mother Cave Spider ───────────────────────────────────────────────

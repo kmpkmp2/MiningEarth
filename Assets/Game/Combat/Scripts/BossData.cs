@@ -8,7 +8,8 @@ namespace DeepEarth.Combat
         StoneGolem,
         MotherCaveSpider,
         SkeletonWarlord,
-        AllMetalColossus
+        AllMetalColossus,
+        CaveRat
     }
 
     // 보스 스탯 공식 소스. HP 추적은 Combat.MonsterModel(BossManager가 이 값들로 생성)이 담당한다.
@@ -31,6 +32,7 @@ namespace DeepEarth.Combat
                 BossID.MotherCaveSpider => "boss_mother_cave_spider_name",
                 BossID.SkeletonWarlord  => "boss_skeleton_warlord_name",
                 BossID.AllMetalColossus => "boss_all_metal_colossus_name",
+                BossID.CaveRat          => "boss_cave_rat_name",
                 _                       => "boss_stone_golem_name"
             };
 
@@ -54,6 +56,10 @@ namespace DeepEarth.Combat
                 case BossID.AllMetalColossus:
                     MaxHP = 200 + colossusScale * 100;
                     Damage = 5 + colossusScale * 2;
+                    break;
+                case BossID.CaveRat:
+                    MaxHP = 60;
+                    Damage = 3;
                     break;
             }
         }

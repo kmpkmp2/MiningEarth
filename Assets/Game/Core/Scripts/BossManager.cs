@@ -104,6 +104,8 @@ namespace DeepEarth.Core
             }
         }
 
+        private static BossID PickRandomBoss(params BossID[] pool) => pool[UnityEngine.Random.Range(0, pool.Length)];
+
         public async UniTask StartBossSequenceAsync(int depth)
         {
             // Transition State to BossCombat
@@ -117,12 +119,13 @@ namespace DeepEarth.Core
             // Determine Boss type by MapIndex (0-based map progression counter).
             // Route Map mode increments MapIndex after each boss defeat, so each 50-floor
             // segment gets a unique boss regardless of CurrentDepth node-counter value.
+            // 각 구간마다 정해진 풀에서 랜덤으로 1종을 뽑는다(4구간 이후는 AllMetalColossus 고정).
             int mapIndex = SaveManager.CurrentData?.MapSaveData?.MapIndex ?? 0;
             BossID bossId = mapIndex switch
             {
-                0 => BossID.StoneGolem,
-                1 => BossID.MotherCaveSpider,
-                2 => BossID.SkeletonWarlord,
+                0 => PickRandomBoss(BossID.CaveRat, BossID.StoneGolem),
+                1 => PickRandomBoss(BossID.MotherCaveSpider, BossID.SkeletonWarlord),
+                2 => PickRandomBoss(BossID.CaveRat, BossID.StoneGolem, BossID.MotherCaveSpider, BossID.SkeletonWarlord),
                 _ => BossID.AllMetalColossus
             };
 
@@ -133,6 +136,7 @@ namespace DeepEarth.Core
                 BossID.MotherCaveSpider => AddressableKeys.MonsterBossMotherSpider,
                 BossID.SkeletonWarlord  => AddressableKeys.MonsterBossSkeletonWarlord,
                 BossID.AllMetalColossus => AddressableKeys.MonsterBossAllMetalColossus,
+                BossID.CaveRat          => AddressableKeys.MonsterBossRat,
                 _                       => AddressableKeys.MonsterBossStoneGolem
             };
 
@@ -184,6 +188,7 @@ namespace DeepEarth.Core
                     BossID.MotherCaveSpider => "Mother Cave Spider",
                     BossID.SkeletonWarlord  => "Skeleton Warlord",
                     BossID.AllMetalColossus => "All Metal Colossus",
+                    BossID.CaveRat          => "Cave Rat",
                     _                       => bossId.ToString()
                 };
                 Debug.Log($"[Boss]\nSpawned\nBoss : {bossDisplayName}\nScale : (1,1,1)");
@@ -211,6 +216,7 @@ namespace DeepEarth.Core
                 BossID.MotherCaveSpider => MonsterType.MotherCaveSpiderBoss,
                 BossID.SkeletonWarlord  => MonsterType.SkeletonWarlordBoss,
                 BossID.AllMetalColossus => MonsterType.AllMetalColossusBoss,
+                BossID.CaveRat          => MonsterType.CaveRatBoss,
                 _                       => MonsterType.StoneGolemBoss
             };
 
@@ -250,6 +256,7 @@ namespace DeepEarth.Core
                         BossID.MotherCaveSpider => DeepEarth.Battle.BossMonsterPresenter.Role.MotherCaveSpider,
                         BossID.SkeletonWarlord  => DeepEarth.Battle.BossMonsterPresenter.Role.SkeletonWarlord,
                         BossID.AllMetalColossus => DeepEarth.Battle.BossMonsterPresenter.Role.ColossusBody,
+                        BossID.CaveRat          => DeepEarth.Battle.BossMonsterPresenter.Role.CaveRat,
                         _                       => DeepEarth.Battle.BossMonsterPresenter.Role.StoneGolem
                     };
                     return new DeepEarth.Battle.BossMonsterPresenter(cp, pattern, turn, role, source, spawnPoint, coordinator);
