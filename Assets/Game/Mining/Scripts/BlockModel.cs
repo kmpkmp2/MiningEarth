@@ -12,27 +12,12 @@ namespace DeepEarth.Mining
 
         public bool IsDestroyed => CurrentHits <= 0;
 
-        public BlockModel(BlockType type, int depth)
+        public BlockModel(BlockType type, int depth, int baseHits)
         {
             Type = type;
-            BaseHits = GetBaseHitsForType(type);
+            BaseHits = baseHits;
             MaxHits = Mathf.RoundToInt(BaseHits * (1f + (float)depth / 15f));
             CurrentHits = MaxHits;
-        }
-
-        private int GetBaseHitsForType(BlockType type)
-        {
-            switch (type)
-            {
-                case BlockType.Dirt:    return 1;
-                case BlockType.Root:    return 2;
-                case BlockType.Stone:   return 4;
-                case BlockType.Iron:    return 8;
-                case BlockType.Silver:  return 15;
-                case BlockType.Gold:    return 25;
-                case BlockType.Diamond: return 50;
-                default:                return 1;
-            }
         }
 
         public bool TakeHit(int damage)

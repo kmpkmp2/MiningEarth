@@ -1,3 +1,4 @@
+using UnityEngine;
 using DeepEarth.Core;
 
 namespace DeepEarth.UI
@@ -6,6 +7,8 @@ namespace DeepEarth.UI
     {
         private readonly GameUIView _view;
         private readonly GameManager _gameManager;
+
+        public RectTransform GetInventoryButtonRect() => _view?.GetInventoryButtonRect();
 
         private readonly EffectHUDPresenter _effectHUDPresenter;
         private readonly InventoryHUDPresenter _inventoryHUDPresenter;

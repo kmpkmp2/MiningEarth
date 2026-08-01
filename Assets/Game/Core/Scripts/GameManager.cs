@@ -106,15 +106,12 @@ namespace DeepEarth.Core
         }
 
         private DepthRewardTable _depthRewardTable;
+        public DepthRewardTable DepthRewardTable => _depthRewardTable;
+
+        public RectTransform GetInventoryButtonRect() => _hudPresenter?.GetInventoryButtonRect();
 
         private void Start()
         {
-            // Register resource reward
-            if (MiningSystem.Instance != null)
-            {
-                MiningSystem.Instance.OnResourceMined += HandleResourceMined;
-            }
-
             // Register HP death hook
             StatManager.Instance.OnHPChanged += CheckPlayerDeath;
 
@@ -131,11 +128,6 @@ namespace DeepEarth.Core
 
         private void OnDestroy()
         {
-            if (MiningSystem.Instance != null)
-            {
-                MiningSystem.Instance.OnResourceMined -= HandleResourceMined;
-            }
-
             if (StatManager.Instance != null)
             {
                 StatManager.Instance.OnHPChanged -= CheckPlayerDeath;
@@ -478,76 +470,6 @@ namespace DeepEarth.Core
             MiningSystem.Instance.SpawnNextBlockAsync().Forget();
         }
 
-        private void HandleResourceMined(BlockType type, int amount)
-        {
-            int depth = CurrentDepth;
-            int baseAmount = 1;
-            int depthBonus = _depthRewardTable != null ? _depthRewardTable.GetDepthBonus(type, depth) : 0;
-            amount = baseAmount + depthBonus;
-
-            // Boss run-local resource multiplier
-            float bossMult = 1.0f + StatManager.Instance.BossResourceModifier;
-            amount = Mathf.RoundToInt(amount * bossMult);
-            if (amount < 1) amount = 1;
-
-            // Miner's Journal ore gain buff
-            float oreMult = NodeEventManager.Instance?.GetOreGainMultiplier() ?? 1.0f;
-            if (oreMult != 1.0f)
-                amount = Mathf.Max(1, Mathf.RoundToInt(amount * oreMult));
-
-            // 유물: 광물 타입별 획득 보너스 (IronOrnament, SilverNecklace 등)
-            float oreTypeBonus = RelicManager.Instance?.GetOreTypeGainBonus(type) ?? 0f;
-            if (oreTypeBonus > 0f)
-            {
-                int oreExtra = Mathf.Max(1, Mathf.RoundToInt(amount * oreTypeBonus));
-                amount += oreExtra;
-            }
-
-            // Grave Robber passive: level-based chance for +10% extra yield (minimum +1)
-            var selectedChar = CharacterManager.Instance.SelectedCharacterID;
-            if (CharacterManager.Instance.HasGraveRobberPassive(selectedChar))
-            {
-                float passiveChance = CharacterManager.Instance.GetCurrentPassiveValue(selectedChar);
-                if (UnityEngine.Random.value < passiveChance)
-                {
-                    int extra = Mathf.Max(1, Mathf.RoundToInt(amount * 0.1f));
-                    amount += extra;
-                    Debug.Log($"[Reward]\nGrave Robber Passive : +{extra} {type}");
-                }
-            }
-
-            string itemId = BlockTypeToItemId(type);
-            if (!string.IsNullOrEmpty(itemId))
-            {
-                Debug.Log($"[Reward]\n{type}\nBase : {baseAmount}\nDepth Bonus : +{depthBonus}\nFinal : {amount}");
-                InventoryManager.Instance.AddItem(itemId, amount);
-
-                // 유물: 행운의 곡괭이 — 5% 확률 동일 광물 1개 추가
-                if (RelicManager.Instance?.CheckLuckyMineChance() ?? false)
-                    InventoryManager.Instance.AddItem(itemId, 1);
-
-                // 유물: 흡혈 곡괭이 — 10% 확률 HP +1
-                if (RelicManager.Instance?.CheckMineHealChance() ?? false)
-                    StatManager.Instance.Heal(1);
-            }
-
-            OnGameDataChanged?.Invoke();
-        }
-
-        private string BlockTypeToItemId(BlockType type)
-        {
-            switch (type)
-            {
-                case BlockType.Stone:   return "Item_Stone";
-                case BlockType.Root:    return "Item_Wood";
-                case BlockType.Iron:    return "Item_Iron";
-                case BlockType.Silver:  return "Item_Silver";
-                case BlockType.Gold:    return "Item_Gold";
-                case BlockType.Diamond: return "Item_Diamond";
-                default:                return "";
-            }
-        }
-
         public void TriggerStatsOrResourcesChanged()
         {
             OnGameDataChanged?.Invoke();
@@ -845,11 +767,12 @@ namespace DeepEarth.Core
 #endif
 
                 // Step 3: Transfer Currency
-                int runStone = 0, runWood = 0, runIron = 0, runSilver = 0, runGold = 0, runDiamond = 0;
+                int runStone = 0, runWood = 0, runDirt = 0, runIron = 0, runSilver = 0, runGold = 0, runDiamond = 0;
                 if (InventoryManager.Instance != null)
                 {
                     runStone = InventoryManager.Instance.GetItemCount("Item_Stone");
                     runWood = InventoryManager.Instance.GetItemCount("Item_Wood");
+                    runDirt = InventoryManager.Instance.GetItemCount("Item_Dirt");
                     runIron = InventoryManager.Instance.GetItemCount("Item_Iron");
                     runSilver = InventoryManager.Instance.GetItemCount("Item_Silver");
                     runGold = InventoryManager.Instance.GetItemCount("Item_Gold");
@@ -861,6 +784,7 @@ namespace DeepEarth.Core
                 sb.AppendLine("[Run]\nTransfer Currency");
                 if (runStone > 0) sb.AppendLine($"Stone +{runStone}");
                 if (runWood > 0) sb.AppendLine($"Wood +{runWood}");
+                if (runDirt > 0) sb.AppendLine($"Dirt +{runDirt}");
                 if (runIron > 0) sb.AppendLine($"Iron +{runIron}");
                 if (runSilver > 0) sb.AppendLine($"Silver +{runSilver}");
                 if (runGold > 0) sb.AppendLine($"Gold +{runGold}");

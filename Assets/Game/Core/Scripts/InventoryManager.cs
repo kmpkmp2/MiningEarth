@@ -147,6 +147,7 @@ namespace DeepEarth.Core
             var data = SaveManager.CurrentData;
             if (data.PersistentStone   > 0) MetaCollection.AddItem(GetTemplate("Item_Stone"),   data.PersistentStone);
             if (data.PersistentWood    > 0) MetaCollection.AddItem(GetTemplate("Item_Wood"),    data.PersistentWood);
+            if (data.PersistentDirt    > 0) MetaCollection.AddItem(GetTemplate("Item_Dirt"),    data.PersistentDirt);
         }
 
         public void ClearRunInventory()
@@ -164,6 +165,7 @@ namespace DeepEarth.Core
 
             int runStone   = RunCollection.GetItemCount("Item_Stone");
             int runWood    = RunCollection.GetItemCount("Item_Wood");
+            int runDirt    = RunCollection.GetItemCount("Item_Dirt");
 
             if (runStone > 0)
             {
@@ -176,6 +178,12 @@ namespace DeepEarth.Core
                 data.PersistentWood += runWood;
                 MetaCollection.AddItem(GetTemplate("Item_Wood"), runWood);
                 Debug.Log($"[Run]\nWood +{runWood}");
+            }
+            if (runDirt > 0)
+            {
+                data.PersistentDirt += runDirt;
+                MetaCollection.AddItem(GetTemplate("Item_Dirt"), runDirt);
+                Debug.Log($"[Run]\nDirt +{runDirt}");
             }
 
             SaveManager.Save();

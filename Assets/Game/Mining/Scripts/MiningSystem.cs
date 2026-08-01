@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using DeepEarth.Common;
@@ -17,7 +19,10 @@ namespace DeepEarth.Mining
         private BlockPresenter _currentBlockPresenter;
         private GameObject _currentBlockObject;
 
-        public event Action<BlockType, int> OnResourceMined;
+        private readonly Dictionary<BlockType, MineralData> _mineralDataCache = new Dictionary<BlockType, MineralData>();
+        private UniTask _mineralDataLoadTask;
+        private bool _mineralDataLoadStarted;
+
         public event Action OnBlockCleared;
 
         private void Awake()
@@ -42,6 +47,8 @@ namespace DeepEarth.Mining
             // Clear current block if any
             ClearCurrentBlock();
 
+            await EnsureMineralDataLoadedAsync();
+
             int depth = GameManager.Instance.CurrentDepth;
             BlockType type = ChooseBlockTypeByDepth(depth);
             string addressableKey = GetAddressableKeyForBlock(type);
@@ -64,9 +71,30 @@ namespace DeepEarth.Mining
                 view = _currentBlockObject.AddComponent<BlockView>();
             }
 
-            var model = new BlockModel(type, depth);
+            int baseHits = _mineralDataCache.TryGetValue(type, out var mineralData) ? mineralData.baseHits : 1;
+            var model = new BlockModel(type, depth, baseHits);
             _currentBlockPresenter = new BlockPresenter(model, view);
             _currentBlockPresenter.OnBlockDestroyed += HandleBlockDestroyed;
+        }
+
+        // ── MineralData Loading (cached-UniTask + .Preserve() — see EnsureBossPatternsLoadedAsync for the same pattern) ──
+
+        private UniTask EnsureMineralDataLoadedAsync()
+        {
+            if (!_mineralDataLoadStarted)
+            {
+                _mineralDataLoadStarted = true;
+                _mineralDataLoadTask = LoadMineralDataAsync().Preserve();
+            }
+            return _mineralDataLoadTask;
+        }
+
+        private async UniTask LoadMineralDataAsync()
+        {
+            var minerals = await ResourceManager.Instance.LoadAllByLabelAsync<MineralData>(AddressableKeys.LabelMineralData);
+            if (minerals != null)
+                foreach (var m in minerals)
+                    if (m != null) _mineralDataCache[m.blockType] = m;
         }
 
         private void ClearCurrentBlock()
@@ -87,8 +115,11 @@ namespace DeepEarth.Mining
 
         private void HandleBlockDestroyed(BlockPresenter presenter)
         {
-            // Resource drop logic
-            RewardPlayerForBlock(presenter.Model.Type);
+            // 뷰가 ClearCurrentBlock()으로 즉시 반환/재활용되기 전에 픽업 연출 시작 위치를 미리 캐싱.
+            Vector3 blockWorldPos = presenter.View.transform.position;
+
+            // Resource drop logic — 확정 지급(드롭 실패 없음)
+            RewardPlayerForBlock(presenter.Model.Type, blockWorldPos);
 
             // Play shatter effects
             EffectSystem.Instance.SpawnHitParticles(presenter.View.transform.position, presenter.View.GetBlockColor());
@@ -111,12 +142,11 @@ namespace DeepEarth.Mining
             GameManager.Instance.OnBlockMined().Forget();
         }
 
-        private void RewardPlayerForBlock(BlockType type)
+        private void RewardPlayerForBlock(BlockType type, Vector3 worldPosition)
         {
-            int amount = 1;
+            // Root 전용 부가 보너스(주 보상과 무관, 그대로 유지)
             if (type == BlockType.Root)
             {
-                // Root has high chance to drop HP recovery
                 if (UnityEngine.Random.value < 0.4f)
                 {
                     StatManager.Instance.Heal(2);
@@ -133,61 +163,48 @@ namespace DeepEarth.Mining
                     }
                 }
             }
-            
-            // Add resource to GameManager inventory (except Dirt which is junk)
-            if (type != BlockType.Dirt)
+
+            if (!_mineralDataCache.TryGetValue(type, out var mineralData) || mineralData == null || string.IsNullOrEmpty(mineralData.itemID))
+                return;
+
+            int depth = GameManager.Instance.CurrentDepth;
+            var reward = RewardCalculator.Calculate(type, depth, mineralData, GameManager.Instance.DepthRewardTable);
+
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            Debug.Log($"[Mining]\nMineral Destroyed\nType : {type}\nBase Reward : {reward.Base}\nDepth Bonus : +{reward.DepthBonus}\nFinal Reward : {type} x{reward.FinalAmount}\nInventory Updated");
+#endif
+
+            InventoryManager.Instance.AddItem(reward.ItemID, reward.FinalAmount);
+            int totalGranted = reward.FinalAmount;
+
+            if (reward.LuckyMineTriggered)
             {
-                OnResourceMined?.Invoke(type, amount);
+                InventoryManager.Instance.AddItem(reward.ItemID, 1);
+                totalGranted += 1;
+            }
+            if (reward.MineHealTriggered)
+            {
+                StatManager.Instance.Heal(1);
+            }
+
+            var targetRect = GameManager.Instance.GetInventoryButtonRect();
+            if (targetRect != null)
+            {
+                EffectSystem.Instance.SpawnMiningRewardPickup(worldPosition, mineralData.itemID, totalGranted, targetRect);
             }
         }
 
+        // 깊이는 더 이상 "출현 확률"을 가중하지 않는다 — MineralData.unlockDepth 이상인 광물들 중
+        // 완전 균등 랜덤으로 선택한다(깊이는 이후 RewardCalculator의 획득량 계산에만 관여).
         private BlockType ChooseBlockTypeByDepth(int depth)
         {
-            float rand = UnityEngine.Random.value;
+            var candidates = _mineralDataCache
+                .Where(kv => depth >= kv.Value.unlockDepth)
+                .Select(kv => kv.Key)
+                .ToList();
 
-            if (depth < 30) // Very Easy
-            {
-                if (rand < 0.60f) return BlockType.Dirt;
-                if (rand < 0.85f) return BlockType.Stone;
-                if (rand < 0.95f) return BlockType.Root;
-                return BlockType.Iron;
-            }
-            else if (depth < 80) // Easy
-            {
-                if (rand < 0.30f) return BlockType.Dirt;
-                if (rand < 0.70f) return BlockType.Stone;
-                if (rand < 0.80f) return BlockType.Root;
-                if (rand < 0.95f) return BlockType.Iron;
-                return BlockType.Silver;
-            }
-            else if (depth < 150) // Medium
-            {
-                if (rand < 0.10f) return BlockType.Dirt;
-                if (rand < 0.50f) return BlockType.Stone;
-                if (rand < 0.60f) return BlockType.Root;
-                if (rand < 0.80f) return BlockType.Iron;
-                if (rand < 0.92f) return BlockType.Silver;
-                if (rand < 0.99f) return BlockType.Gold;
-                return BlockType.Diamond;
-            }
-            else if (depth < 250) // Hard
-            {
-                if (rand < 0.30f) return BlockType.Stone;
-                if (rand < 0.40f) return BlockType.Root;
-                if (rand < 0.65f) return BlockType.Iron;
-                if (rand < 0.83f) return BlockType.Silver;
-                if (rand < 0.95f) return BlockType.Gold;
-                return BlockType.Diamond;
-            }
-            else // Very Hard
-            {
-                if (rand < 0.20f) return BlockType.Stone;
-                if (rand < 0.30f) return BlockType.Root;
-                if (rand < 0.50f) return BlockType.Iron;
-                if (rand < 0.70f) return BlockType.Silver;
-                if (rand < 0.90f) return BlockType.Gold;
-                return BlockType.Diamond;
-            }
+            if (candidates.Count == 0) return BlockType.Dirt; // MineralData 로드 실패 시 안전 폴백
+            return candidates[UnityEngine.Random.Range(0, candidates.Count)];
         }
 
         private string GetAddressableKeyForBlock(BlockType type)

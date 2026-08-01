@@ -27,6 +27,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - ItemData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 37e71648afa54365a28762fdfa5946d7
+    m_Address: Item_Dirt
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4e893dc79c764a958fe067217083a746
     m_Address: Item_Iron
     m_ReadOnly: 0

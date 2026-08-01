@@ -107,6 +107,7 @@ namespace DeepEarth.Common
         // Items
         public const string ItemStone = "Item_Stone";
         public const string ItemWood = "Item_Wood";
+        public const string ItemDirt = "Item_Dirt";
         public const string ItemIron = "Item_Iron";
         public const string ItemSilver = "Item_Silver";
         public const string ItemGold = "Item_Gold";
@@ -228,6 +229,9 @@ namespace DeepEarth.Common
 
         // Mining Data
         public const string DepthRewardTable = "Mining_DepthRewardTable";
+        public const string LabelMineralData = "MineralData";
+        public const string MiningSFXPickup  = "Mining_SFX_Pickup";
+        public const string UIPrefabMiningRewardIcon = "UI_Prefab_MiningRewardIcon";
 
         // Route Map
         public const string UIPanelMapPopup       = "UI_Panel_MapPopup";

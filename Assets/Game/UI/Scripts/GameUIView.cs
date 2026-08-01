@@ -81,6 +81,11 @@ namespace DeepEarth.UI
             return effectIconContainer;
         }
 
+        public RectTransform GetInventoryButtonRect()
+        {
+            return inventoryButton != null ? inventoryButton.transform as RectTransform : null;
+        }
+
         [Header("Resource Counters")]
         [SerializeField] private TextMeshProUGUI ironText;
         [SerializeField] private TextMeshProUGUI silverText;

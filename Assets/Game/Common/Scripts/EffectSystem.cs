@@ -1,7 +1,12 @@
+using System;
 using System.Collections;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using DeepEarth.Core;
+using DeepEarth.UI;
+using DeepEarth.Audio;
 
 namespace DeepEarth.Common
 {
@@ -148,8 +153,8 @@ namespace DeepEarth.Common
 
             while (elapsed < duration)
             {
-                float x = Random.Range(-1f, 1f) * magnitude;
-                float y = Random.Range(-1f, 1f) * magnitude;
+                float x = UnityEngine.Random.Range(-1f, 1f) * magnitude;
+                float y = UnityEngine.Random.Range(-1f, 1f) * magnitude;
 
                 _shakeOffset = new Vector3(x, y, 0f);
 
@@ -243,7 +248,7 @@ namespace DeepEarth.Common
             Vector2 screenPos = _mainCamera.WorldToScreenPoint(worldPosition);
             
             // Adjust position slightly randomly
-            screenPos += new Vector2(Random.Range(-30f, 30f), Random.Range(-10f, 10f));
+            screenPos += new Vector2(UnityEngine.Random.Range(-30f, 30f), UnityEngine.Random.Range(-10f, 10f));
             textGo.transform.position = screenPos;
 
             StartCoroutine(CoAnimateDamageText(textGo, tmp));
@@ -283,6 +288,54 @@ namespace DeepEarth.Common
                 ps.Play();
             }
             Destroy(particles, 1.5f);
+        }
+
+        // 채굴 보상 아이콘이 HUD 인벤토리 버튼으로 날아가는 연출 + 획득 SFX.
+        // ResourceItemView.AbsorbToAsync(GameOver 재화 흡수 연출)와 동일한 이징 방식을 일반화한 것.
+        public void SpawnMiningRewardPickup(Vector3 worldStartPosition, string iconKey, int amount, RectTransform target)
+        {
+            SpawnMiningRewardPickupAsync(worldStartPosition, iconKey, amount, target).Forget();
+        }
+
+        private async UniTaskVoid SpawnMiningRewardPickupAsync(Vector3 worldStartPosition, string iconKey, int amount, RectTransform target)
+        {
+            if (_uiCanvas == null) _uiCanvas = FindFirstObjectByType<Canvas>();
+            EnsureCameraReference();
+            if (_uiCanvas == null || _mainCamera == null || target == null) return;
+
+            GameObject iconGo = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPrefabMiningRewardIcon, _uiCanvas.transform);
+            if (iconGo == null) return;
+
+            var view = iconGo.GetComponent<MiningRewardIconView>();
+            if (view == null)
+            {
+                Destroy(iconGo);
+                return;
+            }
+
+            var rt = iconGo.GetComponent<RectTransform>();
+            if (rt != null)
+                rt.position = _mainCamera.WorldToScreenPoint(worldStartPosition);
+
+            Sprite sprite = null;
+            if (!string.IsNullOrEmpty(iconKey))
+            {
+                try { sprite = await ResourceManager.Instance.LoadAssetAsync<Sprite>(iconKey); }
+                catch (Exception) { sprite = null; }
+            }
+            if (sprite == null)
+            {
+                try { sprite = await ResourceManager.Instance.LoadAssetAsync<Sprite>("Empty_item_Icon"); }
+                catch (Exception) { sprite = null; }
+            }
+
+            view.SetIcon(sprite);
+            view.SetAmount(amount);
+
+            AudioManager.Instance?.PlaySFX(AddressableKeys.MiningSFXPickup);
+
+            await view.FlyToAsync(target);
+            Destroy(iconGo);
         }
     }
 }
