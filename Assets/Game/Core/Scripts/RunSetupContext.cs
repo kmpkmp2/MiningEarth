@@ -23,7 +23,6 @@ namespace DeepEarth.Core
             SelectedCharacter           = CharacterID.Prisoner;
             SelectedPickaxeID           = "pickaxe_wood";
             IsRunSetupComplete          = false;
-            IsInitializedByLoadingScene = false;
         }
     }
 }
