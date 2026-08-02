@@ -306,6 +306,9 @@ namespace DeepEarth.Common
             GameObject iconGo = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPrefabMiningRewardIcon, _uiCanvas.transform);
             if (iconGo == null) return;
 
+            // 다른 팝업/패널이 나중에 캔버스에 추가되어도 항상 최상단에 렌더링되도록 보장.
+            iconGo.transform.SetAsLastSibling();
+
             var view = iconGo.GetComponent<MiningRewardIconView>();
             if (view == null)
             {
@@ -315,7 +318,11 @@ namespace DeepEarth.Common
 
             var rt = iconGo.GetComponent<RectTransform>();
             if (rt != null)
-                rt.position = _mainCamera.WorldToScreenPoint(worldStartPosition);
+            {
+                // 파괴 파티클/데미지 텍스트와 같은 지점에서 겹치지 않도록 시작 위치를 살짝 위로 오프셋.
+                Vector3 offsetStartPosition = worldStartPosition + Vector3.up * 0.4f;
+                rt.position = _mainCamera.WorldToScreenPoint(offsetStartPosition);
+            }
 
             Sprite sprite = null;
             if (!string.IsNullOrEmpty(iconKey))
