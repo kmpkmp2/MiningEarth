@@ -266,6 +266,10 @@ namespace DeepEarth.Common
     {
         public const int MaxBuffDebuffStack = 3;
         public const int BossSpawnDepthInterval = 50;
+
+        public const int MaxHPUpgradeLevelCap = 20;
+        public const int AttackUpgradeLevelCap = 20;
+        public const int MiningPowerUpgradeLevelCap = 50;
     }
 
     public static class SceneNames

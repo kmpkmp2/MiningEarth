@@ -80,9 +80,15 @@ namespace DeepEarth.Core
         {
             switch (type)
             {
-                case UpgradeType.MiningPower:    return (MiningPowerLevel + 1) * 10;
-                case UpgradeType.MaxHP:          return (MaxHPLevel + 1) * 8;
-                case UpgradeType.Attack:         return (AttackLevel + 1) * 5;
+                case UpgradeType.MiningPower:
+                    if (MiningPowerLevel >= GameSettings.MiningPowerUpgradeLevelCap) return int.MaxValue;
+                    return (MiningPowerLevel + 1) * 10;
+                case UpgradeType.MaxHP:
+                    if (MaxHPLevel >= GameSettings.MaxHPUpgradeLevelCap) return int.MaxValue;
+                    return (MaxHPLevel + 1) * 8;
+                case UpgradeType.Attack:
+                    if (AttackLevel >= GameSettings.AttackUpgradeLevelCap) return int.MaxValue;
+                    return (AttackLevel + 1) * 5;
                 case UpgradeType.InventorySize:
                     if (InventorySizeLevel >= 5) return int.MaxValue;
                     return (InventorySizeLevel + 1) * 6;
@@ -103,9 +109,18 @@ namespace DeepEarth.Core
 
             switch (type)
             {
-                case UpgradeType.MiningPower:    upgrade.MiningPowerLevel++;    break;
-                case UpgradeType.MaxHP:          upgrade.MaxHPLevel++;          break;
-                case UpgradeType.Attack:         upgrade.AttackLevel++;         break;
+                case UpgradeType.MiningPower:
+                    if (upgrade.MiningPowerLevel < GameSettings.MiningPowerUpgradeLevelCap)
+                        upgrade.MiningPowerLevel++;
+                    break;
+                case UpgradeType.MaxHP:
+                    if (upgrade.MaxHPLevel < GameSettings.MaxHPUpgradeLevelCap)
+                        upgrade.MaxHPLevel++;
+                    break;
+                case UpgradeType.Attack:
+                    if (upgrade.AttackLevel < GameSettings.AttackUpgradeLevelCap)
+                        upgrade.AttackLevel++;
+                    break;
                 case UpgradeType.InventorySize:
                     if (upgrade.InventorySizeLevel < 5)
                     {
