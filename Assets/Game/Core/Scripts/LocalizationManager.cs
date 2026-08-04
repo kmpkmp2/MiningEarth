@@ -559,6 +559,10 @@ namespace DeepEarth.Core
                 { "loading_step_sound",         "Loading sounds..." },
                 { "loading_step_verify",        "Verifying data..." },
                 { "loading_step_enter",         "Entering the mine..." },
+                { "loading_step_loadscene",     "Loading main scene..." },
+                { "loading_step_systems",       "Initializing systems..." },
+                { "loading_step_activate",      "Activating..." },
+                { "loading_failed_message",     "Failed to enter the mine. Returning to the main menu." },
                 { "loading_tip_cave",           "The deeper you go, the stronger the monsters..." },
 
                 // Exit Run
@@ -1316,6 +1320,10 @@ namespace DeepEarth.Core
                 { "loading_step_sound",         "사운드 로드 중..." },
                 { "loading_step_verify",        "데이터 검증 중..." },
                 { "loading_step_enter",         "지하 세계로 입장 중..." },
+                { "loading_step_loadscene",     "메인 씬 로드 중..." },
+                { "loading_step_systems",       "시스템 초기화 중..." },
+                { "loading_step_activate",      "활성화 중..." },
+                { "loading_failed_message",     "광산 진입에 실패했습니다. 메인 메뉴로 돌아갑니다." },
                 { "loading_tip_cave",           "깊이 내려갈수록 몬스터가 강해집니다..." },
 
                 // 런 종료

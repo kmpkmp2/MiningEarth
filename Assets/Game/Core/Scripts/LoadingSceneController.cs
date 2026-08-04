@@ -10,7 +10,10 @@ namespace DeepEarth.Core
     /// </summary>
     public class LoadingSceneController : MonoBehaviour
     {
-        [SerializeField] private LoadingPanelView panelView;
+        [SerializeField] private LoadingPanelView          panelView;
+        [SerializeField] private LoadingFadeView           fadeView;
+        [SerializeField] private LoadingFailurePopupView   failureView;
+        [SerializeField] private Camera                    mainCamera;
 
         private void Start()
         {
@@ -19,7 +22,7 @@ namespace DeepEarth.Core
 
         private async UniTaskVoid RunAsync()
         {
-            var presenter = new LoadingPresenter(panelView);
+            var presenter = new LoadingPresenter(panelView, fadeView, failureView, mainCamera);
             await presenter.ExecuteAsync();
         }
     }

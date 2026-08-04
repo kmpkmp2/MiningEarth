@@ -215,6 +215,7 @@ MonoBehaviour:
   particlePrefab: {fileID: 7205352269495516320, guid: e6974ee1e13d8984480a57ca6c760201, type: 3}
   blockSpawnPoint: {fileID: 726833102}
   monsterSpawnPoint: {fileID: 748423990}
+  mainCamera: {fileID: 810784930}
   gridTemplate: {fileID: 11400000, guid: 783d078526601ec42ac91494bd909f9c, type: 2}
   roomConfig: {fileID: 11400000, guid: 3c89eed5af951fd43a6096f82eb9593e, type: 2}
   mapRoot: {fileID: 526689761}

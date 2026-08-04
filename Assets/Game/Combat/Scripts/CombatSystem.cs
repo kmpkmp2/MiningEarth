@@ -40,14 +40,19 @@ namespace DeepEarth.Combat
             else Destroy(gameObject);
         }
 
+        // Battle UI(Addressables 인스턴스화 + BattlePresenter 구성) 완료를 외부에서 대기할 수 있도록 노출.
+        // GameBootstrap의 Ready 집계가 이 태스크를 await한다.
+        private UniTask _battleUIReadyTask = UniTask.CompletedTask;
+        public UniTask BattleUIReadyTask => _battleUIReadyTask;
+
         public void Initialize(Transform monsterSpawnPoint, Transform canvasTransform = null)
         {
             spawnPoint = monsterSpawnPoint;
             EnsureDataLoadedAsync().Forget();
-            if (canvasTransform != null) SetupBattleUIAsync(canvasTransform).Forget();
+            if (canvasTransform != null) _battleUIReadyTask = SetupBattleUIAsync(canvasTransform);
         }
 
-        private async UniTaskVoid SetupBattleUIAsync(Transform canvasTransform)
+        private async UniTask SetupBattleUIAsync(Transform canvasTransform)
         {
             var go = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelBattle, canvasTransform);
             if (go == null)

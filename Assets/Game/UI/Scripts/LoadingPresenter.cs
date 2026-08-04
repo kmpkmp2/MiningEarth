@@ -12,16 +12,22 @@ namespace DeepEarth.UI
     /// <summary>
     /// LoadingScene의 두 가지 모드를 처리하는 Presenter.
     ///   · RunSetupContext.IsRunSetupComplete == false → 앱 최초 시작 (StartMenuScene 진입)
-    ///   · RunSetupContext.IsRunSetupComplete == true  → 런 초기화 (MainGameScene 진입)
+    ///   · RunSetupContext.IsRunSetupComplete == true  → 런 초기화 (MainGameScene 진입, Additive)
     /// </summary>
     public class LoadingPresenter
     {
-        private readonly LoadingPanelView _view;
-        private readonly LoadingModel     _model;
+        private readonly LoadingPanelView         _view;
+        private readonly LoadingModel             _model;
+        private readonly LoadingFadeView          _fadeView;
+        private readonly LoadingFailurePopupView  _failureView;
+        private readonly Camera                   _loadingCamera;
 
-        public LoadingPresenter(LoadingPanelView view)
+        public LoadingPresenter(LoadingPanelView view, LoadingFadeView fadeView, LoadingFailurePopupView failureView, Camera loadingCamera)
         {
-            _view  = view;
+            _view          = view;
+            _fadeView      = fadeView;
+            _failureView   = failureView;
+            _loadingCamera = loadingCamera;
             _model = new LoadingModel();
             _model.OnChanged += SyncView;
         }
@@ -62,11 +68,11 @@ namespace DeepEarth.UI
             SceneManager.LoadScene(SceneNames.StartMenu);
         }
 
-        // ── 런 초기화 (14단계) ─────────────────────────────────────
+        // ── 런 초기화 (18단계) ─────────────────────────────────────
         private async UniTask RunInitAsync()
         {
             float start   = Time.time;
-            const int N   = 14;
+            const int N   = 18;
             const float MinDisplaySec = 0.3f;
             int step = 0;
 
@@ -139,20 +145,94 @@ namespace DeepEarth.UI
             ValidateSaveData();
             await UniTask.Delay(50);
 
-            // 14. MainGameScene 로드
+            // 14. MainGameScene Additive 로드 + Ready 대기
             Step(ref step, N, Loc("loading_step_enter") ?? "Entering the mine...");
             RunSetupContext.IsInitializedByLoadingScene = true;
             RunSetupContext.IsRunSetupComplete          = false;
+
+            Step(ref step, N, Loc("loading_step_loadscene") ?? "Loading main scene...");
+
+            GameBootstrap bootstrap = null;
+            Exception loadEx = null;
+            try
+            {
+                await SceneManager.LoadSceneAsync(SceneNames.MainGame, LoadSceneMode.Additive).ToUniTask();
+
+                var mainScene = SceneManager.GetSceneByName(SceneNames.MainGame);
+                bootstrap = FindBootstrapInScene(mainScene);
+                if (bootstrap == null)
+                    throw new InvalidOperationException("GameBootstrap not found in MainGameScene after additive load.");
+
+                Step(ref step, N, Loc("loading_step_systems") ?? "Initializing systems...");
+                await UniTask.WaitUntil(() => bootstrap.ReadyModel.IsCoreReady || bootstrap.ReadyModel.HasFailed);
+
+                if (bootstrap.ReadyModel.HasFailed)
+                    throw bootstrap.ReadyModel.FailureException ?? new Exception("Unknown MainGameScene boot failure");
+            }
+            catch (Exception ex)
+            {
+                loadEx = ex;
+            }
+
+            if (loadEx != null)
+            {
+                Debug.LogError($"[Loading] MainGameScene boot failed: {loadEx}");
+                await ShowFailureAndWaitConfirmAsync();
+                Time.timeScale = 1f;
+                SceneManager.LoadScene(SceneNames.StartMenu);
+                return;
+            }
+
+            // 15. 카메라/오디오 핸드오프 — LoadingScene 쪽을 먼저 끈 뒤 MainGameScene 쪽을 켠다(겹치는 프레임 없음).
+            Step(ref step, N, Loc("loading_step_activate") ?? "Activating...");
+            if (_loadingCamera != null)
+            {
+                _loadingCamera.enabled = false;
+                var loadingListener = _loadingCamera.GetComponent<AudioListener>();
+                if (loadingListener != null) loadingListener.enabled = false;
+            }
+            bootstrap.ActivateSceneCamera();
 
             // 최소 표시 시간 보장
             float elapsed = Time.time - start;
             if (elapsed < MinDisplaySec)
                 await UniTask.Delay(Mathf.RoundToInt((MinDisplaySec - elapsed) * 1000));
 
-            _model.SetProgress(1f, Loc("loading_ready") ?? "Ready!");
-            await UniTask.Delay(300);
+            // 16. 완료 → 페이드아웃 → 언로드 (여기서만 100%)
+            Step(ref step, N, Loc("loading_ready") ?? "Ready!");
+            if (_fadeView != null)
+                await _fadeView.FadeOutAsync();
 
-            SceneManager.LoadScene(SceneNames.MainGame);
+            await SceneManager.UnloadSceneAsync(SceneNames.Loading).ToUniTask();
+        }
+
+        private static GameBootstrap FindBootstrapInScene(Scene scene)
+        {
+            if (!scene.IsValid()) return null;
+            foreach (var root in scene.GetRootGameObjects())
+            {
+                var b = root.GetComponentInChildren<GameBootstrap>(true);
+                if (b != null) return b;
+            }
+            return null;
+        }
+
+        private UniTask ShowFailureAndWaitConfirmAsync()
+        {
+            if (_failureView == null) return UniTask.CompletedTask;
+
+            var tcs = new UniTaskCompletionSource();
+            void OnConfirm() => tcs.TrySetResult();
+            _failureView.OnConfirmClicked += OnConfirm;
+            _failureView.Show(Loc("loading_failed_message") ?? "Failed to enter the mine.");
+
+            return WaitAndUnsubscribeAsync(tcs, OnConfirm);
+        }
+
+        private async UniTask WaitAndUnsubscribeAsync(UniTaskCompletionSource tcs, Action handler)
+        {
+            await tcs.Task;
+            _failureView.OnConfirmClicked -= handler;
         }
 
         // ── 헬퍼 ───────────────────────────────────────────────────

@@ -167,7 +167,7 @@ namespace DeepEarth.Core
             DeepEarth.Common.GameEvents.FireDepthReached(CurrentDepth);
         }
 
-        public async UniTask InitializeUIAsync(Canvas canvas, Image flashOverlay, GameObject particlePrefab)
+        public async UniTask InitializeUIAsync(Camera mainCamera, Canvas canvas, Image flashOverlay, GameObject particlePrefab)
         {
             try
             {
@@ -272,7 +272,7 @@ namespace DeepEarth.Core
                 var revealView = _eventRevealObject.GetComponent<EventRevealView>();
 
                 // Setup EffectSystem
-                EffectSystem.Instance.Initialize(Camera.main, canvas, flashOverlay, particlePrefab);
+                EffectSystem.Instance.Initialize(mainCamera, canvas, flashOverlay, particlePrefab);
 
                 // Setup Presenters
                 _hudPresenter = new GameUIPresenter(hudView, this);
@@ -336,11 +336,15 @@ namespace DeepEarth.Core
                 // Show Main HUD (다른 패널들은 각자 로드 직후 이미 비활성화됨)
                 _hudObject.SetActive(true);
 
-                StartGame();
+                // StartGame()은 더 이상 여기서 호출하지 않는다 — Battle UI/ThemeManager 등
+                // 나머지 초기화가 모두 끝난 뒤 GameBootstrap.BootSequenceAsync가 마지막에 호출한다.
+                // (CurrentState가 그 시점에야 Playing/MapSelecting으로 바뀌어야 기존의
+                // CurrentState 기반 입력 게이트들이 "Ready 이후에만 입력 허용"으로 자동 동작한다.)
             }
             catch (Exception ex)
             {
                 Debug.LogError($"GameManager: Critical exception during InitializeUIAsync: {ex.Message}\n{ex.StackTrace}");
+                throw;
             }
         }
 
