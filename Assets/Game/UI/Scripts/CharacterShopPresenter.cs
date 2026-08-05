@@ -52,7 +52,7 @@ namespace DeepEarth.UI
 
         private void HandleItemAction(ShopItemDisplayData data)
         {
-            if (data.tag is not CharacterStaticData characterData) return;
+            if (data.tag is not CharacterData characterData) return;
 
             if (CharacterManager.Instance.UnlockCharacter(characterData.ID))
             {

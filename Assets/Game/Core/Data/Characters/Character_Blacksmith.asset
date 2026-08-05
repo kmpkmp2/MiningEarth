@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32b8f6e8721fee748b73d4326fbe6069, type: 3}
+  m_Name: Character_Blacksmith
+  m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.Core.CharacterData
+  ID: 5
+  NameKey: char_blacksmith_name
+  DescKey: char_blacksmith_desc
+  FlavorKey: char_blacksmith_flavor
+  PlaystyleKey: char_blacksmith_playstyle
+  Passive: 5
+  PassiveNameKey: passive_blacksmith_name
+  PassiveDescKey: effect_passive_blacksmith_desc
+  PassiveLevels:
+  - Level: 1
+    DescKey: passive_blacksmith_lv1_desc
+    Value: 0.1
+    WillCost: 20
+  - Level: 2
+    DescKey: passive_blacksmith_lv2_desc
+    Value: 0.2
+    WillCost: 40
+  - Level: 3
+    DescKey: passive_blacksmith_lv3_desc
+    Value: 0.3
+    WillCost: 60
+  - Level: 4
+    DescKey: passive_blacksmith_lv4_desc
+    Value: 0.4
+    WillCost: 80
+  - Level: 5
+    DescKey: passive_blacksmith_lv5_desc
+    Value: 0.5
+    WillCost: 100
+  PassiveValueIsPercent: 1
+  PassiveValueFormatKey: effect_passive_blacksmith_value_fmt
+  PassiveHudIcon: "\U0001F527"
+  PassiveHudFormat: '{0:0}%'
+  UnlockCost: []
+  StartingItems:
+  - Item: {fileID: 11400000, guid: b427ece36b3b41c48009901376d7c214, type: 2}
+    Quantity: 2
+  StartingRelic: {fileID: 11400000, guid: fec674a858ceac14a9b27b31453eb035, type: 2}

@@ -274,8 +274,14 @@ namespace DeepEarth.UI
 
                 if (item.healAmount > 0)
                 {
-                    StatManager.Instance.Heal(item.healAmount);
-                    TriggerFloatingText($"+{item.healAmount} {LocalizationManager.Instance.GetTranslation("hud_hp_heal")}", Color.green);
+                    // 신규 패시브: Alchemist — 포션 회복량 증가 + 시작 유물(작은 약병) 추가 증가
+                    var charID = CharacterManager.Instance.SelectedCharacterID;
+                    float healBonus = CharacterManager.Instance.GetPassivePotionHealBonus(charID)
+                                     + (StartingRelicManager.Instance != null ? StartingRelicManager.Instance.GetPotionHealBonus() : 0f);
+                    int finalHeal = Mathf.RoundToInt(item.healAmount * (1f + healBonus));
+
+                    StatManager.Instance.Heal(finalHeal);
+                    TriggerFloatingText($"+{finalHeal} {LocalizationManager.Instance.GetTranslation("hud_hp_heal")}", Color.green);
                     effectApplied = true;
                 }
 

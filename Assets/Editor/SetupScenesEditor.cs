@@ -285,71 +285,6 @@ namespace DeepEarth.Editor
             GameObject shopBackBtnGo = CreateUIButton("BackButton", shopPanelGo, "BACK", new Vector2(0, -380), new Vector2(300, 80));
             shopPanelGo.SetActive(false);
 
-            // 5. Character Selection Popup Panel
-            GameObject charPopupPanelGo = CreateUIElement("CharacterPopupPanel", canvasGo, Vector2.zero, new Vector2(900, 650), new Vector2(0.5f, 0.5f));
-            var charPopupView = charPopupPanelGo.AddComponent<CharacterPopupView>();
-            var popupImg = charPopupPanelGo.AddComponent<Image>();
-            popupImg.color = new Color(0.12f, 0.12f, 0.15f, 0.98f);
-
-            GameObject charPopupTitleGo = CreateUIText("TitleText", charPopupPanelGo, "CHARACTER SELECT", 44, new Color(1f, 0.75f, 0.4f), new Vector2(0, 260));
-            
-            // Left list of character buttons
-            GameObject charListContainer = CreateUIElement("CharacterList", charPopupPanelGo, new Vector2(-250, 0), new Vector2(320, 420), new Vector2(0.5f, 0.5f));
-            GameObject prisonerBtnGo = CreateUIButton("PrisonerButton", charListContainer, "Prisoner", new Vector2(0, 140), new Vector2(300, 75));
-            GameObject mercenaryBtnGo = CreateUIButton("MercenaryButton", charListContainer, "Mercenary", new Vector2(0, 50), new Vector2(300, 75));
-            GameObject minerBtnGo = CreateUIButton("MinerButton", charListContainer, "Miner", new Vector2(0, -40), new Vector2(300, 75));
-            GameObject graveRobberBtnGo = CreateUIButton("GraveRobberButton", charListContainer, "Grave Robber", new Vector2(0, -130), new Vector2(300, 75));
-
-            // Right character info panel
-            GameObject infoContainer = CreateUIElement("CharacterInfo", charPopupPanelGo, new Vector2(180, 0), new Vector2(500, 420), new Vector2(0.5f, 0.5f));
-            
-            GameObject charNameGo = CreateUIText("NameText", infoContainer, "Character Name", 36, Color.white, new Vector2(0, 160));
-            var nameTmp = charNameGo.GetComponent<TextMeshProUGUI>();
-            nameTmp.alignment = TextAlignmentOptions.Left;
-            charNameGo.GetComponent<RectTransform>().sizeDelta = new Vector2(480, 60);
-
-            GameObject charDescGo = CreateUIText("DescriptionText", infoContainer, "Description...", 24, Color.lightGray, new Vector2(0, 20));
-            var descTmp = charDescGo.GetComponent<TextMeshProUGUI>();
-            descTmp.alignment = TextAlignmentOptions.TopLeft;
-            charDescGo.GetComponent<RectTransform>().sizeDelta = new Vector2(480, 200);
-
-            GameObject charCostGo = CreateUIText("CostText", infoContainer, "Unlock Cost...", 24, Color.yellow, new Vector2(0, -110));
-            var costTmp = charCostGo.GetComponent<TextMeshProUGUI>();
-            costTmp.alignment = TextAlignmentOptions.Left;
-            charCostGo.GetComponent<RectTransform>().sizeDelta = new Vector2(480, 50);
-
-            GameObject ownedResGo = CreateUIText("OwnedResourcesText", infoContainer, "Owned Resources...", 20, Color.gray, new Vector2(0, -170));
-            var ownedTmp = ownedResGo.GetComponent<TextMeshProUGUI>();
-            ownedTmp.alignment = TextAlignmentOptions.Left;
-            ownedResGo.GetComponent<RectTransform>().sizeDelta = new Vector2(480, 50);
-
-            // Bottom action buttons
-            GameObject unlockBtnGo = CreateUIButton("UnlockButton", charPopupPanelGo, "UNLOCK", new Vector2(0, -255), new Vector2(240, 65));
-            GameObject selectBtnGo = CreateUIButton("SelectButton", charPopupPanelGo, "SELECT", new Vector2(0, -255), new Vector2(240, 65));
-            GameObject closeBtnGo = CreateUIButton("CloseButton", charPopupPanelGo, "CLOSE", new Vector2(280, -255), new Vector2(160, 65));
-
-            charPopupPanelGo.SetActive(false);
-
-            // Bind view references in CharacterPopupView
-            SetRef(charPopupView, "popupPanel", charPopupPanelGo);
-            SetRef(charPopupView, "titleText", charPopupTitleGo.GetComponent<TextMeshProUGUI>());
-            SetRef(charPopupView, "prisonerButton", prisonerBtnGo.GetComponent<Button>());
-            SetRef(charPopupView, "mercenaryButton", mercenaryBtnGo.GetComponent<Button>());
-            SetRef(charPopupView, "minerButton", minerBtnGo.GetComponent<Button>());
-            SetRef(charPopupView, "graveRobberButton", graveRobberBtnGo.GetComponent<Button>());
-
-            SetRef(charPopupView, "charNameText", nameTmp);
-            SetRef(charPopupView, "charDescText", descTmp);
-            SetRef(charPopupView, "charCostText", costTmp);
-            SetRef(charPopupView, "ownedResourcesText", ownedTmp);
-
-            SetRef(charPopupView, "unlockButton", unlockBtnGo.GetComponent<Button>());
-            SetRef(charPopupView, "unlockButtonText", unlockBtnGo.GetComponentInChildren<TextMeshProUGUI>());
-            SetRef(charPopupView, "selectButton", selectBtnGo.GetComponent<Button>());
-            SetRef(charPopupView, "selectButtonText", selectBtnGo.GetComponentInChildren<TextMeshProUGUI>());
-            SetRef(charPopupView, "closeButton", closeBtnGo.GetComponent<Button>());
-            SetRef(charPopupView, "closeButtonText", closeBtnGo.GetComponentInChildren<TextMeshProUGUI>());
-
             // Bind references
             SetRef(startMenuView, "menuPanel", menuPanelGo);
             SetRef(startMenuView, "upgradePanel", upgradePanelGo);
@@ -359,7 +294,6 @@ namespace DeepEarth.Editor
             SetRef(startMenuView, "playButton", playBtnGo.GetComponent<Button>());
             SetRef(startMenuView, "characterSelectionButton", charBtnGo.GetComponent<Button>());
             SetRef(startMenuView, "characterButtonLabel", charBtnGo.GetComponentInChildren<TextMeshProUGUI>());
-            SetRef(startMenuView, "characterPopupView", charPopupView);
             SetRef(startMenuView, "upgradeButton", upgradeBtnGo.GetComponent<Button>());
             SetRef(startMenuView, "shopButton", shopBtnGo.GetComponent<Button>());
             SetRef(startMenuView, "settingsButton", settingsBtnGo.GetComponent<Button>());

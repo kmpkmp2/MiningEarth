@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32b8f6e8721fee748b73d4326fbe6069, type: 3}
+  m_Name: Character_Adventurer
+  m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.Core.CharacterData
+  ID: 4
+  NameKey: char_adventurer_name
+  DescKey: char_adventurer_desc
+  FlavorKey: char_adventurer_flavor
+  PlaystyleKey: char_adventurer_playstyle
+  Passive: 4
+  PassiveNameKey: passive_adventurer_name
+  PassiveDescKey: effect_passive_adventurer_desc
+  PassiveLevels:
+  - Level: 1
+    DescKey: passive_adventurer_lv1_desc
+    Value: 0.2
+    WillCost: 20
+  - Level: 2
+    DescKey: passive_adventurer_lv2_desc
+    Value: 0.4
+    WillCost: 40
+  - Level: 3
+    DescKey: passive_adventurer_lv3_desc
+    Value: 0.6
+    WillCost: 60
+  - Level: 4
+    DescKey: passive_adventurer_lv4_desc
+    Value: 0.8
+    WillCost: 80
+  - Level: 5
+    DescKey: passive_adventurer_lv5_desc
+    Value: 1
+    WillCost: 100
+  PassiveValueIsPercent: 1
+  PassiveValueFormatKey: effect_passive_adventurer_value_fmt
+  PassiveHudIcon: "\u2753"
+  PassiveHudFormat: '{0:0}%'
+  UnlockCost: []
+  StartingItems:
+  - Item: {fileID: 11400000, guid: 3d3c64afdb6528d43ba7c086f2cc9222, type: 2}
+    Quantity: 1
+  StartingRelic: {fileID: 11400000, guid: 4221c648750bed54eb381f65caddffff, type: 2}

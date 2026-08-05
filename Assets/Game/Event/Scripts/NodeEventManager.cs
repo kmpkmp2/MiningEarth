@@ -174,9 +174,17 @@ namespace DeepEarth.Event
                 return;
             }
 
-            var eventData = BuildEventData(data);
+            var eventData = BuildEventDataWithBonusChoice(data, out bool bonusChoiceShown);
             int choice = await EventManager.Instance.ShowEventChoiceAsync(eventData);
             if (StatManager.Instance.CurrentHP <= 0) return;
+
+            // 신규 패시브: Adventurer — Event Node 보너스 선택지(범용 안전 보상), 저작된 선택지 범위를 벗어나면 개별 이벤트 로직을 타지 않는다.
+            if (bonusChoiceShown && choice == data.choices.Count)
+            {
+                ApplyAdventurerBonusChoice();
+                return;
+            }
+
             await ApplyEffectAsync(data.eventID, choice, depth);
         }
 
@@ -195,6 +203,39 @@ namespace DeepEarth.Event
                 .Select(c => new EventOption(c.titleLocKey, c.descLocKey, new List<EffectType>()))
                 .ToList();
             return new EventData(data.titleLocKey, data.descLocKey, false, opts);
+        }
+
+        // 신규 패시브: Adventurer — 저작된 선택지 뒤에 범용 "보너스 선택지" 1개를 확률적으로 추가.
+        // 16종 이벤트 전부에 실제 3번째 선택지를 개별 저작하는 대신, 콘텐츠와 무관한 안전 보상으로 대체(플랜의 가정 사항 참고).
+        // ExecuteRichOreVeinAsync 등 choice 인덱스를 직접 분기하는 특수 이벤트는 이 메서드를 쓰지 않아 영향받지 않는다.
+        private EventData BuildEventDataWithBonusChoice(NodeEventData data, out bool bonusChoiceShown)
+        {
+            var opts = data.choices
+                .Select(c => new EventOption(c.titleLocKey, c.descLocKey, new List<EffectType>()))
+                .ToList();
+
+            bonusChoiceShown = false;
+            var charID = CharacterManager.Instance.SelectedCharacterID;
+            float roll = CharacterManager.Instance.GetPassiveEventChoiceRoll(charID);
+            if (roll > 0f && UnityEngine.Random.value < roll)
+            {
+                opts.Add(new EventOption("event_bonus_choice_title", "event_bonus_choice_desc", new List<EffectType>()));
+                bonusChoiceShown = true;
+            }
+
+            return new EventData(data.titleLocKey, data.descLocKey, false, opts);
+        }
+
+        private void ApplyAdventurerBonusChoice()
+        {
+            var balance = GameBalanceData.Instance;
+            InventoryManager.Instance.AddItem("Item_Stone", balance != null ? balance.AdventurerBonusStoneReward : 3);
+            int healAmount = balance != null ? balance.AdventurerBonusHealAmount : 1;
+            if (healAmount > 0) StatManager.Instance.Heal(healAmount);
+            ShowFeedback(LocalizationManager.Instance.GetTranslation("event_bonus_choice_result"), Color.cyan);
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            Debug.Log($"[Event]\nAdventurer Bonus Choice\nStone : +{(balance != null ? balance.AdventurerBonusStoneReward : 3)}\nHeal : +{healAmount}");
+#endif
         }
 
         // ── Effect Dispatch ─────────────────────────────────────────────────

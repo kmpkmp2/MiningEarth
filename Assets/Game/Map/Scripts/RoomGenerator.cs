@@ -14,11 +14,13 @@ namespace DeepEarth.Map
     {
         private readonly RoomGenerationConfig _config;
         private readonly IRandomProvider      _rng;
+        private readonly float                _eventWeightMultiplier;
 
-        public RoomGenerator(RoomGenerationConfig config, IRandomProvider rng)
+        public RoomGenerator(RoomGenerationConfig config, IRandomProvider rng, float eventWeightMultiplier = 1f)
         {
             _config = config;
             _rng    = rng;
+            _eventWeightMultiplier = eventWeightMultiplier;
         }
 
         /// <summary>Mutates every active node in <paramref name="mapData"/> with a RoomType.</summary>
@@ -32,7 +34,7 @@ namespace DeepEarth.Map
                     MapNode node = mapData.Grid[floor, col];
                     if (!node.IsActive) continue;
 
-                    RoomType picked = _config.PickRoomType(_rng);
+                    RoomType picked = _config.PickRoomType(_rng, _eventWeightMultiplier);
 
                     // Rule 3: Mine cannot branch — avoid assigning Mine to a node with
                     // multiple outgoing connections. RuleValidator will also enforce this,
@@ -41,7 +43,7 @@ namespace DeepEarth.Map
                     {
                         for (int attempt = 0; attempt < 10; attempt++)
                         {
-                            picked = _config.PickRoomType(_rng);
+                            picked = _config.PickRoomType(_rng, _eventWeightMultiplier);
                             if (picked != RoomType.Mine) break;
                         }
                         if (picked == RoomType.Mine) picked = RoomType.Monster;

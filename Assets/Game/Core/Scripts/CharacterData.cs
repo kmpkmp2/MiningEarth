@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Cysharp.Threading.Tasks;
+using UnityEngine;
 using DeepEarth.Common;
+using DeepEarth.UI;
 
 namespace DeepEarth.Core
 {
@@ -9,7 +13,13 @@ namespace DeepEarth.Core
         Prisoner,
         Mercenary,
         Miner,
-        GraveRobber
+        GraveRobber,
+        Adventurer,
+        Blacksmith,
+        Alchemist,
+        TreasureHunter,
+        Priest,
+        Berserker
     }
 
     public enum PassiveType
@@ -17,7 +27,13 @@ namespace DeepEarth.Core
         None,
         AttackBonus,
         MiningBonus,
-        GraveRobberPassive
+        GraveRobberPassive,
+        EventChoiceBonus,
+        PickaxeDurabilityReduction,
+        PotionHealBonus,
+        TreasureRewardBonus,
+        CurseDurationReduction,
+        LowHpAttackBonus
     }
 
     [Serializable]
@@ -36,101 +52,66 @@ namespace DeepEarth.Core
         public bool IsUnlocked;
     }
 
-    public class CharacterStaticData
+    [Serializable]
+    public class StartingItemEntry
     {
+        public ItemData Item;
+        public int Quantity;
+    }
+
+    [CreateAssetMenu(fileName = "Character_New", menuName = "DeepEarth/Character/CharacterData")]
+    public class CharacterData : ScriptableObject
+    {
+        [Header("Identity")]
         public CharacterID ID;
         public string NameKey;
         public string DescKey;
+        public string FlavorKey;
+        public string PlaystyleKey;
+
+        [Header("Passive")]
         public PassiveType Passive;
         public string PassiveNameKey;
+        public string PassiveDescKey;
         public List<PassiveLevelEffect> PassiveLevels = new List<PassiveLevelEffect>();
-        public Dictionary<BlockType, int> UnlockCost = new Dictionary<BlockType, int>();
+
+        [Header("Passive Display (표시 전용 — EffectManager/RunSetupPresenter가 switch 대신 참조)")]
+        public bool PassiveValueIsPercent;
+        public string PassiveValueFormatKey;
+        public string PassiveHudIcon;
+        public string PassiveHudFormat = "{0:0}";
+
+        [Header("Unlock")]
+        public List<PickaxeCostEntry> UnlockCost = new List<PickaxeCostEntry>();
+
+        [Header("Starting Loadout")]
+        public List<StartingItemEntry> StartingItems = new List<StartingItemEntry>();
+        public StartingRelicData StartingRelic;
     }
 
     public static class CharacterDatabase
     {
-        public static readonly List<CharacterStaticData> Characters = new List<CharacterStaticData>
-        {
-            new CharacterStaticData
-            {
-                ID = CharacterID.Prisoner,
-                NameKey = "char_prisoner_name",
-                DescKey = "char_prisoner_desc",
-                Passive = PassiveType.None,
-                PassiveNameKey = "",
-                PassiveLevels = new List<PassiveLevelEffect>(),
-                UnlockCost = new Dictionary<BlockType, int>()
-            },
-            new CharacterStaticData
-            {
-                ID = CharacterID.Mercenary,
-                NameKey = "char_mercenary_name",
-                DescKey = "char_mercenary_desc",
-                Passive = PassiveType.AttackBonus,
-                PassiveNameKey = "passive_mercenary_name",
-                PassiveLevels = new List<PassiveLevelEffect>
-                {
-                    new PassiveLevelEffect { Level = 1, DescKey = "passive_mercenary_lv1_desc", Value = 1f, WillCost = 20 },
-                    new PassiveLevelEffect { Level = 2, DescKey = "passive_mercenary_lv2_desc", Value = 2f, WillCost = 40 },
-                    new PassiveLevelEffect { Level = 3, DescKey = "passive_mercenary_lv3_desc", Value = 3f, WillCost = 60 },
-                    new PassiveLevelEffect { Level = 4, DescKey = "passive_mercenary_lv4_desc", Value = 4f, WillCost = 80 },
-                    new PassiveLevelEffect { Level = 5, DescKey = "passive_mercenary_lv5_desc", Value = 5f, WillCost = 100 },
-                },
-                UnlockCost = new Dictionary<BlockType, int>
-                {
-                    { BlockType.Iron, 30 },
-                    { BlockType.Silver, 10 }
-                }
-            },
-            new CharacterStaticData
-            {
-                ID = CharacterID.Miner,
-                NameKey = "char_miner_name",
-                DescKey = "char_miner_desc",
-                Passive = PassiveType.MiningBonus,
-                PassiveNameKey = "passive_miner_name",
-                PassiveLevels = new List<PassiveLevelEffect>
-                {
-                    new PassiveLevelEffect { Level = 1, DescKey = "passive_miner_lv1_desc", Value = 1f, WillCost = 20 },
-                    new PassiveLevelEffect { Level = 2, DescKey = "passive_miner_lv2_desc", Value = 2f, WillCost = 40 },
-                    new PassiveLevelEffect { Level = 3, DescKey = "passive_miner_lv3_desc", Value = 3f, WillCost = 60 },
-                    new PassiveLevelEffect { Level = 4, DescKey = "passive_miner_lv4_desc", Value = 4f, WillCost = 80 },
-                    new PassiveLevelEffect { Level = 5, DescKey = "passive_miner_lv5_desc", Value = 5f, WillCost = 100 },
-                },
-                UnlockCost = new Dictionary<BlockType, int>
-                {
-                    { BlockType.Iron, 30 },
-                    { BlockType.Silver, 20 },
-                    { BlockType.Gold, 5 }
-                }
-            },
-            new CharacterStaticData
-            {
-                ID = CharacterID.GraveRobber,
-                NameKey = "char_graverobber_name",
-                DescKey = "char_graverobber_desc",
-                Passive = PassiveType.GraveRobberPassive,
-                PassiveNameKey = "passive_graverobber_name",
-                PassiveLevels = new List<PassiveLevelEffect>
-                {
-                    new PassiveLevelEffect { Level = 1, DescKey = "passive_graverobber_lv1_desc", Value = 0.10f, WillCost = 20 },
-                    new PassiveLevelEffect { Level = 2, DescKey = "passive_graverobber_lv2_desc", Value = 0.15f, WillCost = 40 },
-                    new PassiveLevelEffect { Level = 3, DescKey = "passive_graverobber_lv3_desc", Value = 0.20f, WillCost = 60 },
-                    new PassiveLevelEffect { Level = 4, DescKey = "passive_graverobber_lv4_desc", Value = 0.25f, WillCost = 80 },
-                    new PassiveLevelEffect { Level = 5, DescKey = "passive_graverobber_lv5_desc", Value = 0.30f, WillCost = 100 },
-                },
-                UnlockCost = new Dictionary<BlockType, int>
-                {
-                    { BlockType.Silver, 30 },
-                    { BlockType.Gold, 30 },
-                    { BlockType.Diamond, 12 }
-                }
-            }
-        };
+        private static readonly List<CharacterData> _characters = new List<CharacterData>();
+        private static bool _loaded;
 
-        public static CharacterStaticData Get(CharacterID id)
+        public static IReadOnlyList<CharacterData> Characters => _characters;
+
+        public static async UniTask LoadAsync()
         {
-            return Characters.Find(c => c.ID == id);
+            if (_loaded) return;
+            var list = await ResourceManager.Instance.LoadAllByLabelAsync<CharacterData>(AddressableKeys.LabelCharacterData);
+            _characters.Clear();
+            if (list != null) _characters.AddRange(list.Where(c => c != null));
+            _loaded = true;
+
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            Debug.Log($"[Character]\nDatabase Loaded\nCount : {_characters.Count}");
+#endif
+        }
+
+        public static CharacterData Get(CharacterID id)
+        {
+            return _characters.Find(c => c.ID == id);
         }
     }
 }

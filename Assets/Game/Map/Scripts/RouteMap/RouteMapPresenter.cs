@@ -152,8 +152,12 @@ namespace DeepEarth.Map
 
         private void GenerateMap(int seed)
         {
-            var rng       = new SeededRandomProvider(seed);
-            var generator = new MapGenerator(_gridTemplate, _roomConfig, rng);
+            var rng = new SeededRandomProvider(seed);
+
+            // 시작 유물: 낡은 나침반 (Adventurer) — Event 노드 등장확률 소폭 가산
+            float eventWeightMultiplier = 1f + (StartingRelicManager.Instance != null ? StartingRelicManager.Instance.GetEventChoiceRollBonus() : 0f);
+
+            var generator = new MapGenerator(_gridTemplate, _roomConfig, rng, eventWeightMultiplier);
             _currentMap   = generator.Generate(seed);
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             if (_currentMap.StartNode != null)

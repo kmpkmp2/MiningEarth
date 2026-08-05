@@ -62,7 +62,6 @@ namespace DeepEarth.UI
         [Header("Character Selection UI Elements")]
         [SerializeField] private Button characterSelectionButton;
         [SerializeField] private TextMeshProUGUI characterButtonLabel;
-        [SerializeField] private CharacterPopupView characterPopupView;
 
         [Header("Achievement UI Elements")]
         [SerializeField] private Button achievementButton;
@@ -70,7 +69,6 @@ namespace DeepEarth.UI
         [SerializeField] private AchievementPopupView achievementPopupView;
 
         public UpgradePanelView     UpgradePanelView     => upgradePanelView;
-        public CharacterPopupView   CharacterPopupView   => characterPopupView;
         public AchievementPopupView AchievementPopupView => achievementPopupView;
         public ShopPanelView        ShopPanelView        => shopPanelView;
         public RunSetupPanelView    RunSetupPanelView    => runSetupPanelView;

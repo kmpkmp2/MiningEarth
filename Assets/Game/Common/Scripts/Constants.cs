@@ -223,6 +223,15 @@ namespace DeepEarth.Common
         public const string LabelRelicTreasure = "Relic_Treasure";
         public const string LabelRelicTombstone = "Relic_Tombstone";
 
+        // Character System (label-based load)
+        public const string LabelCharacterData = "CharacterData";
+
+        // Starting Relic System (완전히 별도 시스템 — RelicManager/LabelRelic과 분리)
+        public const string LabelStartingRelic = "StartingRelic";
+
+        // Character Class System — Torch item
+        public const string ItemTorch = "Item_Torch";
+
         public const string FontMalgunSDF = "Font_Malgun_SDF";
         public const string FontDefault = "Font_Default";
         public const string FontNotoSansKR = "Font_NotoSansKR";

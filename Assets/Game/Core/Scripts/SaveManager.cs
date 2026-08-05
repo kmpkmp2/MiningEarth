@@ -47,7 +47,6 @@ namespace DeepEarth.Core
     {
         public int Will;
         public string Language;
-        public System.Collections.Generic.List<string> UnlockedCharacters = new System.Collections.Generic.List<string>();
         public int BestDepth;
 
         // Character Selection
@@ -84,7 +83,6 @@ namespace DeepEarth.Core
         {
             Will = 0;
             Language = (Application.systemLanguage == SystemLanguage.Korean) ? "ko" : "en";
-            UnlockedCharacters = new System.Collections.Generic.List<string> { "Prisoner" };
             BestDepth = 0;
 
             SelectedCharacterID = CharacterID.Prisoner;

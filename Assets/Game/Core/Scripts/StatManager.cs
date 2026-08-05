@@ -315,13 +315,26 @@ namespace DeepEarth.Core
             int passiveBonus  = CharacterManager.Instance.GetPassiveAttackBonus(selectedChar);
             int buffModifier  = GetEffectStack(EffectType.BuffAttackDamage) * 1;
             int curseModifier = GetEffectStack(EffectType.CurseAttackDamage) * 1;
-            int baseResult    = Mathf.Max(1, BaseAttackDamage + passiveBonus + buffModifier - curseModifier + BossAttackModifier);
+            // 시작 유물: 녹슨 검 (Mercenary) — 공격력 고정 가산
+            int relicFixedAtk = StartingRelicManager.Instance != null ? StartingRelicManager.Instance.GetFixedAttackBonus() : 0;
+            int baseResult    = Mathf.Max(1, BaseAttackDamage + passiveBonus + buffModifier - curseModifier + BossAttackModifier + relicFixedAtk);
             float statusMod   = StatusEffectManager.Instance?.GetTotalAttackModifier() ?? 0f;
             int statusAdjust  = Mathf.RoundToInt(baseResult * statusMod);
             // 유물: 전체 몬스터 피해 배율 (DragonFang 등)
             float relicDmgMult  = RelicManager.Instance?.GetDamageMultiplierBonus() ?? 0f;
             int relicMultAdjust = Mathf.RoundToInt(baseResult * relicDmgMult);
-            return Mathf.Max(1, baseResult + statusAdjust + relicMultAdjust);
+
+            // 신규 패시브: Berserker — 체력이 낮을수록 공격력 증가(100%→0% 선형, 최대치는 레벨로 조절)
+            // + 시작 유물(핏빛 펜던트): 체력 30% 이하일 때 추가 보너스
+            float maxBonus = CharacterManager.Instance.GetPassiveLowHpAttackBonusMax(selectedChar);
+            int maxHp = GetMaxHP();
+            float hpRatio = maxHp > 0 ? Mathf.Clamp01((float)CurrentHP / maxHp) : 1f;
+            float lowHpBonus = maxBonus * (1f - hpRatio);
+            float relicLowHpBonus = StartingRelicManager.Instance != null ? StartingRelicManager.Instance.GetLowHpAttackBonus() : 0f;
+            if (relicLowHpBonus > 0f && hpRatio <= 0.3f) lowHpBonus += relicLowHpBonus;
+            int berserkerAdjust = Mathf.RoundToInt(baseResult * lowHpBonus);
+
+            return Mathf.Max(1, baseResult + statusAdjust + relicMultAdjust + berserkerAdjust);
         }
 
         public int GetMiningPower()
@@ -335,7 +348,12 @@ namespace DeepEarth.Core
             int statusAdjust  = Mathf.RoundToInt(baseResult * statusMod);
             // 유물: 내구도 조건부 채굴력 보너스 (WorkGlove 등)
             int conditionalBonus = RelicManager.Instance?.GetConditionalMiningBonus() ?? 0;
-            return Mathf.Max(1, baseResult + statusAdjust + conditionalBonus);
+
+            // 시작 유물: 광부 장갑 (Miner) — 광물 획득량 배율 가산
+            float miningGainBonus = StartingRelicManager.Instance != null ? StartingRelicManager.Instance.GetMiningGainBonus() : 0f;
+            int miningGainAdjust = Mathf.RoundToInt(baseResult * miningGainBonus);
+
+            return Mathf.Max(1, baseResult + statusAdjust + conditionalBonus + miningGainAdjust);
         }
 
         public int GetInventorySize()

@@ -186,16 +186,37 @@ namespace DeepEarth.Event
                 new EventOption("item_burn_cure_name", "item_burn_cure_desc", AddressableKeys.ItemBurnCure)
             };
 
+            // 신규 패시브: TreasureHunter — 유물 등장 확률 증가 + 시작 유물(행운의 동전) 추가 가산
+            var charID = CharacterManager.Instance.SelectedCharacterID;
+            bool bonusSlot = CharacterManager.Instance.HasTreasureRewardBonus(charID);
+            float relicBonusChance = CharacterManager.Instance.GetTreasureRelicChanceBonus(charID)
+                                    + (StartingRelicManager.Instance != null ? StartingRelicManager.Instance.GetTreasureRewardBonus() : 0f);
+
             if (RelicManager.Instance != null)
             {
-                foreach (var relic in RelicManager.Instance.GetAvailableTreasureRelics())
+                var treasureRelics = RelicManager.Instance.GetAvailableTreasureRelics();
+                foreach (var relic in treasureRelics)
                     optionsPool.Add(new EventOption(relic));
+
+                if (relicBonusChance > 0f && treasureRelics.Count > 0 && UnityEngine.Random.value < relicBonusChance)
+                    optionsPool.Add(new EventOption(treasureRelics[UnityEngine.Random.Range(0, treasureRelics.Count)]));
             }
 
             ShuffleList(optionsPool);
-            int count = Mathf.Min(3, optionsPool.Count);
+            // 신규 패시브: TreasureHunter — 보상 개수 +1 (3→4)
+            int count = Mathf.Min(bonusSlot ? 4 : 3, optionsPool.Count);
             var selectedOptions = new List<EventOption>();
-            for (int i = 0; i < count; i++) selectedOptions.Add(optionsPool[i]);
+            var usedRelicIDs = new HashSet<string>();
+            foreach (var opt in optionsPool)
+            {
+                if (selectedOptions.Count >= count) break;
+                if (opt.RelicReward != null)
+                {
+                    if (usedRelicIDs.Contains(opt.RelicReward.relicID)) continue;
+                    usedRelicIDs.Add(opt.RelicReward.relicID);
+                }
+                selectedOptions.Add(opt);
+            }
 
             return new EventData("event_chest_title", "event_chest_desc", false, selectedOptions);
         }

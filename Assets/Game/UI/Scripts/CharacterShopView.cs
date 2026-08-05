@@ -23,7 +23,7 @@ namespace DeepEarth.UI
             _slotPrefab = slotPrefab;
         }
 
-        public void Refresh(IReadOnlyList<CharacterStaticData> characters)
+        public void Refresh(IReadOnlyList<CharacterData> characters)
         {
             if (_slotPrefab == null)
             {
@@ -97,20 +97,16 @@ namespace DeepEarth.UI
             OnItemAction?.Invoke(slot.DisplayData);
         }
 
-        private static string BuildPassiveText(CharacterStaticData data, LocalizationManager loc)
+        private static string BuildPassiveText(CharacterData data, LocalizationManager loc)
         {
             if (loc == null) return "";
 
-            return data.ID switch
-            {
-                CharacterID.Mercenary   => loc.GetTranslation("effect_passive_mercenary_desc"),
-                CharacterID.Miner       => loc.GetTranslation("effect_passive_miner_desc"),
-                CharacterID.GraveRobber => loc.GetTranslation("effect_passive_graverobber_desc"),
-                _                       => loc.GetTranslation(data.DescKey)
-            };
+            return string.IsNullOrEmpty(data.PassiveDescKey)
+                ? loc.GetTranslation(data.DescKey)
+                : loc.GetTranslation(data.PassiveDescKey);
         }
 
-        private static string BuildCostString(CharacterStaticData data, LocalizationManager loc)
+        private static string BuildCostString(CharacterData data, LocalizationManager loc)
         {
             int willCost = CharacterManager.Instance?.GetUnlockWillCost(data.ID) ?? 0;
             if (willCost <= 0) return "";

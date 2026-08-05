@@ -126,45 +126,32 @@ namespace DeepEarth.Core
                 _collection.Remove(pId);
             }
 
-            switch (id)
-            {
-                case CharacterID.Miner:
-                    RegisterEffect(
-                        "CharPassive_Miner",
-                        "char_miner_name",
-                        "effect_passive_miner_desc",
-                        EffectSystemType.CharacterPassive,
-                        1f,
-                        "⚒1",
-                        "Miner",
-                        "Effect_CharacterPassive_Miner"
-                    );
-                    break;
-                case CharacterID.Mercenary:
-                    RegisterEffect(
-                        "CharPassive_Mercenary",
-                        "char_mercenary_name",
-                        "effect_passive_mercenary_desc",
-                        EffectSystemType.CharacterPassive,
-                        1f,
-                        "⚔1",
-                        "Mercenary",
-                        "Effect_CharacterPassive_Mercenary"
-                    );
-                    break;
-                case CharacterID.GraveRobber:
-                    RegisterEffect(
-                        "CharPassive_GraveRobber",
-                        "char_graverobber_name",
-                        "effect_passive_graverobber_desc",
-                        EffectSystemType.CharacterPassive,
-                        10f,
-                        "💎10%",
-                        "Grave Robber",
-                        "Effect_CharacterPassive_GraveRobber"
-                    );
-                    break;
-            }
+            var data = CharacterDatabase.Get(id);
+            if (data == null || data.Passive == PassiveType.None) return;
+
+            float value = CharacterManager.Instance.GetCurrentPassiveValue(id);
+            string display = BuildPassiveDisplayString(data, value);
+
+            RegisterEffect(
+                $"CharPassive_{id}",
+                data.NameKey,
+                data.PassiveDescKey,
+                EffectSystemType.CharacterPassive,
+                value,
+                display,
+                id.ToString(),
+                $"Effect_CharacterPassive_{id}"
+            );
+        }
+
+        // 표시 포맷팅 전용 — 실제 수치 로직에는 관여하지 않는다 (CharacterManager.GetCurrentPassiveValue가 진실의 원천).
+        // 아이콘/포맷은 CharacterData(PassiveHudIcon/PassiveHudFormat/PassiveValueIsPercent) 데이터로 관리된다.
+        private static string BuildPassiveDisplayString(CharacterData data, float value)
+        {
+            if (string.IsNullOrEmpty(data.PassiveHudIcon)) return "";
+            float shown = data.PassiveValueIsPercent ? value * 100f : value;
+            string format = string.IsNullOrEmpty(data.PassiveHudFormat) ? "{0:0}" : data.PassiveHudFormat;
+            return data.PassiveHudIcon + string.Format(format, shown);
         }
     }
 }

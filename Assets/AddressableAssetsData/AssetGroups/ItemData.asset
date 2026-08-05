@@ -15,134 +15,8 @@ MonoBehaviour:
   m_GroupName: ItemData
   m_GUID: de8244c4487d43ce88bb5fe9a97f123c
   m_SerializeEntries:
-  - m_GUID: 5ed30f0545ff4b03bef025b88b74819d
-    m_Address: Item_Stone
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 94d1c85950b64995981dc68c5c76fabc
-    m_Address: Item_Wood
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 37e71648afa54365a28762fdfa5946d7
-    m_Address: Item_Dirt
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4e893dc79c764a958fe067217083a746
-    m_Address: Item_Iron
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 5562da10e30a4f7c81918fe077eb2ce7
-    m_Address: Item_Silver
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7267834e64b441a2a4b75e44f1c5db62
-    m_Address: Item_Gold
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: bc31002c7dd0458896c04bfa42f30786
-    m_Address: Item_Diamond
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: acc76eb4d0dd4775a023633b9ca4aaf5
-    m_Address: Item_Potion
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: cf3b6528f7a24fe6ac68aa1b7258f007
-    m_Address: Item_Potion_Medium
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 937b0a0470304aaf9acc8e3918a00f7f
-    m_Address: Item_Potion_Large
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 5064924cffbc4540b5895c1df99a2882
-    m_Address: Item_BurnCure
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9b16763ecfdf469bac94c84f3071f9fb
-    m_Address: Item_Key
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 359476075a5b497390cec78cf6b368e4
-    m_Address: Item_Chest
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4975c5dd364d498ab3d539c274b0a76a
-    m_Address: Item_Special
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b427ece36b3b41c48009901376d7c214
-    m_Address: Item_PortableAnvil
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3776cb007675469194323a957df71661
-    m_Address: Item_ImmortalityPotion
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 01aa8b80d41542fc94b15ad1f9ffaf8c
     m_Address: Item_RepairKit
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d22f8dfd06244eac93b8ffe9fec3ae5f
-    m_Address: Item_AntidotePotion
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b73cfe31332b4d0a87c3c8500aba2106
-    m_Address: Item_Bomb
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e728d5ed163440a1a6f48af345eb7a93
-    m_Address: Item_HolyWater
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: af0b7d5e35dd4d20b81332a3d63fc6ab
-    m_Address: Item_EnhancedRepairKit
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ItemData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e013c3a87d4a4bafb5330f2027cd9ce3
-    m_Address: Item_EnhancedBomb
     m_ReadOnly: 0
     m_SerializedLabels:
     - ItemData
@@ -153,14 +27,146 @@ MonoBehaviour:
     m_SerializedLabels:
     - ItemData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 335297e7929f415e9584965de22d89bc
+    m_Address: Item_GuardianHeart
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 359476075a5b497390cec78cf6b368e4
+    m_Address: Item_Chest
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3776cb007675469194323a957df71661
+    m_Address: Item_ImmortalityPotion
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 37e71648afa54365a28762fdfa5946d7
+    m_Address: Item_Dirt
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3d3c64afdb6528d43ba7c086f2cc9222
+    m_Address: Item_Torch
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4975c5dd364d498ab3d539c274b0a76a
+    m_Address: Item_Special
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4e893dc79c764a958fe067217083a746
+    m_Address: Item_Iron
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5064924cffbc4540b5895c1df99a2882
+    m_Address: Item_BurnCure
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5562da10e30a4f7c81918fe077eb2ce7
+    m_Address: Item_Silver
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5ed30f0545ff4b03bef025b88b74819d
+    m_Address: Item_Stone
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7267834e64b441a2a4b75e44f1c5db62
+    m_Address: Item_Gold
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 937b0a0470304aaf9acc8e3918a00f7f
+    m_Address: Item_Potion_Large
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 94d1c85950b64995981dc68c5c76fabc
+    m_Address: Item_Wood
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b16763ecfdf469bac94c84f3071f9fb
+    m_Address: Item_Key
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: acc76eb4d0dd4775a023633b9ca4aaf5
+    m_Address: Item_Potion
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: af0b7d5e35dd4d20b81332a3d63fc6ab
+    m_Address: Item_EnhancedRepairKit
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b427ece36b3b41c48009901376d7c214
+    m_Address: Item_PortableAnvil
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b73cfe31332b4d0a87c3c8500aba2106
+    m_Address: Item_Bomb
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bc31002c7dd0458896c04bfa42f30786
+    m_Address: Item_Diamond
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c4a7bf870fbb41b2b6e2924b6ba47244
     m_Address: Item_FullRepairKit
     m_ReadOnly: 0
     m_SerializedLabels:
     - ItemData
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 335297e7929f415e9584965de22d89bc
-    m_Address: Item_GuardianHeart
+  - m_GUID: cf3b6528f7a24fe6ac68aa1b7258f007
+    m_Address: Item_Potion_Medium
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d22f8dfd06244eac93b8ffe9fec3ae5f
+    m_Address: Item_AntidotePotion
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e013c3a87d4a4bafb5330f2027cd9ce3
+    m_Address: Item_EnhancedBomb
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ItemData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e728d5ed163440a1a6f48af345eb7a93
+    m_Address: Item_HolyWater
     m_ReadOnly: 0
     m_SerializedLabels:
     - ItemData

@@ -86,10 +86,17 @@ namespace DeepEarth.Core
             var staticData = CharacterDatabase.Get(id);
             if (staticData == null || staticData.UnlockCost == null) return 0;
 
-            staticData.UnlockCost.TryGetValue(BlockType.Iron, out int iron);
-            staticData.UnlockCost.TryGetValue(BlockType.Silver, out int silver);
-            staticData.UnlockCost.TryGetValue(BlockType.Gold, out int gold);
-            staticData.UnlockCost.TryGetValue(BlockType.Diamond, out int diamond);
+            int iron = 0, silver = 0, gold = 0, diamond = 0;
+            foreach (var entry in staticData.UnlockCost)
+            {
+                switch (entry.resourceType)
+                {
+                    case BlockType.Iron: iron += entry.amount; break;
+                    case BlockType.Silver: silver += entry.amount; break;
+                    case BlockType.Gold: gold += entry.amount; break;
+                    case BlockType.Diamond: diamond += entry.amount; break;
+                }
+            }
 
             return GameBalanceData.Instance.CalculateOreWillValue(iron, silver, gold, diamond);
         }
@@ -126,24 +133,33 @@ namespace DeepEarth.Core
             return true;
         }
 
-        public int GetPassiveAttackBonus(CharacterID id)
+        // 패시브 타입이 id의 실제 패시브와 일치할 때만 현재 레벨 값을 반환 — 아래 9개 getter가 공유하는 핵심 로직.
+        private float GetPassiveValueIfType(CharacterID id, PassiveType type)
         {
             var data = CharacterDatabase.Get(id);
-            if (data?.Passive != PassiveType.AttackBonus) return 0;
-            return Mathf.RoundToInt(GetCurrentPassiveValue(id));
+            return data?.Passive == type ? GetCurrentPassiveValue(id) : 0f;
         }
 
-        public int GetPassiveMiningBonus(CharacterID id)
-        {
-            var data = CharacterDatabase.Get(id);
-            if (data?.Passive != PassiveType.MiningBonus) return 0;
-            return Mathf.RoundToInt(GetCurrentPassiveValue(id));
-        }
+        public int GetPassiveAttackBonus(CharacterID id) => Mathf.RoundToInt(GetPassiveValueIfType(id, PassiveType.AttackBonus));
 
-        public bool HasGraveRobberPassive(CharacterID id)
-        {
-            var data = CharacterDatabase.Get(id);
-            return data?.Passive == PassiveType.GraveRobberPassive && GetCurrentPassiveValue(id) > 0f;
-        }
+        public int GetPassiveMiningBonus(CharacterID id) => Mathf.RoundToInt(GetPassiveValueIfType(id, PassiveType.MiningBonus));
+
+        public bool HasGraveRobberPassive(CharacterID id) => GetPassiveValueIfType(id, PassiveType.GraveRobberPassive) > 0f;
+
+        // ── 신규 6개 패시브 조회 (Character Class System) ──────────────────────
+
+        public float GetPassiveEventChoiceRoll(CharacterID id) => GetPassiveValueIfType(id, PassiveType.EventChoiceBonus);
+
+        public float GetPassivePickaxeDurabilityReduction(CharacterID id) => GetPassiveValueIfType(id, PassiveType.PickaxeDurabilityReduction);
+
+        public float GetPassivePotionHealBonus(CharacterID id) => GetPassiveValueIfType(id, PassiveType.PotionHealBonus);
+
+        public bool HasTreasureRewardBonus(CharacterID id) => GetPassiveValueIfType(id, PassiveType.TreasureRewardBonus) > 0f;
+
+        public float GetTreasureRelicChanceBonus(CharacterID id) => GetPassiveValueIfType(id, PassiveType.TreasureRewardBonus);
+
+        public float GetPassiveCurseDurationReduction(CharacterID id) => GetPassiveValueIfType(id, PassiveType.CurseDurationReduction);
+
+        public float GetPassiveLowHpAttackBonusMax(CharacterID id) => GetPassiveValueIfType(id, PassiveType.LowHpAttackBonus);
     }
 }

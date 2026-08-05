@@ -119,6 +119,13 @@ namespace DeepEarth.Core
 
             // 유물: 내구도 감소율 배율 (OilBottle, LeatherHandle 등)
             float rateModifier = RelicManager.Instance?.GetPickaxeDurabilityRateModifier() ?? 1.0f;
+
+            // 신규 패시브: Blacksmith — 내구도 감소량 감소 + 시작 유물(망치) 추가 감소
+            var charID = CharacterManager.Instance.SelectedCharacterID;
+            float passiveReduction = CharacterManager.Instance.GetPassivePickaxeDurabilityReduction(charID)
+                                    + (StartingRelicManager.Instance != null ? StartingRelicManager.Instance.GetPickaxeDurabilityReduction() : 0f);
+            rateModifier *= Mathf.Max(0f, 1f - passiveReduction);
+
             if (rateModifier != 1.0f)
                 loss = Mathf.Max(1, Mathf.RoundToInt(loss * rateModifier));
 

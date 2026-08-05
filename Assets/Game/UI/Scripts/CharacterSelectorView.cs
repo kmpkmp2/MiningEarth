@@ -1,62 +1,54 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using DeepEarth.Core;
 
 namespace DeepEarth.UI
 {
     public class CharacterSelectorView : MonoBehaviour
     {
-        [Header("Character Buttons")]
-        [SerializeField] private Button prisonerButton;
-        [SerializeField] private Button mercenaryButton;
-        [SerializeField] private Button minerButton;
-        [SerializeField] private Button graveRobberButton;
+        [Header("Dynamic Buttons")]
+        [SerializeField] private Transform buttonContainer;
+        [SerializeField] private GameObject buttonSlotPrefab;
 
         public event Action<CharacterID> OnCharacterSelected;
 
-        private static readonly Color ColorSelected = new Color(0.18f, 0.77f, 0.31f);
-        private static readonly Color ColorNormal   = new Color(0.2f, 0.22f, 0.25f);
-        private static readonly Color ColorLocked   = new Color(0.15f, 0.15f, 0.17f);
-
-        private void Start()
-        {
-            if (prisonerButton   != null) prisonerButton.onClick.AddListener(()   => OnCharacterSelected?.Invoke(CharacterID.Prisoner));
-            if (mercenaryButton  != null) mercenaryButton.onClick.AddListener(()  => OnCharacterSelected?.Invoke(CharacterID.Mercenary));
-            if (minerButton      != null) minerButton.onClick.AddListener(()      => OnCharacterSelected?.Invoke(CharacterID.Miner));
-            if (graveRobberButton!= null) graveRobberButton.onClick.AddListener(()=> OnCharacterSelected?.Invoke(CharacterID.GraveRobber));
-        }
+        private readonly List<CharacterButtonSlotView> _slots = new List<CharacterButtonSlotView>();
 
         public void Refresh(CharacterID selectedID)
         {
-            RefreshButton(prisonerButton,    CharacterID.Prisoner,   selectedID);
-            RefreshButton(mercenaryButton,   CharacterID.Mercenary,  selectedID);
-            RefreshButton(minerButton,       CharacterID.Miner,      selectedID);
-            RefreshButton(graveRobberButton, CharacterID.GraveRobber,selectedID);
-        }
+            if (buttonContainer == null || buttonSlotPrefab == null) return;
 
-        private void RefreshButton(Button btn, CharacterID id, CharacterID selectedID)
-        {
-            if (btn == null) return;
+            var characters = CharacterDatabase.Characters;
 
-            bool isUnlocked = CharacterManager.Instance != null && CharacterManager.Instance.IsUnlocked(id);
-            bool isSelected = id == selectedID;
-
-            btn.interactable = isUnlocked;
-
-            var img = btn.GetComponent<Image>();
-            if (img != null)
-                img.color = isSelected ? ColorSelected : (isUnlocked ? ColorNormal : ColorLocked);
-
-            var label = btn.GetComponentInChildren<TextMeshProUGUI>();
-            if (label != null && LocalizationManager.Instance != null)
+            while (_slots.Count > characters.Count)
             {
-                var staticData = CharacterDatabase.Get(id);
-                string name = staticData != null
-                    ? LocalizationManager.Instance.GetTranslation(staticData.NameKey)
+                var last = _slots[_slots.Count - 1];
+                _slots.RemoveAt(_slots.Count - 1);
+                if (last != null) Destroy(last.gameObject);
+            }
+
+            while (_slots.Count < characters.Count)
+            {
+                var go = Instantiate(buttonSlotPrefab, buttonContainer);
+                _slots.Add(go.GetComponent<CharacterButtonSlotView>());
+            }
+
+            for (int i = 0; i < characters.Count; i++)
+            {
+                var data = characters[i];
+                var id = data.ID;
+                var slot = _slots[i];
+                if (slot == null) continue;
+
+                bool isUnlocked = CharacterManager.Instance != null && CharacterManager.Instance.IsUnlocked(id);
+                bool isSelected = id == selectedID;
+                string name = LocalizationManager.Instance != null
+                    ? LocalizationManager.Instance.GetTranslation(data.NameKey)
                     : id.ToString();
-                label.text = isUnlocked ? name : $"🔒 {name}";
+
+                slot.SetData(name, isUnlocked, isSelected);
+                slot.OnClick = () => OnCharacterSelected?.Invoke(id);
             }
         }
     }

@@ -24,12 +24,12 @@ namespace DeepEarth.Map
         private readonly BossConnector     _bossConnector;
         private readonly EntranceConnector _entranceConnector;
 
-        public MapGenerator(GridTemplate template, RoomGenerationConfig roomConfig, IRandomProvider rng)
+        public MapGenerator(GridTemplate template, RoomGenerationConfig roomConfig, IRandomProvider rng, float eventWeightMultiplier = 1f)
         {
             _template           = template;
             _gridGenerator      = new GridGenerator(template);
             _pathGenerator      = new PathGenerator(template, rng);
-            _roomGenerator      = new RoomGenerator(roomConfig, rng);
+            _roomGenerator      = new RoomGenerator(roomConfig, rng, eventWeightMultiplier);
             _eliteNodeGenerator = new EliteNodeGenerator(rng);
             _ruleValidator      = new RuleValidator(roomConfig, rng);
             _bossConnector      = new BossConnector();

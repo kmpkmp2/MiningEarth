@@ -76,7 +76,7 @@ namespace DeepEarth.Core
             int baseDamage   = _burnData.damagePerTurn;
             int durationMod  = RelicManager.Instance?.GetBurnDurationModifier() ?? 0;
             int damageMod    = RelicManager.Instance?.GetBurnDamageModifier() ?? 0;
-            int finalDuration = Mathf.Max(1, baseDuration + durationMod);
+            int finalDuration = Mathf.Max(1, Mathf.RoundToInt((baseDuration + durationMod) * GetPriestDurationMultiplier()));
             int finalDamage   = Mathf.Max(0, baseDamage + damageMod);
 
             Debug.Log($"[Burn]\nBase Duration : {baseDuration}\nBase Damage : {baseDamage}");
@@ -124,11 +124,12 @@ namespace DeepEarth.Core
                 EffectManager.Instance?.RemoveEffect(PoisonEffectID);
             }
 
+            int finalTurns = Mathf.Max(1, Mathf.RoundToInt(turns * GetPriestDurationMultiplier()));
             var data  = CreatePoisonData();
-            var model = new StatusEffectModel(data, turns, 0);
+            var model = new StatusEffectModel(data, finalTurns, 0);
             _activeEffects.Add(model);
             RegisterInEffectManager(model);
-            Debug.Log($"[Status]\nPoison Applied\nDuration : {turns}\nAttack Mod : -10%");
+            Debug.Log($"[Status]\nPoison Applied\nDuration : {finalTurns}\nAttack Mod : -10%");
         }
 
         public bool HasPoison() => _activeEffects.Exists(e => e.EffectID == PoisonEffectID);
@@ -182,12 +183,23 @@ namespace DeepEarth.Core
                 EffectManager.Instance?.RemoveEffect(_miningPowerDownData.effectID);
             }
 
-            int duration = durationOverride > 0 ? durationOverride : _miningPowerDownData.baseDuration;
+            int baseDuration = durationOverride > 0 ? durationOverride : _miningPowerDownData.baseDuration;
+            int duration = Mathf.Max(1, Mathf.RoundToInt(baseDuration * GetPriestDurationMultiplier()));
             var model = new StatusEffectModel(_miningPowerDownData, duration, 0);
             _activeEffects.Add(model);
             RegisterInEffectManager(model);
 
             Debug.Log($"[Status]\nMiningPowerDown Applied\nDuration : {duration}\nModifier : {_miningPowerDownData.miningPowerModifier}");
+        }
+
+        // 신규 패시브: Priest — "저주형"(지속시간 기반) 디버프 지속시간 감소 + 시작 유물(축복의 성수) 추가 감소
+        // 코드베이스에 duration 기반 "Curse" 카테고리가 별도로 없어 Burn/Poison/MiningPowerDown 전부에 넓게 적용한다.
+        private float GetPriestDurationMultiplier()
+        {
+            var charID = CharacterManager.Instance.SelectedCharacterID;
+            float reduction = CharacterManager.Instance.GetPassiveCurseDurationReduction(charID)
+                             + (StartingRelicManager.Instance != null ? StartingRelicManager.Instance.GetCurseDurationReduction() : 0f);
+            return Mathf.Max(0f, 1f - Mathf.Clamp01(reduction));
         }
 
         public void ApplyMiningPowerUp(int durationOverride = -1)

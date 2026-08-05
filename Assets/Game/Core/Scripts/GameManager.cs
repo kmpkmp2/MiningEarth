@@ -372,12 +372,27 @@ namespace DeepEarth.Core
 
             // 2c. Relic Clear
             RelicManager.Instance?.ClearAll();
+            StartingRelicManager.Instance?.ClearAll();
 
             // 2d. Pickaxe Durability Clear
             PickaxeDurabilityManager.Instance?.ClearForRun();
 
             // 3. Player Runtime Stat Reset
             StatManager.Instance.ResetStatsForRun();
+
+            // 3a. 시작 아이템 + 전용 시작 유물 지급 — 반드시 위의 InventoryManager.ClearRunInventory()(1번)와
+            // StatManager.ResetStatsForRun()(EffectManager.InitializeCharacterPassive 포함, 3번) 이후여야
+            // 그 클리어 로직에 의해 지급 즉시 유실되지 않는다.
+            var charData = CharacterDatabase.Get(CharacterManager.Instance.SelectedCharacterID);
+            if (charData != null)
+            {
+                foreach (var entry in charData.StartingItems)
+                {
+                    if (entry.Item != null && entry.Quantity > 0)
+                        InventoryManager.Instance.AddItem(entry.Item.itemID, entry.Quantity);
+                }
+                StartingRelicManager.Instance?.ApplyForCharacter(charData);
+            }
 
             // 3b. Pickaxe Durability Init (after stat reset so upgrade level is current)
             PickaxeDurabilityManager.Instance?.InitializeForRun();
@@ -809,6 +824,7 @@ namespace DeepEarth.Core
 
                 StatusEffectManager.Instance?.ClearAll();
                 RelicManager.Instance?.ClearAll();
+                StartingRelicManager.Instance?.ClearAll();
 
                 StatManager.Instance.ResetStatsForRun();
 
@@ -867,6 +883,7 @@ namespace DeepEarth.Core
             EffectManager.Instance?.ClearRunEffects();
             StatusEffectManager.Instance?.ClearAll();
             RelicManager.Instance?.ClearAll();
+            StartingRelicManager.Instance?.ClearAll();
             StatManager.Instance?.ResetStatsForRun();
 
             RunSetupContext.Reset();

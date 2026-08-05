@@ -148,21 +148,15 @@ namespace DeepEarth.UI
 
             if (level <= 0) return flavor;
 
-            int    idx       = Mathf.Clamp(level - 1, 0, maxLevel - 1);
-            int    value     = (int)staticData.PassiveLevels[idx].Value;
-            string label     = loc.GetTranslation("run_setup_passive_label");
-            string levelText = loc.GetFormatted("run_setup_passive_level_fmt", level, maxLevel);
+            int    idx        = Mathf.Clamp(level - 1, 0, maxLevel - 1);
+            float  rawValue   = staticData.PassiveLevels[idx].Value;
+            float  shown      = staticData.PassiveValueIsPercent ? rawValue * 100f : rawValue;
+            string label      = loc.GetTranslation("run_setup_passive_label");
+            string levelText  = loc.GetFormatted("run_setup_passive_level_fmt", level, maxLevel);
 
-            string passiveLine = staticData.Passive switch
-            {
-                PassiveType.AttackBonus =>
-                    $"{label} {levelText} : {loc.GetFormatted("effect_passive_mercenary_value_fmt", value)}",
-                PassiveType.MiningBonus =>
-                    $"{label} {levelText} : {loc.GetFormatted("effect_passive_miner_value_fmt", value)}",
-                PassiveType.GraveRobberPassive =>
-                    $"{label} {levelText} : {loc.GetTranslation("effect_passive_graverobber_desc")}",
-                _ => string.Empty
-            };
+            string passiveLine = string.IsNullOrEmpty(staticData.PassiveValueFormatKey)
+                ? string.Empty
+                : $"{label} {levelText} : {loc.GetFormatted(staticData.PassiveValueFormatKey, shown)}";
 
             return string.IsNullOrEmpty(passiveLine) ? flavor : $"{flavor}\n{passiveLine}";
         }

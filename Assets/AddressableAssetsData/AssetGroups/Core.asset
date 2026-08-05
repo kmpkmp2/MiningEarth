@@ -14,7 +14,115 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
   m_GroupName: Core
   m_GUID: 88d244bc7866d524ebf3540379df45bf
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 1cf2efc90d3b14d4097b419a5accddf3
+    m_Address: StartingRelic_RustySword
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - StartingRelic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3eb76309de564b041a2c65205a800b6e
+    m_Address: Character_Prisoner
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CharacterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4221c648750bed54eb381f65caddffff
+    m_Address: StartingRelic_OldCompass
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - StartingRelic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 477ecd148594fbb489b4bb99b8463d85
+    m_Address: Character_Priest
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CharacterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 70ea5bcaeba9b2d47914b2815ae5f087
+    m_Address: Character_Alchemist
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CharacterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8514f236e993f3d438fac65e88daf65f
+    m_Address: Character_TreasureHunter
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CharacterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 91251048bc2d2114cab9b1bd83622e92
+    m_Address: Character_GraveRobber
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CharacterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a26da04f1068f064db16162b61f77ccf
+    m_Address: StartingRelic_MinerGloves
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - StartingRelic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a3454b0aeea878144872dd98e5309ce8
+    m_Address: StartingRelic_BloodPendant
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - StartingRelic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a6c77f21e1449a4498dd716aa1a483fe
+    m_Address: Character_Adventurer
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CharacterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ab5c0fa49a24bd5469e6504650f6002c
+    m_Address: StartingRelic_SmallVial
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - StartingRelic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bf4a49548f2de9043adfee77add0132d
+    m_Address: Character_Berserker
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CharacterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c6d92ac8bfa70a04b9891ee39147b8f1
+    m_Address: StartingRelic_LuckyCoin
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - StartingRelic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ea6812265f089824fa82c78f7d43b76b
+    m_Address: Character_Mercenary
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CharacterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eb6473c6d34932f4995940aa995f52bd
+    m_Address: Character_Blacksmith
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CharacterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f11ec7ba8d5410747850c7b897388402
+    m_Address: StartingRelic_HolyWater
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - StartingRelic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: feb3bdacbbae76642ad16ebdc3a879e5
+    m_Address: Character_Miner
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - CharacterData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fec674a858ceac14a9b27b31453eb035
+    m_Address: StartingRelic_Hammer
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - StartingRelic
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: bf53922257c85cf45b1d5828a500e7b9, type: 2}
   m_SchemaSet:

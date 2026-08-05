@@ -51,6 +51,9 @@ namespace DeepEarth.UI
             _model.SetProgress(0.2f, Loc("loading_assets") ?? "Initializing assets...");
             await Addressables.InitializeAsync().ToUniTask();
 
+            _model.SetProgress(0.35f, Loc("loading_characters") ?? "Loading characters...");
+            await CharacterDatabase.LoadAsync();
+
             _model.SetProgress(0.5f, Loc("loading_save") ?? "Loading save data...");
             SaveManager.Load();
             await UniTask.Delay(200);
@@ -81,12 +84,13 @@ namespace DeepEarth.UI
 
             // 1. PlayerData 로드
             Step(ref step, N, Loc("loading_step_playerdata") ?? "Loading player data...");
+            await CharacterDatabase.LoadAsync(); // 이미 로드되어 있으면 즉시 반환 (방어적 보장)
             SaveManager.Load();
             await UniTask.Delay(50);
 
             // 2. RunData 생성
             Step(ref step, N, Loc("loading_step_rundata") ?? "Preparing run data...");
-            var runData = RunDataModel.Create(RunSetupContext.SelectedCharacter, RunSetupContext.SelectedPickaxeID);
+            RunDataModel.Create();
             await UniTask.Delay(50);
 
             // 3. 캐릭터 적용
@@ -101,7 +105,8 @@ namespace DeepEarth.UI
                 await PickaxeManager.Instance.InitializeAsync();
             await UniTask.Delay(50);
 
-            // 5. 시작 아이템 지급 (현재 미구현)
+            // 5. 시작 아이템 준비 (실제 지급은 8번 스텝 — 런 데이터 초기화 이후에 수행됨.
+            //    순서 주의: 여기서 지급하면 8번의 ClearRunInventory()/RelicManager.ClearAll()에 유실된다.)
             Step(ref step, N, Loc("loading_step_items") ?? "Preparing starting items...");
             await UniTask.Delay(50);
 
@@ -109,9 +114,8 @@ namespace DeepEarth.UI
             Step(ref step, N, Loc("loading_step_passive") ?? "Applying character passive...");
             await UniTask.Delay(50);
 
-            // 7. 기본 스탯 계산
+            // 7. 기본 스탯 계산 (실제 계산은 StatManager.ResetStatsForRun에서 처리 — 8-2번 스텝 근처)
             Step(ref step, N, Loc("loading_step_stats") ?? "Calculating base stats...");
-            ComputeAndStoreStats(runData);
             await UniTask.Delay(50);
 
             // 8. 런 전용 데이터 초기화
@@ -121,6 +125,10 @@ namespace DeepEarth.UI
             EffectManager.Instance?.ClearRunEffects();
             StatusEffectManager.Instance?.ClearAll();
             RelicManager.Instance?.ClearAll();
+            StartingRelicManager.Instance?.ClearAll();
+            // 시작 아이템/전용 시작 유물의 실제 지급은 GameManager.RunStart()에서 수행된다 —
+            // RunStart()가 자신만의 InventoryManager.ClearRunInventory()/StatManager.ResetStatsForRun()를
+            // (EffectManager.InitializeCharacterPassive 포함) 다시 호출하므로, 여기서 지급하면 그때 유실된다.
             await UniTask.Delay(50);
 
             // 9. Addressables 에셋 프리로드
@@ -245,23 +253,6 @@ namespace DeepEarth.UI
         private void SyncView() => _view?.SetProgress(_model.Progress, _model.StatusText);
 
         private static string Loc(string key) => LocalizationManager.Instance?.GetTranslation(key);
-
-        private static void ComputeAndStoreStats(RunDataModel runData)
-        {
-            var meta       = MetaProgressionManager.Instance;
-            var pkxMgr     = PickaxeManager.Instance;
-            var charID     = RunSetupContext.SelectedCharacter;
-            var staticData = CharacterDatabase.Get(charID);
-
-            int maxHP = 10 + (meta != null ? (meta.MaxHPLevel - 1) * 2 : 0);
-            int atk   = 1 + (meta != null ? meta.AttackLevel - 1 : 0);
-            int min   = (pkxMgr?.GetEquippedMiningPower() ?? 1)
-                          + (meta != null ? meta.MiningPowerLevel - 1 : 0);
-            int invSz = 24 + (meta != null ? meta.InventorySizeLevel * 4 : 0);
-            int dur   = pkxMgr != null ? pkxMgr.GetFinalMaxDurability(pkxMgr.EquippedPickaxeData) : 100;
-
-            runData.ApplyStats(maxHP, min, atk, dur, invSz);
-        }
 
         private static async UniTask PreloadAddressablesAsync()
         {

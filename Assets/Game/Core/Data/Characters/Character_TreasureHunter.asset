@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32b8f6e8721fee748b73d4326fbe6069, type: 3}
+  m_Name: Character_TreasureHunter
+  m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.Core.CharacterData
+  ID: 7
+  NameKey: char_treasurehunter_name
+  DescKey: char_treasurehunter_desc
+  FlavorKey: char_treasurehunter_flavor
+  PlaystyleKey: char_treasurehunter_playstyle
+  Passive: 7
+  PassiveNameKey: passive_treasurehunter_name
+  PassiveDescKey: effect_passive_treasurehunter_desc
+  PassiveLevels:
+  - Level: 1
+    DescKey: passive_treasurehunter_lv1_desc
+    Value: 0.1
+    WillCost: 20
+  - Level: 2
+    DescKey: passive_treasurehunter_lv2_desc
+    Value: 0.15
+    WillCost: 40
+  - Level: 3
+    DescKey: passive_treasurehunter_lv3_desc
+    Value: 0.2
+    WillCost: 60
+  - Level: 4
+    DescKey: passive_treasurehunter_lv4_desc
+    Value: 0.25
+    WillCost: 80
+  - Level: 5
+    DescKey: passive_treasurehunter_lv5_desc
+    Value: 0.3
+    WillCost: 100
+  PassiveValueIsPercent: 1
+  PassiveValueFormatKey: effect_passive_treasurehunter_value_fmt
+  PassiveHudIcon: "\U0001F4B0"
+  PassiveHudFormat: '{0:0}%'
+  UnlockCost: []
+  StartingItems: []
+  StartingRelic: {fileID: 11400000, guid: c6d92ac8bfa70a04b9891ee39147b8f1, type: 2}
