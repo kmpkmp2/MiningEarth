@@ -200,6 +200,7 @@ namespace DeepEarth.Common
         public const string LabelBossPattern        = "BossPattern";
         public const string BattleBalanceDataKey    = "BattleBalanceData";
         public const string MonsterIntentDataKey    = "MonsterIntentData";
+        public const string ShieldDataKey           = "ShieldData";
         public const string UIPanelBattle           = "UI_Panel_Battle";
 
         // Battle art/audio — reserved keys, real assets not yet produced (loads no-op until then)

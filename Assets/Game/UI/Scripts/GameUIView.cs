@@ -11,6 +11,7 @@ namespace DeepEarth.UI
         [Header("HUD Elements")]
         [SerializeField] private TextMeshProUGUI hpText;
         [SerializeField] private Slider hpSlider;
+        [SerializeField] private TextMeshProUGUI shieldText;
         [SerializeField] private TextMeshProUGUI depthText;
         [SerializeField] private TextMeshProUGUI difficultyText;
         [SerializeField] private TextMeshProUGUI inventorySizeText;
@@ -104,6 +105,15 @@ namespace DeepEarth.UI
                 hpSlider.maxValue = max;
                 hpSlider.value = current;
             }
+        }
+
+        public void SetShield(int current)
+        {
+            if (shieldText == null) return;
+            bool hasShield = current > 0;
+            shieldText.gameObject.SetActive(hasShield);
+            if (hasShield)
+                shieldText.text = LocalizationManager.Instance.GetFormatted("hud_shield", current);
         }
 
         public void SetDepth(int depth, string difficultyKey)

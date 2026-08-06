@@ -15,6 +15,8 @@ namespace DeepEarth.Battle
         private readonly MonsterPatternModel _pattern;
         private readonly TurnModel _turn;
 
+        private static readonly Color ShieldDamageColor = new Color(0.3f, 0.6f, 1f);
+
         public Combat.MonsterPresenter CombatPresenter => _combatPresenter;
         public PatternStepData CurrentStep => _pattern.CurrentStep;
 
@@ -82,16 +84,14 @@ namespace DeepEarth.Battle
                 case IntentType.HeavyAttack:
                 {
                     int dmg = ModifyOutgoingDamage(step.value > 0 ? step.value : _combatPresenter.Model.Damage);
-                    if (_turn.PlayerIsDefending)
-                        dmg = Mathf.RoundToInt(dmg * (1f - BattleBalanceData.Instance.defenseRate));
 
                     _combatPresenter.View.PlayAttackAnimation(BattleBalanceData.Instance.monsterAttackAnimationTime);
                     await UniTask.Delay(TimeSpan.FromSeconds(BattleBalanceData.Instance.monsterAttackAnimationTime));
 
+                    var result = StatManager.Instance.TakeDamage(dmg);
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
-                    Debug.Log($"[Battle]\nMonster Attack\nDamage : {dmg}");
+                    Debug.Log($"[Battle]\nMonster Attack\nIncoming Damage : {dmg}\nShield Damage : {result.ShieldDamage}\nHP Damage : {result.HpDamage}");
 #endif
-                    StatManager.Instance.TakeDamage(dmg);
 
                     float hitEffectTime = BattleBalanceData.Instance.monsterHitEffectTime;
                     EffectSystem.Instance.FlashScreen(new Color(1f, 0f, 0f, 0.35f), hitEffectTime);
@@ -99,7 +99,10 @@ namespace DeepEarth.Battle
                     Vector3 textWorldPos = Camera.main != null
                         ? Camera.main.transform.position + Camera.main.transform.forward * 1.5f + Camera.main.transform.right * -0.5f
                         : _combatPresenter.View.transform.position + Vector3.up;
-                    EffectSystem.Instance.SpawnDamageText(textWorldPos, $"-{dmg} HP", Color.red);
+                    if (result.ShieldDamage > 0)
+                        EffectSystem.Instance.SpawnDamageText(textWorldPos, $"-{result.ShieldDamage}", ShieldDamageColor);
+                    if (result.HpDamage > 0)
+                        EffectSystem.Instance.SpawnDamageText(textWorldPos, $"-{result.HpDamage} HP", Color.red);
 
                     await UniTask.Delay(TimeSpan.FromSeconds(hitEffectTime));
                     break;

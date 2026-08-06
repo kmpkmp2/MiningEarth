@@ -21,6 +21,7 @@ namespace DeepEarth.UI
             // Subscribe to state change events
             StatManager.Instance.OnHPChanged += UpdateHP;
             StatManager.Instance.OnStatsUpdated += UpdateStats;
+            StatManager.Instance.OnShieldChanged += UpdateShield;
             _gameManager.OnGameDataChanged += UpdateAll;
 
             // Subscribe to settings panel trigger
@@ -59,6 +60,7 @@ namespace DeepEarth.UI
             {
                 StatManager.Instance.OnHPChanged -= UpdateHP;
                 StatManager.Instance.OnStatsUpdated -= UpdateStats;
+                StatManager.Instance.OnShieldChanged -= UpdateShield;
             }
 
             if (_gameManager != null)
@@ -111,6 +113,11 @@ namespace DeepEarth.UI
             _view.SetHP(StatManager.Instance.CurrentHP, StatManager.Instance.GetMaxHP());
         }
 
+        private void UpdateShield()
+        {
+            _view.SetShield(StatManager.Instance.CurrentShield);
+        }
+
         private void UpdateStats()
         {
             UpdateHP();
@@ -119,6 +126,7 @@ namespace DeepEarth.UI
         private void UpdateAll()
         {
             UpdateHP();
+            UpdateShield();
             _view.SetDepth(_gameManager.CurrentDepth, _gameManager.DifficultyName);
             _view.SetResources(_gameManager.IronCount, _gameManager.SilverCount, _gameManager.GoldCount, _gameManager.DiamondCount);
             

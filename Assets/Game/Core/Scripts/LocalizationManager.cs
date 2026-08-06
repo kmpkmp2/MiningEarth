@@ -47,6 +47,7 @@ namespace DeepEarth.Core
             var en = new Dictionary<string, string>
             {
                 { "hud_hp", "HP: {0} / {1}" },
+                { "hud_shield", "Shield: {0}" },
                 { "hud_depth", "Depth: {0}m" },
                 { "hud_bag", "Bag: {0} / {1}" },
                 { "hud_iron", "Iron: {0}" },
@@ -916,6 +917,7 @@ namespace DeepEarth.Core
             var ko = new Dictionary<string, string>
             {
                 { "hud_hp", "체력: {0} / {1}" },
+                { "hud_shield", "방어도: {0}" },
                 { "hud_depth", "깊이: {0}m" },
                 { "hud_bag", "가방: {0} / {1}" },
                 { "hud_iron", "철: {0}" },

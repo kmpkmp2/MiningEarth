@@ -25,6 +25,13 @@ namespace DeepEarth.Core
         CurseMiningFailChance
     }
 
+    public readonly struct DamageResult
+    {
+        public readonly int ShieldDamage;
+        public readonly int HpDamage;
+        public DamageResult(int shieldDamage, int hpDamage) { ShieldDamage = shieldDamage; HpDamage = hpDamage; }
+    }
+
     public class StatManager : MonoBehaviour
     {
         private static StatManager _instance;
@@ -48,6 +55,9 @@ namespace DeepEarth.Core
         public int BaseAttackDamage { get; private set; } = 1;
         public int BaseMiningPower { get; private set; } = 1;
         public int BaseInventorySize { get; private set; } = 24;
+
+        // Shield(방어도): 전투 중에만 존재, 전투 시작/종료 시 BattlePresenter가 Reset 호출. SaveData에 저장되지 않음.
+        public int CurrentShield { get; private set; }
 
         // Boss run-local modifiers (not saved)
         public int BossAttackModifier { get; set; } = 0;
@@ -74,6 +84,7 @@ namespace DeepEarth.Core
 
         public event Action OnHPChanged;
         public event Action OnStatsUpdated;
+        public event Action OnShieldChanged;
 
         private void Awake()
         {
@@ -126,7 +137,8 @@ namespace DeepEarth.Core
             Debug.Log($"[Inventory]\nFinal Capacity : {finalCapacity}");
 
             CurrentHP = BaseMaxHP;
-            
+            CurrentShield = 0;
+
             if (EffectManager.Instance != null)
             {
                 EffectManager.Instance.ClearRunEffects();
@@ -394,9 +406,32 @@ namespace DeepEarth.Core
             return curseStack * 1; // 1 damage per stack
         }
 
-        public void TakeDamage(int amount)
+        public void ResetShield()
         {
-            CurrentHP = Mathf.Max(0, CurrentHP - amount);
+            if (CurrentShield == 0) return;
+            CurrentShield = 0;
+            OnShieldChanged?.Invoke();
+        }
+
+        public void AddShield(int amount)
+        {
+            if (amount <= 0) return;
+            CurrentShield += amount;
+            OnShieldChanged?.Invoke();
+        }
+
+        public DamageResult TakeDamage(int amount)
+        {
+            int shieldDamage = Mathf.Clamp(amount, 0, CurrentShield);
+            int hpDamage = amount - shieldDamage;
+
+            if (shieldDamage > 0)
+            {
+                CurrentShield -= shieldDamage;
+                OnShieldChanged?.Invoke();
+            }
+
+            CurrentHP = Mathf.Max(0, CurrentHP - hpDamage);
             OnHPChanged?.Invoke();
 
             if (CurrentHP <= 0 && InventoryManager.Instance.GetItemCount(AddressableKeys.ItemImmortalityPotion) > 0)
@@ -419,7 +454,7 @@ namespace DeepEarth.Core
                 Debug.Log($"[Item]\nImmortality Potion Activated\nHP Restored : {reviveHP}");
                 Debug.Log("[Item]\nRevive Completed");
 #endif
-                return; // BossReviveCount 체크로 내려가지 않음 — 중복 부활 방지
+                return new DamageResult(shieldDamage, hpDamage); // BossReviveCount 체크로 내려가지 않음 — 중복 부활 방지
             }
 
             if (CurrentHP <= 0 && BossReviveCount > 0)
@@ -437,6 +472,8 @@ namespace DeepEarth.Core
 
                 EffectSystem.Instance.SpawnDamageText(textWorldPos, "REVIVED! +100% HP", Color.green);
             }
+
+            return new DamageResult(shieldDamage, hpDamage);
         }
 
         public void Heal(int amount)

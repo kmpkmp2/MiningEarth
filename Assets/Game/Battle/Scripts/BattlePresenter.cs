@@ -20,6 +20,7 @@ namespace DeepEarth.Battle
         private readonly BattleModel _battleModel = new BattleModel();
 
         private readonly TargetSelectPresenter _targetSelectPresenter;
+        private readonly ShieldPresenter _shieldPresenter;
         private readonly List<MonsterPresenter> _monsters = new List<MonsterPresenter>();
         private UniTaskCompletionSource<PlayerActionType> _playerActionTcs;
 
@@ -29,6 +30,7 @@ namespace DeepEarth.Battle
             _turnPresenter = new TurnPresenter(view != null ? view.TurnView : null);
             _intentPresenter = new IntentPresenter(intentData, intentViewPrefab, intentLayer);
             _targetSelectPresenter = new TargetSelectPresenter(view != null ? view.TargetIndicatorPrefab : null, view != null ? view.TargetIndicatorLayer : null);
+            _shieldPresenter = new ShieldPresenter(view != null ? view.ShieldPopupView : null);
 
             if (_view != null)
             {
@@ -44,6 +46,7 @@ namespace DeepEarth.Battle
                 _view.OnAttackClicked -= HandleAttackClicked;
                 _view.OnDefendClicked -= HandleDefendClicked;
             }
+            _shieldPresenter?.Dispose();
         }
 
         public async UniTask RunTurnLoopAsync(
@@ -54,6 +57,7 @@ namespace DeepEarth.Battle
             _monsters.Clear();
             _intentPresenter.Clear();
             _battleModel.Turn.Phase = BattleState.Idle;
+            StatManager.Instance.ResetShield();
 
             var makeWrapper = wrapperFactory ?? ((cp, pattern, turn) => new MonsterPresenter(cp, pattern, turn));
 
@@ -90,6 +94,7 @@ namespace DeepEarth.Battle
             {
                 monsterSource.OnMonsterSpawned -= RegisterMonster;
                 _battleModel.Turn.Phase = BattleState.BattleEnd;
+                StatManager.Instance.ResetShield();
                 _intentPresenter.Clear();
                 _view?.SetVisible(false);
             }
@@ -119,12 +124,18 @@ namespace DeepEarth.Battle
                 if (action == PlayerActionType.Defend)
                 {
                     _view?.SetActionButtonsInteractable(false);
-                    // 방어는 즉시 종료 — 실드 이펙트만 fire-and-forget으로 재생하고 대기 없이 Monster Turn으로 넘어간다.
-                    _battleModel.Turn.PlayerIsDefending = true;
-                    _view?.PlayDefendEffect();
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
-                    Debug.Log("[Battle]\nPlayer Defend");
+                    Debug.Log("[Battle]\nDefend Button");
 #endif
+                    _battleModel.Turn.Phase = BattleState.ShieldSelect;
+                    bool applied = await _shieldPresenter.SelectAndApplyOreAsync();
+                    if (!applied)
+                    {
+                        // 취소 → 턴 미소모, Player Turn 재진입.
+                        continue;
+                    }
+
+                    _view?.PlayDefendEffect();
                     return;
                 }
 
@@ -148,7 +159,6 @@ namespace DeepEarth.Battle
                 Debug.Log("[Battle]\nAttack");
 #endif
                 await target.ReceivePlayerAttackAsync();
-                _battleModel.Turn.PlayerIsDefending = false;
                 return;
             }
         }
@@ -165,7 +175,6 @@ namespace DeepEarth.Battle
                 if (StatManager.Instance.CurrentHP <= 0) break;
             }
 
-            _battleModel.Turn.PlayerIsDefending = false;
             RefreshAllIntents();
         }
 

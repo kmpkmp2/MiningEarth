@@ -19,8 +19,8 @@ MonoBehaviour:
     m_Address: Relic_PurificationRing
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Relic_Treasure
     - Relic
+    - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0605fbd06f5bbe64592f32a42c813c3f
     m_Address: ach_relic5
@@ -32,15 +32,36 @@ MonoBehaviour:
     m_Address: Relic_BrokenDrill
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Relic_Treasure
     - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0fbff40bd5b643b3b46c936cc0090280
+    m_Address: Relic_WarriorNecklace
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 10b18935167347c39f797b890a20daa1
+    m_Address: Relic_MinerLunchbox
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 13361750ad4c467bab5ea29dfc528bb3
     m_Address: Relic_MinersGloves
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Relic_Treasure
     - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 14ff0004466c4b2499066fec02f00576
+    m_Address: Relic_MiningPermit
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 158049cb385e67143a938584326c1cfa
     m_Address: ach_lava1
@@ -54,6 +75,17 @@ MonoBehaviour:
     m_SerializedLabels:
     - Achievement
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 16d3681f8edc4343a2a3a76e92341eca
+    m_Address: GameBalanceData
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1b8fd76e00dc7f145b8af04e1e3f04e0
+    m_Address: ShieldData
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ShieldData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1dcdbd36da3db454ba8ad789306a88d4
     m_Address: ach_boss_first
     m_ReadOnly: 0
@@ -64,15 +96,22 @@ MonoBehaviour:
     m_Address: Relic_BloodContract
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Relic_Treasure
     - Relic
+    - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 21fa4e6a6caf4409b8cca5772202fd3b
     m_Address: Relic_MercenaryMedal
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Relic_Treasure
     - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 22d282d1d39d490584e6b06fe765f861
+    m_Address: Relic_Hourglass
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Tombstone
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 25ccbe8b462defe459bdb9c6e480a3e8
     m_Address: ach_treasure5
@@ -80,11 +119,39 @@ MonoBehaviour:
     m_SerializedLabels:
     - Achievement
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2754b2e9f62d4ee3822b10af66534f36
+    m_Address: Relic_ImmortalHeart
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ba3606e8452440e80c349a2bea7b4f5
+    m_Address: Relic_LeatherHandle
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 30255cab670d5ef43a4ba321868dc98f
     m_Address: ach_relic1
     m_ReadOnly: 0
     m_SerializedLabels:
     - Achievement
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3445eb643f4843c79d7390891777b687
+    m_Address: Relic_GoldenBag
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 35e7afd5f339452fa2ca44c9bdc60ea5
+    m_Address: Relic_PoisonAntidote
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 36a7df9d4bb5dc346952699cfedd6726
     m_Address: UI_Prefab_ShopItemSlot
@@ -97,6 +164,13 @@ MonoBehaviour:
     m_SerializedLabels:
     - Achievement
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3fa96ead769f48deaaa7f86379d36204
+    m_Address: Relic_MineBlessing
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 40a467cc1dd59c441a33bdbdbffd0544
     m_Address: ach_ore_diamond10
     m_ReadOnly: 0
@@ -107,15 +181,22 @@ MonoBehaviour:
     m_Address: Relic_BloodRune
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Relic_Tombstone
     - Relic
+    - Relic_Tombstone
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 47fa4ec966b0eaf429893772febc419d
     m_Address: Relic_FrozenCrystal
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Relic_Treasure
     - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4f2a2407219746b19f61ff629ff1c804
+    m_Address: Relic_GreedyCoin
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 516bf29c119a8de4da54d3c412f43790
     m_Address: Pickaxe_Default
@@ -128,33 +209,80 @@ MonoBehaviour:
     m_SerializedLabels:
     - Achievement
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5792ae7d91e741a8b13993731abdf6ab
+    m_Address: Relic_SoulContract
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5e4d6e73f4664df39b020dc3eecd71d0
     m_Address: Relic_OreDetector
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Relic_Treasure
     - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 60c176798ef144d5b1800fb4eb69baf0
+    m_Address: Relic_EliteHunterMedal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 618e981dcb63450a94ef5e4ccf65eacc
     m_Address: Relic_MadnessSword
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Relic_Tombstone
     - Relic
+    - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 61d8c4c997cf449e9927ab466696174e
+    m_Address: Relic_OilBottle
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 624035da422aa1a458f321876adc2b15
     m_Address: Relic_LavaContract
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Relic_Tombstone
     - Relic
+    - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 64acf17402194f549a4944bca78dba00
+    m_Address: MonsterIntentData
+    m_ReadOnly: 0
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 693d82b5c77e4d7591f7b0e66f4c3423
     m_Address: Relic_CursedMiningGloves
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Relic_Tombstone
     - Relic
+    - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6b56f119a9be4fdb8a095ec28da96220
+    m_Address: Relic_SilverNecklace
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6c01380b31ee4e2b858e19fd40d31bfe
+    m_Address: Relic_LuckyPickaxe
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 72d40c16a6f5424b8c87a2b5676450f7
+    m_Address: Relic_DiamondBrooch
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 76a61630e35d379429773aba69f1cb0c
     m_Address: ach_boss_cave_rat
@@ -162,10 +290,45 @@ MonoBehaviour:
     m_SerializedLabels:
     - Achievement
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 76fd387e0c144c088cb64d7a48ec1342
+    m_Address: Relic_OldWhetstone
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 77a9a6e40a6a3964ca3bc7d321d44bd4
     m_Address: StatusEffect_Burn
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 780a4a0e530640fdae4055d285df14dc
+    m_Address: Relic_GodPickaxe
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7f64a37c7c824f18b9eae46773365328
+    m_Address: Relic_IronOrnament
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7fae63866a0e4e22a769150d911aa12b
+    m_Address: Relic_MinerCanteen
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 82c0e198f9384f0bae230edd88a37d92
+    m_Address: Relic_WorkGlove
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8560bbd83fb4dbe47ba2dc000b0029f8
     m_Address: ach_kill50
@@ -173,12 +336,19 @@ MonoBehaviour:
     m_SerializedLabels:
     - Achievement
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 87de6aed09a145e5aa4b062e2142aa72
+    m_Address: Relic_AutoRepairKit
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 89e96dd4159e7b24dab10600b0773245
     m_Address: Relic_BurningHeart
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Relic_Tombstone
     - Relic
+    - Relic_Tombstone
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8a37362d18a5e8e4d97231c9f54634a0
     m_Address: ach_depth200
@@ -186,12 +356,66 @@ MonoBehaviour:
     m_SerializedLabels:
     - Achievement
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8c747bd76788402788192bc20de33167
+    m_Address: Relic_MinerGlove
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8ea2c997082a4f80bfa4be3b0bfb85a2
+    m_Address: Relic_GoldPouch
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8f15d65638584de9901bdb087942d15e
     m_Address: Relic_HuntersEye
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Relic_Treasure
     - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 97bc6e5601744836bf5d9e8c115aab71
+    m_Address: Relic_OreSensor
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9875e5dc603f4da099c7161180144566
+    m_Address: Relic_AbyssalCore
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9b83ac6106504c95bae3afe83b2eb57a
+    m_Address: Relic_InfiniteWhetstone
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9e7adba5472547a29200272f4cf1c381
+    m_Address: Relic_RewardConfig
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a027be112f82471f99b6e760b6d4fe8f
+    m_Address: Relic_SteelHeart
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a06f177e92364836b9853d55bb00fc7d
+    m_Address: Relic_MineRing
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a9137ab19b07d974a9fa63bb3c6965dc
     m_Address: ach_depth50
@@ -209,20 +433,27 @@ MonoBehaviour:
     m_Address: Relic_FireCultMask
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Relic_Tombstone
     - Relic
+    - Relic_Tombstone
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ae5be52e32b88534699fb194aff25c60
     m_Address: Pickaxe_Config
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b24f742d6e7447829fb038b0adb3ed34
+    m_Address: Relic_IronBoot
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b7880e6d9d39b294fbc578fa3e32cbbe
     m_Address: Relic_CursedAsh
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Relic_Tombstone
     - Relic
+    - Relic_Tombstone
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b9e1ff49f70ce964588ccc1ed066aa2b
     m_Address: ach_kill10
@@ -230,26 +461,73 @@ MonoBehaviour:
     m_SerializedLabels:
     - Achievement
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: baad03d5b8ef41db9c81c7fa7cfdd189
+    m_Address: BattleBalanceData
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bca13a50471442aca3b283ef3b090241
+    m_Address: Relic_EmergencyBandage
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: bf891c3affd648ffa717e8f458e3b2f4
     m_Address: Relic_CursedPickaxe
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Relic_Tombstone
     - Relic
+    - Relic_Tombstone
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c4305b9afe0454d4f8864d629f082424
     m_Address: Relic_FirefighterHelmet
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Relic_Treasure
     - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c5a92b505a634239aa79eff2e4dc448d
+    m_Address: Relic_VampirePickaxe
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c5c8bb567de64b36bcbbaab62a698d30
+    m_Address: Relic_MagmaAmulet
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c5deaddb1edb4cd793aab09ed2859a8f
+    m_Address: Relic_DragonFang
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cab59a505d3d4eccae37969c8aee627c
+    m_Address: Relic_MineCrown
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d1e8be7ecdda471d8208419d5bcc0993
+    m_Address: Relic_SmallWhetstone
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d93235663ebc4232b66b49215cef0d0b
     m_Address: Relic_WarriorsRing
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Relic_Treasure
     - Relic
+    - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dd1900d9d171078499950dc2704af073
     m_Address: ach_death1
@@ -257,312 +535,40 @@ MonoBehaviour:
     m_SerializedLabels:
     - Achievement
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: f1a49154007543e1a55fc3193dda5ff2
-    m_Address: Relic_MiningKingHelmet
+  - m_GUID: ddf4353f145f45fd8539537ea609f82d
+    m_Address: Relic_CursedDigger
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Relic_Treasure
     - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9e7adba5472547a29200272f4cf1c381
-    m_Address: Relic_RewardConfig
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 8c747bd76788402788192bc20de33167
-    m_Address: Relic_MinerGlove
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 76fd387e0c144c088cb64d7a48ec1342
-    m_Address: Relic_OldWhetstone
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e4542b33d4564273b36b9e02f9068709
-    m_Address: Relic_SturdyBackpack
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: bca13a50471442aca3b283ef3b090241
-    m_Address: Relic_EmergencyBandage
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
+    - Relic_Tombstone
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e13a9bb5fa414cba8a38486b9dd94fc0
     m_Address: Relic_ReinforcedHandle
     m_ReadOnly: 0
     m_SerializedLabels:
+    - Relic
     - Relic_Treasure
-    - Relic
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 61d8c4c997cf449e9927ab466696174e
-    m_Address: Relic_OilBottle
+  - m_GUID: e4542b33d4564273b36b9e02f9068709
+    m_Address: Relic_SturdyBackpack
     m_ReadOnly: 0
     m_SerializedLabels:
+    - Relic
     - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7f64a37c7c824f18b9eae46773365328
-    m_Address: Relic_IronOrnament
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6b56f119a9be4fdb8a095ec28da96220
-    m_Address: Relic_SilverNecklace
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 8ea2c997082a4f80bfa4be3b0bfb85a2
-    m_Address: Relic_GoldPouch
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 72d40c16a6f5424b8c87a2b5676450f7
-    m_Address: Relic_DiamondBrooch
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7fae63866a0e4e22a769150d911aa12b
-    m_Address: Relic_MinerCanteen
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 82c0e198f9384f0bae230edd88a37d92
-    m_Address: Relic_WorkGlove
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b24f742d6e7447829fb038b0adb3ed34
-    m_Address: Relic_IronBoot
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d1e8be7ecdda471d8208419d5bcc0993
-    m_Address: Relic_SmallWhetstone
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6c01380b31ee4e2b858e19fd40d31bfe
-    m_Address: Relic_LuckyPickaxe
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 10b18935167347c39f797b890a20daa1
-    m_Address: Relic_MinerLunchbox
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 2ba3606e8452440e80c349a2bea7b4f5
-    m_Address: Relic_LeatherHandle
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 14ff0004466c4b2499066fec02f00576
-    m_Address: Relic_MiningPermit
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 87de6aed09a145e5aa4b062e2142aa72
-    m_Address: Relic_AutoRepairKit
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Tombstone
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c5a92b505a634239aa79eff2e4dc448d
-    m_Address: Relic_VampirePickaxe
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Tombstone
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 97bc6e5601744836bf5d9e8c115aab71
-    m_Address: Relic_OreSensor
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a027be112f82471f99b6e760b6d4fe8f
-    m_Address: Relic_SteelHeart
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a06f177e92364836b9853d55bb00fc7d
-    m_Address: Relic_MineRing
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 0fbff40bd5b643b3b46c936cc0090280
-    m_Address: Relic_WarriorNecklace
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c5c8bb567de64b36bcbbaab62a698d30
-    m_Address: Relic_MagmaAmulet
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Tombstone
-    - Relic
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e6e7fb41aa974c1daaed46eef8da7c03
     m_Address: Relic_WaterproofBoot
     m_ReadOnly: 0
     m_SerializedLabels:
+    - Relic
     - Relic_Treasure
-    - Relic
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 35e7afd5f339452fa2ca44c9bdc60ea5
-    m_Address: Relic_PoisonAntidote
+  - m_GUID: f1a49154007543e1a55fc3193dda5ff2
+    m_Address: Relic_MiningKingHelmet
     m_ReadOnly: 0
     m_SerializedLabels:
+    - Relic
     - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4f2a2407219746b19f61ff629ff1c804
-    m_Address: Relic_GreedyCoin
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ddf4353f145f45fd8539537ea609f82d
-    m_Address: Relic_CursedDigger
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Tombstone
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 60c176798ef144d5b1800fb4eb69baf0
-    m_Address: Relic_EliteHunterMedal
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 780a4a0e530640fdae4055d285df14dc
-    m_Address: Relic_GodPickaxe
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: cab59a505d3d4eccae37969c8aee627c
-    m_Address: Relic_MineCrown
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 2754b2e9f62d4ee3822b10af66534f36
-    m_Address: Relic_ImmortalHeart
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Tombstone
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 5792ae7d91e741a8b13993731abdf6ab
-    m_Address: Relic_SoulContract
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Tombstone
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c5deaddb1edb4cd793aab09ed2859a8f
-    m_Address: Relic_DragonFang
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Tombstone
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9b83ac6106504c95bae3afe83b2eb57a
-    m_Address: Relic_InfiniteWhetstone
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3fa96ead769f48deaaa7f86379d36204
-    m_Address: Relic_MineBlessing
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3445eb643f4843c79d7390891777b687
-    m_Address: Relic_GoldenBag
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Treasure
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 22d282d1d39d490584e6b06fe765f861
-    m_Address: Relic_Hourglass
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Tombstone
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9875e5dc603f4da099c7161180144566
-    m_Address: Relic_AbyssalCore
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - Relic_Tombstone
-    - Relic
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 16d3681f8edc4343a2a3a76e92341eca
-    m_Address: GameBalanceData
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: baad03d5b8ef41db9c81c7fa7cfdd189
-    m_Address: BattleBalanceData
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 64acf17402194f549a4944bca78dba00
-    m_Address: MonsterIntentData
-    m_ReadOnly: 0
-    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: bf53922257c85cf45b1d5828a500e7b9, type: 2}
