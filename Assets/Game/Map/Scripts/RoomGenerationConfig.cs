@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using DeepEarth.Core;
 
 namespace DeepEarth.Map
 {
@@ -49,16 +50,24 @@ namespace DeepEarth.Map
         {
             float total = 0f;
             foreach (var e in _weights)
-                total += (e.Type == RoomType.Event) ? e.Weight * eventWeightMultiplier : e.Weight;
+                total += GetEffectiveWeight(e, eventWeightMultiplier);
 
             float roll       = rng.Range(0f, total);
             float cumulative = 0f;
             foreach (var e in _weights)
             {
-                cumulative += (e.Type == RoomType.Event) ? e.Weight * eventWeightMultiplier : e.Weight;
+                cumulative += GetEffectiveWeight(e, eventWeightMultiplier);
                 if (roll <= cumulative) return e.Type;
             }
             return RoomType.Mine;
+        }
+
+        // 그룹 B: 유물의 NodeWeightBonus(타입별 가산치)를 기존 가중치에 더한다(Event 배율과 독립적으로 적용).
+        private static float GetEffectiveWeight(RoomWeightEntry e, float eventWeightMultiplier)
+        {
+            float w = (e.Type == RoomType.Event) ? e.Weight * eventWeightMultiplier : e.Weight;
+            w += RelicManager.Instance?.GetNodeWeightBonus(e.Type) ?? 0f;
+            return Mathf.Max(0f, w);
         }
     }
 }

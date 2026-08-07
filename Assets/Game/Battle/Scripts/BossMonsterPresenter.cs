@@ -52,7 +52,7 @@ namespace DeepEarth.Battle
             base.Dispose();
         }
 
-        public override async UniTask ReceivePlayerAttackAsync()
+        public override async UniTask ReceivePlayerAttackAsync(int aliveMonsterCount = 1)
         {
             // 코어가 이 공격으로 죽으면 OnMonsterKilled 핸들러가 View GameObject를 즉시 Destroy하므로,
             // base 호출(및 그 이후의 히트 이펙트 대기) 전에 위치를 미리 캐싱해둔다.
@@ -60,7 +60,7 @@ namespace DeepEarth.Battle
                 ? CombatPresenter.View.transform.position
                 : Vector3.zero;
 
-            await base.ReceivePlayerAttackAsync();
+            await base.ReceivePlayerAttackAsync(aliveMonsterCount);
 
             if (_role == Role.SkeletonWarlord && !CombatPresenter.Model.IsDead)
                 CheckWarlordThresholds();

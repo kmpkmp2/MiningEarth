@@ -7,7 +7,8 @@ namespace DeepEarth.Core
         Burn,
         MiningPowerDown,
         MiningPowerUp,
-        Poison,         // time-limited attack debuff (-10% per stack for N turns)
+        Poison,             // time-limited attack debuff (-10% per stack for N turns), 그룹 I부터 데미지도 부여
+        PlayerAttackBuff,   // 그룹 C — 소비 아이템/포션 사용 시 부여되는 임시 공격력 버프(스택 가능)
     }
 
     [CreateAssetMenu(fileName = "StatusEffect_New", menuName = "DeepEarth/StatusEffect/StatusEffect")]

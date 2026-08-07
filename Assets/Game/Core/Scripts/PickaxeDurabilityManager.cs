@@ -152,7 +152,9 @@ namespace DeepEarth.Core
         public void Repair(int gain)
         {
             if (_model == null || gain <= 0) return;
-            _model.Repair(gain);
+            float bonus = RelicManager.Instance?.GetRepairEfficiencyBonus() ?? 0f;
+            int finalGain = Mathf.RoundToInt(gain * (1f + bonus));
+            _model.Repair(finalGain);
         }
 
         public RepairRecipe GetRepairRecipe(string itemID) => _configData?.GetRepairRecipe(itemID);
@@ -220,6 +222,7 @@ namespace DeepEarth.Core
         {
             OnPickaxeRepaired?.Invoke();
             DeepEarth.Common.GameEvents.FirePickaxeRepaired();
+            RelicManager.Instance?.ApplyPickaxeRepairedEffects();
         }
 
         private void ClearModel()

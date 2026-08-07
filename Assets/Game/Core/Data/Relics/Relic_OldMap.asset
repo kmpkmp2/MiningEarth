@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 535cdf5e4fecdd1438a9ed245133baa2, type: 3}
+  m_Name: Relic_OldMap
+  m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.Core.RelicData
+  relicID: relic_old_map
+  nameLocKey: relic_old_map_name
+  descLocKey: relic_old_map_desc
+  iconKey: Effect_Relic_OldMap
+  rarity: 2
+  effects:
+  - effectType: 2
+    value: 1
+    triggerEvent: 1
+    triggerNodeType: 4
+    targetItems: []
+    buffDurationTurns: 0
+    buffMaxStacks: 1
+    conditionHpRatioMax: 1
+    scalingSource: 0
+    scalingDivisor: 1
+  - effectType: 35
+    value: 3
+    triggerEvent: 1
+    triggerNodeType: 4
+    targetItems: []
+    buffDurationTurns: 0
+    buffMaxStacks: 1
+    conditionHpRatioMax: 1
+    scalingSource: 0
+    scalingDivisor: 1
+  isTombstone: 0
+  burnDurationModifier: 0
+  burnDamageModifier: 0
+  burnImmunityChance: 0
+  attackBonus: 0
+  miningPowerBonus: 0
+  maxHPBonus: 0
+  resourceMultiplierBonus: 0
+  monsterAttackBonus: 0
+  monsterSpawnRateBonus: 0
+  pickaxeDurabilityModifier: 0

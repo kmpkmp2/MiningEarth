@@ -117,19 +117,25 @@ namespace DeepEarth.Core
                 Debug.Log("[Status]\nPoison Blocked by Relic Immunity");
                 return;
             }
+
+            int durationMod = RelicManager.Instance?.GetPoisonDurationModifier() ?? 0;
+            int addedTurns  = Mathf.Max(1, Mathf.RoundToInt((turns + durationMod) * GetPriestDurationMultiplier()));
+
+            // 그룹 I: 재적용 시 교체 대신 남은 턴수에 가산 (데미지는 매 틱마다 "그 시점의 남은 턴수")
             var existing = _activeEffects.Find(e => e.EffectID == PoisonEffectID);
             if (existing != null)
             {
-                _activeEffects.Remove(existing);
-                EffectManager.Instance?.RemoveEffect(PoisonEffectID);
+                existing.ExtendDuration(addedTurns);
+                EffectManager.Instance?.UpdateEffectDisplay(existing.EffectID, BuildDisplayString(existing), existing.RemainingTurns);
+                Debug.Log($"[Status]\nPoison Extended\nAdded Turns : {addedTurns}\nTotal Remaining : {existing.RemainingTurns}");
+                return;
             }
 
-            int finalTurns = Mathf.Max(1, Mathf.RoundToInt(turns * GetPriestDurationMultiplier()));
             var data  = CreatePoisonData();
-            var model = new StatusEffectModel(data, finalTurns, 0);
+            var model = new StatusEffectModel(data, addedTurns, 0, damageScalesWithRemainingTurns: true);
             _activeEffects.Add(model);
             RegisterInEffectManager(model);
-            Debug.Log($"[Status]\nPoison Applied\nDuration : {finalTurns}\nAttack Mod : -10%");
+            Debug.Log($"[Status]\nPoison Applied\nDuration : {addedTurns}\nAttack Mod : -10%");
         }
 
         public bool HasPoison() => _activeEffects.Exists(e => e.EffectID == PoisonEffectID);
@@ -148,9 +154,46 @@ namespace DeepEarth.Core
         {
             float total = 0f;
             foreach (var effect in _activeEffects)
-                if (effect.Data.effectType == StatusEffectID.Poison)
+                if (effect.Data.effectType == StatusEffectID.Poison || effect.Data.effectType == StatusEffectID.PlayerAttackBuff)
                     total += effect.AttackModifier;
             return total;
+        }
+
+        // ── Player Attack Buff (그룹 C) ────────────────────────────────────
+        // 화상/독과 달리 동일 effectID라도 교체하지 않고 maxStacks까지 별도 인스턴스로 중첩된다.
+        public void ApplyPlayerAttackBuff(string effectID, int duration, float attackBonus, int maxStacks)
+        {
+            int currentStacks = _activeEffects.FindAll(e => e.EffectID == effectID).Count;
+            if (currentStacks >= maxStacks)
+            {
+                Debug.Log($"[Status]\n{effectID} Stack Limit Reached\nMax Stacks : {maxStacks}");
+                return;
+            }
+
+            var data = ScriptableObject.CreateInstance<StatusEffectData>();
+            data.effectType        = StatusEffectID.PlayerAttackBuff;
+            data.effectID          = effectID;
+            data.nameLocKey        = "status_player_attack_buff_name";
+            data.descLocKey        = "status_player_attack_buff_desc";
+            data.damagePerTurn     = 0;
+            data.attackModifier    = attackBonus;
+            data.miningPowerModifier = 0f;
+            data.baseDuration      = duration;
+            data.systemType        = EffectSystemType.StatusEffect;
+            data.iconKey           = "Effect_Buff_Attack";
+            data.source            = "Relic";
+
+            var model = new StatusEffectModel(data, duration, 0);
+            _activeEffects.Add(model);
+            RegisterInEffectManager(model);
+            Debug.Log($"[Status]\n{effectID} Applied\nStack : {currentStacks + 1}/{maxStacks}\nDuration : {duration}\nAttack Mod : +{attackBonus * 100}%");
+        }
+
+        // 그룹 C: 소비 즉시 디버프 해제 — 화상/독만 대상(채굴력/공격력 하락 상태이상은 미포함, 사용자 확정 사항)
+        public void ClearAllDebuffs()
+        {
+            CureBurn();
+            CurePoison();
         }
 
         private StatusEffectData CreatePoisonData()
@@ -245,19 +288,30 @@ namespace DeepEarth.Core
             {
                 int dmg = effect.Tick();
 
+                if (dmg > 0 && (effect.Data.effectType == StatusEffectID.Burn || effect.Data.effectType == StatusEffectID.Poison))
+                {
+                    float reducePercent = RelicManager.Instance?.GetStatusDamagePercentModifier() ?? 0f;
+                    dmg = Mathf.Max(0, Mathf.RoundToInt(dmg * (1f - Mathf.Clamp01(reducePercent))));
+                }
+
                 if (dmg > 0)
                 {
                     StatManager.Instance.TakeDamage(dmg);
+                    StatManager.Instance.AddCombatStatusDamage(dmg);
 
                     if (StatManager.Instance.CurrentHP > 0)
                     {
-                        EffectSystem.Instance.FlashScreen(new Color(1f, 0.5f, 0f, 0.25f), 0.2f);
+                        bool isPoison = effect.Data.effectType == StatusEffectID.Poison;
+                        Color flashColor = isPoison ? new Color(0.5f, 0.9f, 0.2f, 0.25f) : new Color(1f, 0.5f, 0f, 0.25f);
+                        EffectSystem.Instance.FlashScreen(flashColor, 0.2f);
                         EffectSystem.Instance.ShakeCamera(0.12f, 0.05f);
 
                         Vector3 pos = Camera.main != null
                             ? Camera.main.transform.position + Camera.main.transform.forward * 1.5f + Camera.main.transform.right * 0.5f
                             : Vector3.up;
-                        EffectSystem.Instance.SpawnDamageText(pos, $"-{dmg} 화상", new Color(1f, 0.4f, 0f));
+                        string label = isPoison ? $"-{dmg} 중독" : $"-{dmg} 화상";
+                        Color textColor = isPoison ? new Color(0.5f, 0.9f, 0.2f) : new Color(1f, 0.4f, 0f);
+                        EffectSystem.Instance.SpawnDamageText(pos, label, textColor);
                     }
 
                     Debug.Log($"[Status]\n{effect.Data.effectID} Tick\nRemaining Turn : {effect.RemainingTurns}\nDamage : {dmg}\nCurrent HP : {StatManager.Instance.CurrentHP}");

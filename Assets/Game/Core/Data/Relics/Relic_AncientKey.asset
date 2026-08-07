@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 535cdf5e4fecdd1438a9ed245133baa2, type: 3}
+  m_Name: Relic_AncientKey
+  m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.Core.RelicData
+  relicID: relic_ancient_key
+  nameLocKey: relic_ancient_key_name
+  descLocKey: relic_ancient_key_desc
+  iconKey: Effect_Relic_AncientKey
+  rarity: 2
+  effects:
+  - effectType: 36
+    value: 1
+    triggerEvent: 2
+    triggerNodeType: 6
+    targetItems:
+    - {fileID: 11400000, guid: acc76eb4d0dd4775a023633b9ca4aaf5, type: 2}
+    - {fileID: 11400000, guid: cf3b6528f7a24fe6ac68aa1b7258f007, type: 2}
+    - {fileID: 11400000, guid: 937b0a0470304aaf9acc8e3918a00f7f, type: 2}
+    buffDurationTurns: 0
+    buffMaxStacks: 1
+    conditionHpRatioMax: 1
+    scalingSource: 0
+    scalingDivisor: 1
+  isTombstone: 0
+  burnDurationModifier: 0
+  burnDamageModifier: 0
+  burnImmunityChance: 0
+  attackBonus: 0
+  miningPowerBonus: 0
+  maxHPBonus: 0
+  resourceMultiplierBonus: 0
+  monsterAttackBonus: 0
+  monsterSpawnRateBonus: 0
+  pickaxeDurabilityModifier: 0

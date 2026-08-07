@@ -22,11 +22,23 @@ MonoBehaviour:
     - Relic
     - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 05f88c417b0d37c4aa2172cd8a08f2d2
+    m_Address: Assets/Game/Core/Data/Relics/Relic_WhetstoneBlade.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0605fbd06f5bbe64592f32a42c813c3f
     m_Address: ach_relic5
     m_ReadOnly: 0
     m_SerializedLabels:
     - Achievement
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 086e7d618b294aa46a147c55b89a453c
+    m_Address: Assets/Game/Core/Data/Relics/Relic_WarMedal.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 09377517552e474798c8f3ee81807a14
     m_Address: Relic_BrokenDrill
@@ -34,6 +46,24 @@ MonoBehaviour:
     m_SerializedLabels:
     - Relic
     - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0bc36130f5d493f478ed4af116f50b22
+    m_Address: Assets/Game/Core/Data/Relics/Relic_RedHeart.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0c94b806f138fed4d8324a0a906fb1eb
+    m_Address: Assets/Game/Core/Data/Relics/Relic_MiningGloves.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 0f12c0994091f7b41ba01616b7c8a01c
+    m_Address: Assets/Game/Core/Data/Relics/Relic_BloodRing.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0fbff40bd5b643b3b46c936cc0090280
     m_Address: Relic_WarriorNecklace
@@ -86,6 +116,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - ShieldData
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1cc43de8f4a191d43ab26b4e9e322991
+    m_Address: Assets/Game/Core/Data/Relics/Relic_ConstellationCompass.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1dcdbd36da3db454ba8ad789306a88d4
     m_Address: ach_boss_first
     m_ReadOnly: 0
@@ -98,6 +134,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Relic
     - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1e44092eb379d5444bca49cceca07cd1
+    m_Address: Assets/Game/Core/Data/Relics/Relic_BlessedShield.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 21fa4e6a6caf4409b8cca5772202fd3b
     m_Address: Relic_MercenaryMedal
@@ -113,6 +155,18 @@ MonoBehaviour:
     - Relic
     - Relic_Tombstone
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2338bcca44c1587488b74da0e74b1757
+    m_Address: Assets/Game/Core/Data/Relics/Relic_GoldenFlask.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 23f6474a7460f2345b1cdd4764c41e83
+    m_Address: Assets/Game/Core/Data/Relics/Relic_BerserkersAxe.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 25ccbe8b462defe459bdb9c6e480a3e8
     m_Address: ach_treasure5
     m_ReadOnly: 0
@@ -126,12 +180,24 @@ MonoBehaviour:
     - Relic
     - Relic_Tombstone
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2b1a0c441252cee45b3bfa002d969a79
+    m_Address: Assets/Game/Core/Data/Relics/Relic_TravelersBackpack.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2ba3606e8452440e80c349a2bea7b4f5
     m_Address: Relic_LeatherHandle
     m_ReadOnly: 0
     m_SerializedLabels:
     - Relic
     - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2d89bdea32c1fe2409fb65029438c00e
+    m_Address: Assets/Game/Core/Data/Relics/Relic_GoldenTicket.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 30255cab670d5ef43a4ba321868dc98f
     m_Address: ach_relic1
@@ -158,6 +224,12 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 397929395cbf02b45aa0e753914427ad
+    m_Address: Assets/Game/Core/Data/Relics/Relic_BattleGauntlet.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3da17855428de584ebb6dfc596bb3a9b
     m_Address: ach_repair1
     m_ReadOnly: 0
@@ -170,6 +242,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Relic
     - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 405b99cb76cef9b4a83598da9bf5a580
+    m_Address: Assets/Game/Core/Data/Relics/Relic_HolySymbol.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 40a467cc1dd59c441a33bdbdbffd0544
     m_Address: ach_ore_diamond10
@@ -184,6 +262,12 @@ MonoBehaviour:
     - Relic
     - Relic_Tombstone
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 41f5a755f351c9947a2bde9ddb450472
+    m_Address: Assets/Game/Core/Data/Relics/Relic_SteelHammer.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 47fa4ec966b0eaf429893772febc419d
     m_Address: Relic_FrozenCrystal
     m_ReadOnly: 0
@@ -191,12 +275,30 @@ MonoBehaviour:
     - Relic
     - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4a9c441b1d79c7148841f63009536690
+    m_Address: Assets/Game/Core/Data/Relics/Relic_GoldenCompass.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4eacfde7a2d6d974fafc5b97c1f3f9c5
+    m_Address: Assets/Game/Core/Data/Relics/Relic_RingOfBlessing.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4f2a2407219746b19f61ff629ff1c804
     m_Address: Relic_GreedyCoin
     m_ReadOnly: 0
     m_SerializedLabels:
     - Relic
     - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 50e7517a23a5fc74599e53b8a8af5084
+    m_Address: Assets/Game/Core/Data/Relics/Relic_HolyWaterBottle.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 516bf29c119a8de4da54d3c412f43790
     m_Address: Pickaxe_Default
@@ -215,6 +317,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Relic
     - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 58a806a191c3b1a449b8ed911e97e2af
+    m_Address: Assets/Game/Core/Data/Relics/Relic_BloodNecklace.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5e4d6e73f4664df39b020dc3eecd71d0
     m_Address: Relic_OreDetector
@@ -256,6 +364,12 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 67edd6fd5cea581438eee2f87259a876
+    m_Address: Assets/Game/Core/Data/Relics/Relic_BloodPact.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 693d82b5c77e4d7591f7b0e66f4c3423
     m_Address: Relic_CursedMiningGloves
     m_ReadOnly: 0
@@ -277,12 +391,36 @@ MonoBehaviour:
     - Relic
     - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6eacd66a78dc8e3459c4f0f3c38e2126
+    m_Address: Assets/Game/Core/Data/Relics/Relic_TreasureDetector.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7133ecc7dec56cd498e47a7f1ad3fa74
+    m_Address: Assets/Game/Core/Data/Relics/Relic_AncientKey.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 71db063b5ba3cef4487a46cb71d7b8d6
+    m_Address: Assets/Game/Core/Data/Relics/Relic_BattleFlag.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 72d40c16a6f5424b8c87a2b5676450f7
     m_Address: Relic_DiamondBrooch
     m_ReadOnly: 0
     m_SerializedLabels:
     - Relic
     - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 744ad3ac30ed5ef41b0cb20105ee7a38
+    m_Address: Assets/Game/Core/Data/Relics/Relic_MysteriousKey.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 76a61630e35d379429773aba69f1cb0c
     m_Address: ach_boss_cave_rat
@@ -309,6 +447,12 @@ MonoBehaviour:
     - Relic
     - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7cc372150c4f59041b1df2e9afa39a01
+    m_Address: Assets/Game/Core/Data/Relics/Relic_ExplorersJournal.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7f64a37c7c824f18b9eae46773365328
     m_Address: Relic_IronOrnament
     m_ReadOnly: 0
@@ -330,11 +474,23 @@ MonoBehaviour:
     - Relic
     - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 84b193338a4ad0240820cba40113dc64
+    m_Address: Assets/Game/Core/Data/Relics/Relic_ChaliceOfPurification.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8560bbd83fb4dbe47ba2dc000b0029f8
     m_Address: ach_kill50
     m_ReadOnly: 0
     m_SerializedLabels:
     - Achievement
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 860726f901a90b2418c103a46f679292
+    m_Address: Assets/Game/Core/Data/Relics/Relic_BraceletOfRage.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 87de6aed09a145e5aa4b062e2142aa72
     m_Address: Relic_AutoRepairKit
@@ -342,6 +498,18 @@ MonoBehaviour:
     m_SerializedLabels:
     - Relic
     - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8923e97fc02402a46a6f2219e8f727fe
+    m_Address: Assets/Game/Core/Data/Relics/Relic_MaintenanceKit.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 89536216b6d483d4381e0785d93156d5
+    m_Address: Assets/Game/Core/Data/Relics/Relic_LuckyCompass.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 89e96dd4159e7b24dab10600b0773245
     m_Address: Relic_BurningHeart
@@ -363,6 +531,12 @@ MonoBehaviour:
     - Relic
     - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8e8554f038182554fb18b369976f8910
+    m_Address: Assets/Game/Core/Data/Relics/Relic_DeepBreath.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8ea2c997082a4f80bfa4be3b0bfb85a2
     m_Address: Relic_GoldPouch
     m_ReadOnly: 0
@@ -376,6 +550,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Relic
     - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 971094a1f76c6e0419ee19211ccf54ad
+    m_Address: Assets/Game/Core/Data/Relics/Relic_AlchemyNotebook.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 97bc6e5601744836bf5d9e8c115aab71
     m_Address: Relic_OreSensor
@@ -391,6 +571,18 @@ MonoBehaviour:
     - Relic
     - Relic_Tombstone
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9a0bb3bbc46e4bc4c991a2b8bdf07d90
+    m_Address: Assets/Game/Core/Data/Relics/Relic_MinerBackpack.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9a5f64fafdcdc554bb086d638475fe65
+    m_Address: Assets/Game/Core/Data/Relics/Relic_GraveRobbersGloves.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9b83ac6106504c95bae3afe83b2eb57a
     m_Address: Relic_InfiniteWhetstone
     m_ReadOnly: 0
@@ -402,6 +594,12 @@ MonoBehaviour:
     m_Address: Relic_RewardConfig
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9f61705ac41227944a7320f3513edebf
+    m_Address: Assets/Game/Core/Data/Relics/Relic_HuntersMedal.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a027be112f82471f99b6e760b6d4fe8f
     m_Address: Relic_SteelHeart
@@ -416,6 +614,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Relic
     - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a2dcb40cae24c8742b33b2a345cb09f8
+    m_Address: Assets/Game/Core/Data/Relics/Relic_FurnaceCore.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a9137ab19b07d974a9fa63bb3c6965dc
     m_Address: ach_depth50
@@ -441,6 +645,12 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b0f66f70d7813af4ea043972775de44e
+    m_Address: Assets/Game/Core/Data/Relics/Relic_OldMap.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b24f742d6e7447829fb038b0adb3ed34
     m_Address: Relic_IronBoot
     m_ReadOnly: 0
@@ -448,12 +658,24 @@ MonoBehaviour:
     - Relic
     - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b62a2e75de1dca647b6d109d96c704bf
+    m_Address: Assets/Game/Core/Data/Relics/Relic_ReinforcedWhetstone.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b7880e6d9d39b294fbc578fa3e32cbbe
     m_Address: Relic_CursedAsh
     m_ReadOnly: 0
     m_SerializedLabels:
     - Relic
     - Relic_Tombstone
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b820c19a00efdd442b143fb39f076928
+    m_Address: Assets/Game/Core/Data/Relics/Relic_MysteriousSerum.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b9e1ff49f70ce964588ccc1ed066aa2b
     m_Address: ach_kill10
@@ -480,12 +702,36 @@ MonoBehaviour:
     - Relic
     - Relic_Tombstone
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bfa1bd8aa410248419a6ea85b30fbdce
+    m_Address: Assets/Game/Core/Data/Relics/Relic_FinishingBlow.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c024c24784839cb498431c565df2cf56
+    m_Address: Assets/Game/Core/Data/Relics/Relic_SteelArmor.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c2708b62baee1a34bbc9b716a227002c
+    m_Address: Assets/Game/Core/Data/Relics/Relic_HealingHerb.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c4305b9afe0454d4f8864d629f082424
     m_Address: Relic_FirefighterHelmet
     m_ReadOnly: 0
     m_SerializedLabels:
     - Relic
     - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c57abd8a200ab5a4b975d6546f625a7f
+    m_Address: Assets/Game/Core/Data/Relics/Relic_StoneBlessing.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c5a92b505a634239aa79eff2e4dc448d
     m_Address: Relic_VampirePickaxe
@@ -508,6 +754,12 @@ MonoBehaviour:
     - Relic
     - Relic_Tombstone
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c5feb08aa4017004d989dcc1ad22cf4a
+    m_Address: Assets/Game/Core/Data/Relics/Relic_BattleAxe.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cab59a505d3d4eccae37969c8aee627c
     m_Address: Relic_MineCrown
     m_ReadOnly: 0
@@ -522,12 +774,24 @@ MonoBehaviour:
     - Relic
     - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d43bd93873a7c684abdcb23e542eb1de
+    m_Address: Assets/Game/Core/Data/Relics/Relic_PaladinsCloak.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d93235663ebc4232b66b49215cef0d0b
     m_Address: Relic_WarriorsRing
     m_ReadOnly: 0
     m_SerializedLabels:
     - Relic
     - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: da3c4d378af0bec448cb2ec01c30e532
+    m_Address: Assets/Game/Core/Data/Relics/Relic_CollectorsBag.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dd1900d9d171078499950dc2704af073
     m_Address: ach_death1
@@ -556,6 +820,12 @@ MonoBehaviour:
     - Relic
     - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e4cf679529742d346b62151711e6fe46
+    m_Address: Assets/Game/Core/Data/Relics/Relic_PickaxeSword.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e6e7fb41aa974c1daaed46eef8da7c03
     m_Address: Relic_WaterproofBoot
     m_ReadOnly: 0
@@ -563,12 +833,54 @@ MonoBehaviour:
     - Relic
     - Relic_Treasure
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ea1854727c86b1a4fa870214e7a0c3d8
+    m_Address: Assets/Game/Core/Data/Relics/Relic_AlloyHandle.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed25ddbf6e78d6e4992e8225c0115f17
+    m_Address: Assets/Game/Core/Data/Relics/Relic_ReinforcedPickaxeHandle.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: edd39d48ab86f844bad5a4c82ff8d748
+    m_Address: Assets/Game/Core/Data/Relics/Relic_DistillationDevice.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f1a49154007543e1a55fc3193dda5ff2
     m_Address: Relic_MiningKingHelmet
     m_ReadOnly: 0
     m_SerializedLabels:
     - Relic
     - Relic_Treasure
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f704144e97928fc44b7b47588daa8e62
+    m_Address: Assets/Game/Core/Data/Relics/Relic_NailPouch.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f8e5a4b9c9c58b246885830ed2a7b373
+    m_Address: Assets/Game/Core/Data/Relics/Relic_RingOfLuck.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: faa0f5b8c211e6a41be1ce9caf950d1b
+    m_Address: Assets/Game/Core/Data/Relics/Relic_EmergencyKit.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fdf675f6b5aec6649889b2a73c68e37e
+    m_Address: Assets/Game/Core/Data/Relics/Relic_GoldenPrayerBook.asset
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Relic
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: bf53922257c85cf45b1d5828a500e7b9, type: 2}

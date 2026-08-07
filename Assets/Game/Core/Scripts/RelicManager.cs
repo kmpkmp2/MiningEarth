@@ -66,9 +66,11 @@ namespace DeepEarth.Core
                         r.rarity >= RelicRarity.Rare).ToList();
 
                 case RelicRewardContext.Merchant:
+                case RelicRewardContext.Treasure:
+                    // 4단계 개편(2026-08-07): Unique는 Rare급 판매 대상에 포함, Legendary만 제외.
                     return _allRelics.Where(r =>
                         !_acquiredIDs.Contains(r.relicID) &&
-                        r.rarity <= RelicRarity.Rare).ToList();
+                        r.rarity <= RelicRarity.Unique).ToList();
 
                 default:
                     return _allRelics.Where(r => !_acquiredIDs.Contains(r.relicID)).ToList();
@@ -79,7 +81,7 @@ namespace DeepEarth.Core
         public List<RelicData> GetAvailableTreasureRelics() =>
             _allRelics.Where(r =>
                 !_acquiredIDs.Contains(r.relicID) &&
-                r.rarity <= RelicRarity.Rare).ToList();
+                r.rarity <= RelicRarity.Unique).ToList();
 
         public List<RelicData> GetAvailableTombstoneRelics() =>
             _allRelics.Where(r =>
@@ -113,32 +115,77 @@ namespace DeepEarth.Core
 
         private RelicRarity RollRarity(RelicRewardContext ctx)
         {
-            var (c, r, l) = _rewardConfig != null ? _rewardConfig.GetChances(ctx) : (0.65f, 0.28f, 0.07f);
+            var (c, r, u, l) = _rewardConfig != null ? _rewardConfig.GetChances(ctx) : (0.45f, 0.28f, 0.20f, 0.07f);
+
+            // 그룹 J — 행운의 반지(전역) + 신비한 열쇠(Treasure 한정). Rare 확률을 가산(기존 동작 유지).
+            float rareBonus = 0f;
+            foreach (var relic in _activeRelics)
+                foreach (var e in relic.effects)
+                {
+                    if (e.effectType == RelicEffectType.RareChanceBonus) rareBonus += e.value;
+                    if (e.effectType == RelicEffectType.TreasureRareChanceBonus && ctx == RelicRewardContext.Treasure)
+                        rareBonus += e.value;
+                }
+            if (rareBonus > 0f)
+            {
+                r += rareBonus;
+                c = Mathf.Max(0f, c - rareBonus);
+                float total = c + r + u + l;
+                if (total > 0) { c /= total; r /= total; u /= total; l /= total; }
+            }
+
             float roll = Random.value;
-            if (roll < l)     return RelicRarity.Legendary;
-            if (roll < l + r) return RelicRarity.Rare;
+            if (roll < l)         return RelicRarity.Legendary;
+            if (roll < l + u)     return RelicRarity.Unique;
+            if (roll < l + u + r) return RelicRarity.Rare;
             return RelicRarity.Common;
         }
 
+        // 그룹 J(B-2) — 보물상자 가중 셔플에서 사용할 (Common, Rare, Unique) 가중치. Legendary는 보물상자 풀에 없어 제외.
+        public (float commonWeight, float rareWeight, float uniqueWeight) GetTreasureRarityWeights()
+        {
+            var (c, r, u, _) = _rewardConfig != null ? _rewardConfig.GetChances(RelicRewardContext.Treasure) : (0.45f, 0.35f, 0.20f, 0f);
+
+            float keyBonus = 0f;
+            foreach (var relic in _activeRelics)
+                foreach (var e in relic.effects)
+                    if (e.effectType == RelicEffectType.TreasureRareChanceBonus)
+                        keyBonus += e.value;
+
+            r += keyBonus;
+            c = Mathf.Max(0f, c - keyBonus);
+            return (c, r, u);
+        }
+
         // ── Acquire ──────────────────────────────────────────────────────────
+
+        private const string CollectorsBagID = "relic_collectors_bag";
 
         public void AddRelic(RelicData relic)
         {
             if (relic == null || _acquiredIDs.Contains(relic.relicID)) return;
 
-            _activeRelics.Add(relic);
+            // 그룹 L — 수집가의 가방은 런타임 전용 복제본을 사용(에셋 원본 오염 방지)
+            RelicData instanceToUse = relic;
+            if (relic.relicID == CollectorsBagID)
+            {
+                instanceToUse = ScriptableObject.Instantiate(relic);
+                instanceToUse.effects = new List<RelicEffectData>(relic.effects);
+            }
+
+            _activeRelics.Add(instanceToUse);
             _acquiredIDs.Add(relic.relicID);
 
             // Apply effect list (new system)
-            if (relic.effects != null && relic.effects.Count > 0)
+            if (instanceToUse.effects != null && instanceToUse.effects.Count > 0)
             {
-                foreach (var effect in relic.effects)
+                foreach (var effect in instanceToUse.effects)
                     ApplyEffect(effect);
             }
             else
             {
                 // Legacy fallback for pre-migration assets
-                ApplyLegacyFields(relic);
+                ApplyLegacyFields(instanceToUse);
             }
 
             EffectSystemType displayType = RarityToEffectSystemType(relic.rarity);
@@ -150,7 +197,7 @@ namespace DeepEarth.Core
                 relic.descLocKey,
                 displayType,
                 0f,
-                BuildDisplayString(relic),
+                BuildDisplayString(instanceToUse),
                 rarityLabel,
                 relic.iconKey
             );
@@ -163,10 +210,55 @@ namespace DeepEarth.Core
             Debug.Log($"[Relic]\nObtained\nName : {relic.relicID}\nRarity : {relic.rarity}");
 #endif
             GameEvents.FireRelicCollected();
+
+            if (relic.relicID == CollectorsBagID)
+                PromptRelicCopyAsync(instanceToUse).Forget();
+        }
+
+        // 그룹 L — 유물 효과 복사 대상 선택(플레이어 직접 선택, 취소 불가)
+        private async UniTaskVoid PromptRelicCopyAsync(RelicData collectorInstance)
+        {
+            var candidates = _activeRelics
+                .Where(r => r.relicID != CollectorsBagID && r != collectorInstance)
+                .ToList();
+
+            if (candidates.Count == 0)
+            {
+                Debug.Log("[Relic]\nCollector's Bag\nNo Other Relics Owned — Skipped");
+                return;
+            }
+
+            var presenter = GameManager.Instance?.RelicCopyPopupPresenter;
+            if (presenter == null)
+            {
+                Debug.LogWarning("[Relic]\nCollector's Bag: RelicCopyPopupPresenter not available — Skipped");
+                return;
+            }
+
+            var selected = await presenter.SelectRelicAsync(candidates);
+            if (selected != null) CopyRelicEffects(collectorInstance, selected);
+        }
+
+        // 그룹 L — 대상 유물의 effects를 복제본에 추가 적용. ApplyEffect 디스패치를 그대로 재사용.
+        private void CopyRelicEffects(RelicData targetInstance, RelicData sourceRelic)
+        {
+            foreach (var effect in sourceRelic.effects)
+            {
+                targetInstance.effects.Add(effect);
+                ApplyEffect(effect);
+            }
+
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            Debug.Log($"[Relic]\nCollector's Bag Copied\nSource : {sourceRelic.relicID}\nEffects : {sourceRelic.effects.Count}");
+#endif
         }
 
         private void ApplyEffect(RelicEffectData effect)
         {
+            // 트리거형(그룹 A/C/D/E/I)·스케일링형(그룹 F/G/K) 효과는 획득 즉시 적용하지 않고
+            // 해당 트리거/조회 시점에 별도로 처리한다(아래 47종 지원 섹션 참고).
+            if (effect.triggerEvent != RelicTriggerEvent.None || effect.scalingSource != RelicScalingSource.None) return;
+
             int intVal = Mathf.RoundToInt(effect.value);
             switch (effect.effectType)
             {
@@ -299,7 +391,18 @@ namespace DeepEarth.Core
         // ── 피해 보너스 ───────────────────────────────────────────────────────
         public int GetTrapDamageReduction()    => Mathf.RoundToInt(SumEffectValues(RelicEffectType.TrapDamageReduction));
         public float GetEliteDamageBonus()     => SumEffectValues(RelicEffectType.EliteDamageBonus);
-        public float GetDamageMultiplierBonus() => SumEffectValues(RelicEffectType.DamageMultiplierBonus);
+        // 그룹 G: conditionHpRatioMax 조건부(피의 계약/붉은 심장) 지원 — 기본값 1f는 무조건부(기존 드래곤 송곳니 등)와 동일하게 항상 통과.
+        public float GetDamageMultiplierBonus()
+        {
+            int maxHp = StatManager.Instance.GetMaxHP();
+            float hpRatio = maxHp > 0 ? (float)StatManager.Instance.CurrentHP / maxHp : 1f;
+            float total = 0f;
+            foreach (var r in _activeRelics)
+                foreach (var e in r.effects)
+                    if (e.effectType == RelicEffectType.DamageMultiplierBonus && hpRatio <= e.conditionHpRatioMax)
+                        total += e.value;
+            return total;
+        }
 
         // ── 채굴/처치 시 확률 ────────────────────────────────────────────────
         public bool CheckLuckyMineChance()
@@ -327,6 +430,9 @@ namespace DeepEarth.Core
         // ── 엘리트 ──────────────────────────────────────────────────────────
         public bool HasEliteKillRelicReward()   => SumEffectValues(RelicEffectType.EliteKillRelicReward)  > 0f;
         public float GetEliteRewardMultiplier() => Mathf.Max(1f, SumEffectValues(RelicEffectType.EliteRewardMultiplier));
+
+        // ── 그룹 M: 도굴꾼 장갑(TreasureHunter 패시브와 동일 개념) ───────────────
+        public bool HasTreasureRewardBonusRelic() => SumEffectValues(RelicEffectType.TreasureRewardBonus) > 0f;
 
         // ── 조건부 채굴 ─────────────────────────────────────────────────────
         public int GetConditionalMiningBonus()
@@ -356,6 +462,245 @@ namespace DeepEarth.Core
             Debug.Log($"[Relic]\nReviveOnce Used\nHP : {reviveHP}");
             return true;
         }
+
+        // ══════════════════════════════════════════════════════════════════
+        // 47종 신규 유물 지원 (그룹 A~N, 제안서 기준)
+        // ══════════════════════════════════════════════════════════════════
+
+        // ── 공통 헬퍼 ────────────────────────────────────────────────────────
+        private float SumTriggeredEffectValues(RelicEffectType type, RelicTriggerEvent evt)
+        {
+            float total = 0f;
+            foreach (var r in _activeRelics)
+                foreach (var e in r.effects)
+                    if (e.effectType == type && e.triggerEvent == evt) total += e.value;
+            return total;
+        }
+
+        private bool HasTriggeredEffect(RelicEffectType type, RelicTriggerEvent evt)
+        {
+            foreach (var r in _activeRelics)
+                foreach (var e in r.effects)
+                    if (e.effectType == type && e.triggerEvent == evt) return true;
+            return false;
+        }
+
+        private void ApplyMatchingTriggerEffects(RelicTriggerEvent evt)
+        {
+            foreach (var r in _activeRelics)
+                foreach (var e in r.effects)
+                    if (e.triggerEvent == evt) ApplyTriggeredEffect(r, e);
+        }
+
+        private void ApplyMatchingTriggerEffects(RelicTriggerEvent evt, DeepEarth.Map.RoomType nodeType)
+        {
+            foreach (var r in _activeRelics)
+                foreach (var e in r.effects)
+                    if (e.triggerEvent == evt && e.triggerNodeType == nodeType) ApplyTriggeredEffect(r, e);
+        }
+
+        // 트리거 발동 시 실제 적용 로직(그룹 A/C/I 공용) — HealBonus/NodeItemGrant/DebuffClearAll/
+        // 스택형 AttackBonus버프/반복형 MaxHPBonus·MiningPowerBonus(오래된 지도 등)를 처리한다.
+        private void ApplyTriggeredEffect(RelicData owner, RelicEffectData e)
+        {
+            int intVal = Mathf.RoundToInt(e.value);
+            switch (e.effectType)
+            {
+                case RelicEffectType.HealBonus:
+                    if (intVal > 0) StatManager.Instance.Heal(intVal);
+                    break;
+                case RelicEffectType.NodeItemGrant:
+                    if (e.targetItems != null && e.targetItems.Count > 0)
+                    {
+                        var chosen = e.targetItems[Random.Range(0, e.targetItems.Count)];
+                        if (chosen != null) InventoryManager.Instance?.AddItem(chosen.itemID, Mathf.Max(1, intVal));
+                    }
+                    break;
+                case RelicEffectType.DebuffClearAll:
+                case RelicEffectType.CombatEndDebuffClear:
+                    StatusEffectManager.Instance?.ClearAllDebuffs();
+                    break;
+                case RelicEffectType.AttackBonus:
+                    if (e.buffDurationTurns > 0)
+                        StatusEffectManager.Instance?.ApplyPlayerAttackBuff(
+                            "RelicBuff_" + owner.relicID, e.buffDurationTurns, e.value, Mathf.Max(1, e.buffMaxStacks));
+                    else
+                        StatManager.Instance.BossAttackModifier += intVal;  // 영구 가산(탐험가의 일지/보물 감지기 등, 즉시적용형 AttackBonus와 동일 처리)
+                    break;
+                case RelicEffectType.MaxHPBonus:
+                    if (intVal > 0) { StatManager.Instance.BossMaxHPModifier += intVal; StatManager.Instance.Heal(intVal); }
+                    break;
+                case RelicEffectType.MiningPowerBonus:
+                    StatManager.Instance.RelicMiningModifier += intVal;
+                    break;
+            }
+        }
+
+        // ── 그룹 A: 노드 도착/완료 트리거 ────────────────────────────────────
+        public void ApplyNodeArrivalEffects(DeepEarth.Map.RoomType type)   => ApplyMatchingTriggerEffects(RelicTriggerEvent.NodeArrival, type);
+        public void ApplyNodeCompletionEffects(DeepEarth.Map.RoomType type) => ApplyMatchingTriggerEffects(RelicTriggerEvent.NodeCompletion, type);
+
+        // ── 그룹 B: 맵 생성 가중치 ────────────────────────────────────────────
+        public float GetNodeWeightBonus(DeepEarth.Map.RoomType type)
+        {
+            float total = 0f;
+            foreach (var r in _activeRelics)
+                foreach (var e in r.effects)
+                    if (e.effectType == RelicEffectType.NodeWeightBonus && e.triggerNodeType == type)
+                        total += e.value;
+            return total;
+        }
+
+        // ── 그룹 C: 아이템/포션 사용 트리거 ───────────────────────────────────
+        public void ApplyItemUseEffects()   => ApplyMatchingTriggerEffects(RelicTriggerEvent.ItemUse);
+        public void ApplyPotionUseEffects() => ApplyMatchingTriggerEffects(RelicTriggerEvent.PotionUse);
+
+        public float GetLowHpHealMultiplier()
+        {
+            int maxHp = StatManager.Instance.GetMaxHP();
+            float hpRatio = maxHp > 0 ? (float)StatManager.Instance.CurrentHP / maxHp : 1f;
+            float mult = 1f;
+            foreach (var r in _activeRelics)
+                foreach (var e in r.effects)
+                    if (e.effectType == RelicEffectType.LowHpHealMultiplier && hpRatio <= e.conditionHpRatioMax)
+                        mult *= e.value;
+            return mult;
+        }
+
+        // ── 그룹 D: 전투 내 동적 스케일링/트리거 ──────────────────────────────
+        public int GetCombatTurnAttackBonus() =>
+            Mathf.RoundToInt(SumEffectValues(RelicEffectType.CombatTurnAttackBonus)) * StatManager.Instance.CombatTurnCount;
+
+        public int GetCombatHitTakenAttackBonus() =>
+            Mathf.RoundToInt(SumEffectValues(RelicEffectType.CombatHitTakenAttackBonus)) * StatManager.Instance.CombatHitsTaken;
+
+        public int GetPerMonsterAttackBonus(int monsterCount) =>
+            Mathf.RoundToInt(SumEffectValues(RelicEffectType.PerMonsterAttackBonus)) * Mathf.Max(0, monsterCount);
+
+        // 1이면 아직 미사용(전투 도끼) — 호출측이 StatManager.MarkFirstAttackDone()으로 소비 처리해야 함
+        public float GetFirstAttackDamageMultiplier()
+        {
+            if (StatManager.Instance.CombatFirstAttackDone) return 0f;
+            return SumTriggeredEffectValues(RelicEffectType.FirstAttackDamageBonus, RelicTriggerEvent.CombatFirstAttack);
+        }
+
+        // 강철 갑옷 — 첫 턴(CombatTurnCount==0)에만 0이 아닌 값 반환
+        public int GetFirstTurnShieldBonus()
+        {
+            if (StatManager.Instance.CombatTurnCount != 0) return 0;
+            return Mathf.RoundToInt(SumTriggeredEffectValues(RelicEffectType.CombatFirstTurnShieldBonus, RelicTriggerEvent.CombatFirstTurnOnly));
+        }
+
+        // 성기사의 망토 — 매 턴 호출
+        public int GetEveryTurnShieldBonus() =>
+            Mathf.RoundToInt(SumTriggeredEffectValues(RelicEffectType.EveryTurnShieldBonus, RelicTriggerEvent.CombatTurnStart));
+
+        // ── 그룹 E: 처치/수리 트리거 ──────────────────────────────────────────
+        private static readonly HashSet<MonsterType> EliteTypes = new HashSet<MonsterType> {
+            MonsterType.BigSlime, MonsterType.SkeletonMiner, MonsterType.IronPlateSpider,
+            MonsterType.MerchantMimic, MonsterType.CursedKnight, MonsterType.CursedPriest
+        };
+        private static readonly HashSet<MonsterType> BossTypes = new HashSet<MonsterType> {
+            MonsterType.StoneGolemBoss, MonsterType.MotherCaveSpiderBoss, MonsterType.SkeletonWarlordBoss,
+            MonsterType.AllMetalColossusBoss, MonsterType.CaveRatBoss, MonsterType.BossCore
+        };
+        public static bool IsEliteType(MonsterType type) => EliteTypes.Contains(type);
+        public static bool IsBossType(MonsterType type)  => BossTypes.Contains(type);
+
+        public void ApplyMonsterKilledEffects(MonsterType type)
+        {
+            float killHeal = SumTriggeredEffectValues(RelicEffectType.OnKillHealBonus, RelicTriggerEvent.MonsterKilled);
+            if (killHeal > 0f) StatManager.Instance.Heal(Mathf.RoundToInt(killHeal));
+
+            if (IsEliteType(type))
+            {
+                if (HasTriggeredEffect(RelicEffectType.EliteKillPotionDropBonus, RelicTriggerEvent.EliteKilled))
+                    InventoryManager.Instance?.AddItem(AddressableKeys.ItemPotion, 1);
+
+                if (HasTriggeredEffect(RelicEffectType.PickaxeFullRestoreOnKill, RelicTriggerEvent.EliteKilled))
+                    FullRestorePickaxe();
+            }
+
+            if (IsBossType(type) && HasTriggeredEffect(RelicEffectType.PickaxeFullRestoreOnKill, RelicTriggerEvent.BossKilled))
+                FullRestorePickaxe();
+        }
+
+        private void FullRestorePickaxe()
+        {
+            var dm = PickaxeDurabilityManager.Instance;
+            if (dm != null) dm.RepairOnKill(dm.MaxDurability);
+        }
+
+        public void ApplyPlayerDealtDamageEffects()
+        {
+            float heal = SumTriggeredEffectValues(RelicEffectType.OnHitHealBonus, RelicTriggerEvent.PlayerDealtDamage);
+            if (heal > 0f) StatManager.Instance.Heal(Mathf.RoundToInt(heal));
+        }
+
+        public void ApplyPickaxeRepairedEffects()
+        {
+            float heal = SumTriggeredEffectValues(RelicEffectType.OnRepairHealBonus, RelicTriggerEvent.PickaxeRepaired);
+            if (heal > 0f) StatManager.Instance.Heal(Mathf.RoundToInt(heal));
+
+            foreach (var r in _activeRelics)
+                foreach (var e in r.effects)
+                    if (e.effectType == RelicEffectType.OnRepairMaxDurabilityChance && e.triggerEvent == RelicTriggerEvent.PickaxeRepaired)
+                        if (Random.value < e.value)
+                            PickaxeDurabilityManager.Instance?.AddMaxDurabilityBonus(1);
+        }
+
+        public float GetRepairEfficiencyBonus() => SumEffectValues(RelicEffectType.RepairEfficiencyBonus);
+
+        // ── 그룹 F/K: 실시간 파생 스탯 계산 ────────────────────────────────────
+        public int GetScalingBonus(RelicEffectType type)
+        {
+            float total = 0f;
+            foreach (var r in _activeRelics)
+                foreach (var e in r.effects)
+                    if (e.effectType == type && e.scalingSource != RelicScalingSource.None)
+                        total += Mathf.FloorToInt(GetScalingSourceValue(e.scalingSource) / Mathf.Max(0.0001f, e.scalingDivisor)) * e.value;
+            return Mathf.RoundToInt(total);
+        }
+
+        private float GetScalingSourceValue(RelicScalingSource source)
+        {
+            switch (source)
+            {
+                case RelicScalingSource.InventoryOreCount:
+                    if (InventoryManager.Instance == null) return 0f;
+                    return InventoryManager.Instance.GetItemCount(AddressableKeys.ItemIron)
+                         + InventoryManager.Instance.GetItemCount(AddressableKeys.ItemSilver)
+                         + InventoryManager.Instance.GetItemCount(AddressableKeys.ItemGold)
+                         + InventoryManager.Instance.GetItemCount(AddressableKeys.ItemDiamond);
+                case RelicScalingSource.MiningPower:
+                    return StatManager.Instance.GetMiningPower();
+                case RelicScalingSource.PickaxeDurability:
+                    return PickaxeDurabilityManager.Instance?.CurrentDurability ?? 0;
+                case RelicScalingSource.Depth:
+                    return GameManager.Instance != null ? GameManager.Instance.CurrentDepth : 0;
+                case RelicScalingSource.HpLostPercent:
+                {
+                    int maxHp = StatManager.Instance.GetMaxHP();
+                    return maxHp > 0 ? (1f - (float)StatManager.Instance.CurrentHP / maxHp) * 100f : 0f;
+                }
+                case RelicScalingSource.CombatStatusDamage:
+                    return StatManager.Instance.CombatStatusDamageAccumulated;
+                default:
+                    return 0f;
+            }
+        }
+
+        // ── 그룹 H: 상점 가격 ────────────────────────────────────────────────
+        public float GetPotionPriceReduction() => SumEffectValues(RelicEffectType.PotionPriceReduction);
+        public float GetShopDiscountBonus()    => SumEffectValues(RelicEffectType.ShopDiscountBonus);
+
+        // ── 그룹 I: 상태이상 일반화 ───────────────────────────────────────────
+        public int GetPoisonDurationModifier()        => Mathf.RoundToInt(SumEffectValues(RelicEffectType.PoisonDurationModifier));
+        public float GetStatusDamagePercentModifier() => SumEffectValues(RelicEffectType.StatusDamagePercentModifier);
+        public void ApplyCombatEndEffects()           => ApplyMatchingTriggerEffects(RelicTriggerEvent.CombatEnd);
+
+        // ── 그룹 N: 최후의 일격 ───────────────────────────────────────────────
+        public float GetFinishingBlowMultiplier() => SumEffectValues(RelicEffectType.FinishingBlowMultiplier);
 
         public IReadOnlyList<RelicData> GetActiveRelics() => _activeRelics;
 
@@ -446,6 +791,7 @@ namespace DeepEarth.Core
         private static EffectSystemType RarityToEffectSystemType(RelicRarity rarity) => rarity switch
         {
             RelicRarity.Legendary => EffectSystemType.RelicLegendary,
+            RelicRarity.Unique    => EffectSystemType.RelicUnique,
             RelicRarity.Rare      => EffectSystemType.RelicRare,
             _                     => EffectSystemType.RelicCommon
         };
@@ -453,6 +799,7 @@ namespace DeepEarth.Core
         private static string RarityLocKey(RelicRarity rarity) => rarity switch
         {
             RelicRarity.Legendary => "relic_rarity_legendary",
+            RelicRarity.Unique    => "relic_rarity_unique",
             RelicRarity.Rare      => "relic_rarity_rare",
             _                     => "relic_rarity_common"
         };
@@ -541,6 +888,35 @@ namespace DeepEarth.Core
                     // 신규 — 조건부 채굴
                     RelicEffectType.ConditionalMiningBonus =>
                         $"내구도 50% 이상 시 채굴력 +{Mathf.RoundToInt(e.value)}",
+
+                    // 신규 — 47종 지원(그룹 A~N)
+                    RelicEffectType.HealBonus              => $"HP {sign}{Mathf.RoundToInt(e.value)}",
+                    RelicEffectType.NodeItemGrant           => "아이템 지급",
+                    RelicEffectType.NodeWeightBonus         => $"노드 출현 확률 +{e.value * 100:0}%",
+                    RelicEffectType.DebuffClearAll          => "디버프 제거",
+                    RelicEffectType.LowHpHealMultiplier     => $"저체력 시 포션 효과 {Mathf.RoundToInt(e.value)}배",
+                    RelicEffectType.FirstAttackDamageBonus  => $"첫 공격 피해 +{e.value * 100:0}%",
+                    RelicEffectType.CombatTurnAttackBonus   => $"매 턴 공격력 +{Mathf.RoundToInt(e.value)}",
+                    RelicEffectType.CombatFirstTurnShieldBonus => $"전투 첫 턴 방어도 +{Mathf.RoundToInt(e.value)}",
+                    RelicEffectType.PerMonsterAttackBonus   => $"몬스터 1마리당 공격력 +{Mathf.RoundToInt(e.value)}",
+                    RelicEffectType.CombatHitTakenAttackBonus => $"피격 시 공격력 +{Mathf.RoundToInt(e.value)}",
+                    RelicEffectType.EveryTurnShieldBonus    => $"매 턴 방어도 +{Mathf.RoundToInt(e.value)}",
+                    RelicEffectType.OnKillHealBonus         => $"처치 시 HP +{Mathf.RoundToInt(e.value)}",
+                    RelicEffectType.OnHitHealBonus          => $"적중 시 HP +{Mathf.RoundToInt(e.value)}",
+                    RelicEffectType.EliteKillPotionDropBonus => "엘리트 처치 시 포션 추가 획득",
+                    RelicEffectType.PickaxeFullRestoreOnKill => "처치 시 내구도 완전 회복",
+                    RelicEffectType.OnRepairHealBonus       => $"수리 시 HP +{Mathf.RoundToInt(e.value)}",
+                    RelicEffectType.OnRepairMaxDurabilityChance => $"수리 시 {e.value * 100:0}% 확률 최대 내구도 +1",
+                    RelicEffectType.RepairEfficiencyBonus   => $"수리 효율 +{e.value * 100:0}%",
+                    RelicEffectType.PotionPriceReduction    => $"포션 가격 -{Mathf.RoundToInt(e.value)}",
+                    RelicEffectType.ShopDiscountBonus       => $"상점 가격 -{e.value * 100:0}%",
+                    RelicEffectType.PoisonDurationModifier  => $"중독 지속 {sign}{Mathf.RoundToInt(e.value)}턴",
+                    RelicEffectType.StatusDamagePercentModifier => $"상태이상 피해 -{e.value * 100:0}%",
+                    RelicEffectType.CombatEndDebuffClear    => "전투 종료 시 디버프 제거",
+                    RelicEffectType.RareChanceBonus         => $"유물 Rare 이상 확률 +{e.value * 100:0}%",
+                    RelicEffectType.TreasureRareChanceBonus => $"보물상자 고급 유물 확률 +{e.value * 100:0}%",
+                    RelicEffectType.FinishingBlowMultiplier => $"필살 조건 충족 시 피해 {Mathf.RoundToInt(e.value)}배(전투당 1회)",
+                    RelicEffectType.TreasureRewardBonus     => "보물상자 보상 선택지 +1",
 
                     _ => ""
                 };

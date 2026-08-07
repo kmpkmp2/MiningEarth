@@ -12,6 +12,7 @@ namespace DeepEarth.Core
         public int minDepth;
         [Range(0f, 1f)] public float commonChance;
         [Range(0f, 1f)] public float rareChance;
+        [Range(0f, 1f)] public float uniqueChance;    // 2026-08-07 4단계 등급 개편
         [Range(0f, 1f)] public float legendaryChance;
     }
 
@@ -25,10 +26,10 @@ namespace DeepEarth.Core
         [Header("Relic Rarity By Depth")]
         public List<DepthRarityEntry> relicRarityByDepth = new List<DepthRarityEntry>
         {
-            new DepthRarityEntry { minDepth = 0,   commonChance = 0.75f, rareChance = 0.24f, legendaryChance = 0.01f },
-            new DepthRarityEntry { minDepth = 50,  commonChance = 0.65f, rareChance = 0.30f, legendaryChance = 0.05f },
-            new DepthRarityEntry { minDepth = 100, commonChance = 0.55f, rareChance = 0.38f, legendaryChance = 0.07f },
-            new DepthRarityEntry { minDepth = 150, commonChance = 0.45f, rareChance = 0.45f, legendaryChance = 0.10f },
+            new DepthRarityEntry { minDepth = 0,   commonChance = 0.70f, rareChance = 0.20f, uniqueChance = 0.09f, legendaryChance = 0.01f },
+            new DepthRarityEntry { minDepth = 50,  commonChance = 0.58f, rareChance = 0.27f, uniqueChance = 0.10f, legendaryChance = 0.05f },
+            new DepthRarityEntry { minDepth = 100, commonChance = 0.48f, rareChance = 0.32f, uniqueChance = 0.13f, legendaryChance = 0.07f },
+            new DepthRarityEntry { minDepth = 150, commonChance = 0.38f, rareChance = 0.37f, uniqueChance = 0.15f, legendaryChance = 0.10f },
         };
 
         [Header("Consumable Rarity By Depth")]
@@ -43,6 +44,7 @@ namespace DeepEarth.Core
         [Header("Relic Prices (Run Currency 개수)")]
         public int relicPriceCommon = 3;    // Silver
         public int relicPriceRare = 3;      // Gold
+        public int relicPriceUnique = 3;    // Gold (Rare와 동일 화폐, 수량으로 차등 — 2026-08-07)
         public int relicPriceLegendary = 3; // Diamond
 
         [Header("Consumable Prices (Run Currency 개수)")]

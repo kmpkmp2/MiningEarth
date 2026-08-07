@@ -59,6 +59,13 @@ namespace DeepEarth.Core
         // Shield(방어도): 전투 중에만 존재, 전투 시작/종료 시 BattlePresenter가 Reset 호출. SaveData에 저장되지 않음.
         public int CurrentShield { get; private set; }
 
+        // 전투 스코프 카운터(그룹 D/K/N): 전투 시작/종료 시 BattlePresenter가 ResetCombatCounters() 호출. SaveData 미저장.
+        public int CombatTurnCount { get; private set; }
+        public int CombatHitsTaken { get; private set; }
+        public bool CombatFirstAttackDone { get; private set; }
+        public bool CombatFinishingBlowUsed { get; private set; }
+        public int CombatStatusDamageAccumulated { get; private set; }
+
         // Boss run-local modifiers (not saved)
         public int BossAttackModifier { get; set; } = 0;
         public int BossMaxHPModifier { get; set; } = 0;
@@ -346,7 +353,15 @@ namespace DeepEarth.Core
             if (relicLowHpBonus > 0f && hpRatio <= 0.3f) lowHpBonus += relicLowHpBonus;
             int berserkerAdjust = Mathf.RoundToInt(baseResult * lowHpBonus);
 
-            return Mathf.Max(1, baseResult + statusAdjust + relicMultAdjust + berserkerAdjust);
+            // 47종 신규 유물 — 그룹 F(곡괭이 검/숫돌 칼날/광전사의 도끼)·K(황금의 기도서) 스케일링,
+            // 그룹 D(전투 장갑/분노의 팔찌) 전투 스코프 누적. 조우 몬스터수 기반(전장의 깃발)은
+            // Battle 레이어 전용이라 여기 포함하지 않음(Core→Battle 참조 불가).
+            int relicScalingAdjust = RelicManager.Instance?.GetScalingBonus(RelicEffectType.AttackBonus) ?? 0;
+            int combatTurnAdjust   = RelicManager.Instance?.GetCombatTurnAttackBonus() ?? 0;
+            int combatHitAdjust    = RelicManager.Instance?.GetCombatHitTakenAttackBonus() ?? 0;
+
+            return Mathf.Max(1, baseResult + statusAdjust + relicMultAdjust + berserkerAdjust
+                + relicScalingAdjust + combatTurnAdjust + combatHitAdjust);
         }
 
         public int GetMiningPower()
@@ -365,7 +380,10 @@ namespace DeepEarth.Core
             float miningGainBonus = StartingRelicManager.Instance != null ? StartingRelicManager.Instance.GetMiningGainBonus() : 0f;
             int miningGainAdjust = Mathf.RoundToInt(baseResult * miningGainBonus);
 
-            return Mathf.Max(1, baseResult + statusAdjust + conditionalBonus + miningGainAdjust);
+            // 그룹 F — 강화 곡괭이 손잡이(보유 광물 9개당)/깊은 숨결(깊이 50m당)
+            int relicScalingAdjust = RelicManager.Instance?.GetScalingBonus(RelicEffectType.MiningPowerBonus) ?? 0;
+
+            return Mathf.Max(1, baseResult + statusAdjust + conditionalBonus + miningGainAdjust + relicScalingAdjust);
         }
 
         public int GetInventorySize()
@@ -420,6 +438,21 @@ namespace DeepEarth.Core
             OnShieldChanged?.Invoke();
         }
 
+        // ── 전투 스코프 카운터(그룹 D/K/N) ────────────────────────────────────
+        public void ResetCombatCounters()
+        {
+            CombatTurnCount = 0;
+            CombatHitsTaken = 0;
+            CombatFirstAttackDone = false;
+            CombatFinishingBlowUsed = false;
+            CombatStatusDamageAccumulated = 0;
+        }
+
+        public void IncrementCombatTurn() => CombatTurnCount++;
+        public void MarkFirstAttackDone() => CombatFirstAttackDone = true;
+        public void MarkCombatFinishingBlowUsed() => CombatFinishingBlowUsed = true;
+        public void AddCombatStatusDamage(int amount) { if (amount > 0) CombatStatusDamageAccumulated += amount; }
+
         public DamageResult TakeDamage(int amount)
         {
             int shieldDamage = Mathf.Clamp(amount, 0, CurrentShield);
@@ -433,6 +466,9 @@ namespace DeepEarth.Core
 
             CurrentHP = Mathf.Max(0, CurrentHP - hpDamage);
             OnHPChanged?.Invoke();
+
+            // 그룹 D — 분노의 팔찌: Shield로 완전 흡수되면 카운트 안 함(실제 HP 피해가 있을 때만)
+            if (hpDamage > 0) CombatHitsTaken++;
 
             if (CurrentHP <= 0 && InventoryManager.Instance.GetItemCount(AddressableKeys.ItemImmortalityPotion) > 0)
             {

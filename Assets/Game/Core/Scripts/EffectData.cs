@@ -14,7 +14,8 @@ namespace DeepEarth.Core
         Special,           // 5 – purple border
         RelicCommon,       // 6 – gray border
         RelicRare,         // 7 – blue border
-        RelicLegendary     // 8 – orange-gold border
+        RelicLegendary,    // 8 – orange-gold border
+        RelicUnique        // 9 – purple border (2026-08-07 4단계 등급 개편)
     }
 
     [Serializable]

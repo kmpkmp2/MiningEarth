@@ -116,6 +116,11 @@ namespace DeepEarth.Core
             var onGameDataChanged = (Action)typeof(GameManager).GetField("OnGameDataChanged", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.GetValue(gameMgr);
             onGameDataChanged?.Invoke();
 
+            // UI_Panel_MapPopup은 항상 전체화면 최상단(SetAsLastSibling)으로 뜨므로, 어떤 경로로 보스전이
+            // 트리거되든 여기서 명시적으로 닫아 전투 팝업(UI_Panel_Battle)의 공격/방어 버튼이 레이캐스트를
+            // 가로막히지 않도록 보장한다.
+            RouteMapPresenter.Instance?.HideMap();
+
             // Determine Boss type by MapIndex (0-based map progression counter).
             // Route Map mode increments MapIndex after each boss defeat, so each 50-floor
             // segment gets a unique boss regardless of CurrentDepth node-counter value.

@@ -280,9 +280,16 @@ namespace DeepEarth.UI
                                      + (StartingRelicManager.Instance != null ? StartingRelicManager.Instance.GetPotionHealBonus() : 0f);
                     int finalHeal = Mathf.RoundToInt(item.healAmount * (1f + healBonus));
 
+                    // 그룹 C: 저체력일수록 회복량 배율 증가(회복 전 HP 비율 기준)
+                    float lowHpMult = RelicManager.Instance?.GetLowHpHealMultiplier() ?? 1f;
+                    finalHeal = Mathf.RoundToInt(finalHeal * lowHpMult);
+
                     StatManager.Instance.Heal(finalHeal);
                     TriggerFloatingText($"+{finalHeal} {LocalizationManager.Instance.GetTranslation("hud_hp_heal")}", Color.green);
                     effectApplied = true;
+
+                    // 그룹 C: 포션(회복 아이템) 사용 트리거
+                    RelicManager.Instance?.ApplyPotionUseEffects();
                 }
 
                 if (blockConsume && !effectApplied) return; // 치료할 상태이상이 없어 아무 효과도 없었다 — 소모하지 않음
@@ -293,6 +300,9 @@ namespace DeepEarth.UI
                     TriggerFloatingText(LocalizationManager.Instance.GetFormatted("item_used_generic_fmt", usedName), Color.white);
                 }
             }
+
+            // 그룹 C: 소비 아이템 사용 트리거(고대열쇠 등 — 여기 도달했다면 실제로 소비된 아이템 사용이다)
+            RelicManager.Instance?.ApplyItemUseEffects();
 
             _collection.RemoveItem(itemId, 1);
             GameManager.Instance.TriggerStatsOrResourcesChanged();

@@ -54,9 +54,38 @@ namespace DeepEarth.Battle
         // 플레이어가 공격을 선택했을 때 이 몬스터가 받는 피해 처리.
         // Fast Turn Battle: PlayerAttackAnimationTime(윈드업) → 피해 적용 → PlayerHitEffectTime(피격 연출) 순으로
         // 아주 짧게 진행한다. Player Turn 재입력을 막지 않도록 이 시퀀스는 다음 Player Turn 시작 전에만 완료되면 된다.
-        public virtual async UniTask ReceivePlayerAttackAsync()
+        public virtual async UniTask ReceivePlayerAttackAsync(int aliveMonsterCount = 1)
         {
             int dmg = StatManager.Instance.GetAttackDamage();
+            dmg += RelicManager.Instance?.GetPerMonsterAttackBonus(aliveMonsterCount) ?? 0;
+
+            // 그룹 D: 전투 도끼 — 전투당 1회, 첫 공격에 배율 적용
+            float firstAttackMult = RelicManager.Instance?.GetFirstAttackDamageMultiplier() ?? 0f;
+            if (firstAttackMult > 0f)
+            {
+                dmg = Mathf.RoundToInt(dmg * firstAttackMult);
+                StatManager.Instance.MarkFirstAttackDone();
+            }
+
+            // 그룹 N: 최후의 일격 — 상대 HP비율 < 내 HP비율일 때, 전투당 1회 배율 적용
+            if (!StatManager.Instance.CombatFinishingBlowUsed)
+            {
+                int monsterMaxHp = _combatPresenter.Model.MaxHP;
+                int playerMaxHp  = StatManager.Instance.GetMaxHP();
+                float monsterHpRatio = monsterMaxHp > 0 ? (float)_combatPresenter.Model.CurrentHP / monsterMaxHp : 0f;
+                float playerHpRatio  = playerMaxHp > 0 ? (float)StatManager.Instance.CurrentHP / playerMaxHp : 0f;
+
+                if (monsterHpRatio < playerHpRatio)
+                {
+                    float finishMult = RelicManager.Instance?.GetFinishingBlowMultiplier() ?? 0f;
+                    if (finishMult > 0f)
+                    {
+                        dmg = Mathf.RoundToInt(dmg * finishMult);
+                        StatManager.Instance.MarkCombatFinishingBlowUsed();
+                    }
+                }
+            }
+
             if (_combatPresenter.Model.IsDefending)
                 dmg = Mathf.RoundToInt(dmg * (1f - BattleBalanceData.Instance.defenseRate));
 
@@ -66,6 +95,7 @@ namespace DeepEarth.Battle
             Debug.Log($"[Battle]\nPlayer Attack\nDamage : {dmg}");
 #endif
             _combatPresenter.ApplyExternalDamage(dmg);
+            RelicManager.Instance?.ApplyPlayerDealtDamageEffects();
 
             await UniTask.Delay(TimeSpan.FromSeconds(BattleBalanceData.Instance.playerHitEffectTime));
         }

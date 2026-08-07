@@ -39,6 +39,7 @@ namespace DeepEarth.UI
             EffectSystemType.Special          => new Color(0.6f, 0.2f, 0.9f),
             EffectSystemType.RelicCommon      => new Color(0.6f, 0.6f, 0.6f),   // gray
             EffectSystemType.RelicRare        => new Color(0.27f, 0.53f, 1f),   // blue
+            EffectSystemType.RelicUnique      => new Color(0.64f, 0.21f, 0.93f),// purple
             EffectSystemType.RelicLegendary   => new Color(1f,   0.55f, 0.1f),  // orange
             _                                 => Color.white
         };
@@ -47,6 +48,7 @@ namespace DeepEarth.UI
         {
             RelicRarity.Common    => new Color(0.6f, 0.6f, 0.6f),
             RelicRarity.Rare      => new Color(0.27f, 0.53f, 1f),
+            RelicRarity.Unique    => new Color(0.64f, 0.21f, 0.93f),
             RelicRarity.Legendary => new Color(1f, 0.55f, 0.1f),
             _                     => Color.white
         };

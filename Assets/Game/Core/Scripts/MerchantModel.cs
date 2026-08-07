@@ -94,13 +94,17 @@ namespace DeepEarth.Core
             var item = InventoryManager.Instance?.GetTemplate(itemId);
             if (item == null) return;
 
+            // 그룹 H: 포션 가격 할인 유물
+            float priceReduction = RelicManager.Instance?.GetPotionPriceReduction() ?? 0f;
+            int finalPrice = Mathf.Max(1, Mathf.RoundToInt(rootPrice * (1f - Mathf.Clamp01(priceReduction))));
+
             result.PotionSlots.Add(new MerchantSlotData
             {
                 kind = MerchantSlotKind.Potion,
                 item = item,
                 priceCurrencyItemId = AddressableKeys.ItemWood,
                 basePrice = rootPrice,
-                finalPrice = rootPrice,
+                finalPrice = finalPrice,
             });
         }
 
@@ -159,6 +163,7 @@ namespace DeepEarth.Core
             float roll = Random.value;
             if (roll < entry.commonChance) return RelicRarity.Common;
             if (roll < entry.commonChance + entry.rareChance) return RelicRarity.Rare;
+            if (roll < entry.commonChance + entry.rareChance + entry.uniqueChance) return RelicRarity.Unique;
             return RelicRarity.Legendary;
         }
 
@@ -176,28 +181,33 @@ namespace DeepEarth.Core
             {
                 RelicRarity.Common => _balance.relicPriceCommon,
                 RelicRarity.Rare => _balance.relicPriceRare,
+                RelicRarity.Unique => _balance.relicPriceUnique,
                 _ => _balance.relicPriceLegendary,
             };
             slot.priceCurrencyItemId = slot.relic.rarity switch
             {
                 RelicRarity.Common => AddressableKeys.ItemSilver,
                 RelicRarity.Rare => AddressableKeys.ItemGold,
+                RelicRarity.Unique => AddressableKeys.ItemGold,
                 _ => AddressableKeys.ItemDiamond,
             };
 
             slot.basePrice = basePrice;
             slot.finalPrice = basePrice;
 
-            if (forceNoStandardDiscount || !result.HasDiscountEvent) return;
-
-            if (result.IsAllDiscount)
+            float discountPercent = 0f;
+            if (!forceNoStandardDiscount && result.HasDiscountEvent)
             {
-                slot.finalPrice = Mathf.Max(1, Mathf.RoundToInt(basePrice * (1f - _balance.discountAllPercent)));
-                slot.isDiscounted = true;
+                if (result.IsAllDiscount) discountPercent = _balance.discountAllPercent;
+                else if (slot.relic.rarity == RelicRarity.Rare) discountPercent = _balance.discountRareRelicPercent;
             }
-            else if (slot.relic.rarity == RelicRarity.Rare)
+
+            // 그룹 H: 상점 할인 유물 — 이벤트 유무와 무관하게 상시 적용
+            discountPercent += RelicManager.Instance?.GetShopDiscountBonus() ?? 0f;
+
+            if (discountPercent > 0f)
             {
-                slot.finalPrice = Mathf.Max(1, Mathf.RoundToInt(basePrice * (1f - _balance.discountRareRelicPercent)));
+                slot.finalPrice = Mathf.Max(1, Mathf.RoundToInt(basePrice * (1f - Mathf.Clamp01(discountPercent))));
                 slot.isDiscounted = true;
             }
         }
@@ -220,10 +230,16 @@ namespace DeepEarth.Core
             slot.basePrice = basePrice;
             slot.finalPrice = basePrice;
 
-            if (!result.HasDiscountEvent || !result.IsAllDiscount) return;
+            float discountPercent = (result.HasDiscountEvent && result.IsAllDiscount) ? _balance.discountAllPercent : 0f;
 
-            slot.finalPrice = Mathf.Max(1, Mathf.RoundToInt(basePrice * (1f - _balance.discountAllPercent)));
-            slot.isDiscounted = true;
+            // 그룹 H: 상점 할인 유물 — 이벤트 유무와 무관하게 상시 적용
+            discountPercent += RelicManager.Instance?.GetShopDiscountBonus() ?? 0f;
+
+            if (discountPercent > 0f)
+            {
+                slot.finalPrice = Mathf.Max(1, Mathf.RoundToInt(basePrice * (1f - Mathf.Clamp01(discountPercent))));
+                slot.isDiscounted = true;
+            }
         }
 
 #if DEVELOPMENT_BUILD || UNITY_EDITOR

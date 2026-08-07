@@ -1360,6 +1360,7 @@ namespace DeepEarth.Editor
                 ( $"{RootPath}/UI/Prefabs/UI_Panel_BossRoom.prefab", AddressableKeys.UIPanelBossRoom, "UI" ),
                 ( $"{RootPath}/UI/Prefabs/UI_Panel_BossReward.prefab", AddressableKeys.UIPanelBossReward, "UI" ),
                 ( $"{RootPath}/UI/Prefabs/UI_Panel_RelicPopup.prefab", AddressableKeys.UIPanelRelicPopup, "UI" ),
+                ( $"{RootPath}/UI/Prefabs/UI_Panel_RelicCopyPopup.prefab", AddressableKeys.UIPanelRelicCopyPopup, "UI" ),
                 ( $"{RootPath}/UI/Prefabs/UI_Panel_InventoryPopup.prefab", AddressableKeys.UIPanelInventoryPopup, "UI" ),
                 ( $"{RootPath}/UI/Prefabs/UI_Prefab_EffectIcon.prefab", AddressableKeys.UIEffectIcon, "UI" ),
                 ( $"{RootPath}/UI/Prefabs/UI_Prefab_EffectCard.prefab", AddressableKeys.UIEffectCard, "UI" ),

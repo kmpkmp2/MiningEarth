@@ -20,6 +20,12 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 068a7c89991b4881b6a40cdcfe0914b3
+    m_Address: Mineral_Dirt
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MineralData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 109005890f03247429fc420d8f3d117e
     m_Address: Theme_Dirt
     m_ReadOnly: 0
@@ -35,10 +41,22 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2d93397279884b10bf8db78cff725f64
+    m_Address: Mineral_Silver
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MineralData
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3434337025f2204448fb69a2e7081dc8
     m_Address: Mining_Block_Diamond
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3bb594c732d84cddb4ccac99747ecef8
+    m_Address: Mineral_Root
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MineralData
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4a609c16349a8104ab1bac99ff188082
     m_Address: Theme_Gold
@@ -60,55 +78,16 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9bf15f8a09d8e334b88c0de159cd0c9a
-    m_Address: Mining_Block_Gold
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ca3a45b9e2f9cad42a8421e8ebca374f
-    m_Address: Mining_Block_Iron
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ee7e3bda85722c04fb481f92a9db501b
-    m_Address: Mining_DepthRewardTable
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: fb7f5394a1ccb624bab062808c7e5090
-    m_Address: Theme_Crystal
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 068a7c89991b4881b6a40cdcfe0914b3
-    m_Address: Mineral_Dirt
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - MineralData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: dd6fb0ae7257465c8cd88c4eda81aa6a
-    m_Address: Mineral_Stone
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - MineralData
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3bb594c732d84cddb4ccac99747ecef8
-    m_Address: Mineral_Root
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - MineralData
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6e062a0d9e6a446a83a5bed5fd76fa29
     m_Address: Mineral_Iron
     m_ReadOnly: 0
     m_SerializedLabels:
     - MineralData
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 2d93397279884b10bf8db78cff725f64
-    m_Address: Mineral_Silver
+  - m_GUID: 9bf15f8a09d8e334b88c0de159cd0c9a
+    m_Address: Mining_Block_Gold
     m_ReadOnly: 0
-    m_SerializedLabels:
-    - MineralData
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b8b93b1042eb433e8ccd147f4f428d4a
     m_Address: Mineral_Gold
@@ -121,6 +100,27 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - MineralData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ca3a45b9e2f9cad42a8421e8ebca374f
+    m_Address: Mining_Block_Iron
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dd6fb0ae7257465c8cd88c4eda81aa6a
+    m_Address: Mineral_Stone
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - MineralData
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ee7e3bda85722c04fb481f92a9db501b
+    m_Address: Mining_DepthRewardTable
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: fb7f5394a1ccb624bab062808c7e5090
+    m_Address: Theme_Crystal
+    m_ReadOnly: 0
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: bf53922257c85cf45b1d5828a500e7b9, type: 2}

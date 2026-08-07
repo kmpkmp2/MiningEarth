@@ -31,7 +31,7 @@ namespace DeepEarth.Battle
         }
 
         // 플레이어 공격 수신 — IronPlateSpider는 방어구가 남아있는 동안 HP 대신 방어구를 깎는다.
-        public override async UniTask ReceivePlayerAttackAsync()
+        public override async UniTask ReceivePlayerAttackAsync(int aliveMonsterCount = 1)
         {
             if (EliteModel.Data.eliteSkillType == EliteSkillType.IronArmor && !EliteModel.IsArmorBroken)
             {
@@ -39,7 +39,7 @@ namespace DeepEarth.Battle
                 return;
             }
 
-            await base.ReceivePlayerAttackAsync();
+            await base.ReceivePlayerAttackAsync(aliveMonsterCount);
             if (CombatPresenter.Model.IsDead) return;
 
             // IronPlateSpider: 방어구 파괴 후 3타마다 중독.

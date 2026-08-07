@@ -60,13 +60,13 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6ab1710b53aa4654788298945354e127
-    m_Address: UI_Prefab_MiningRewardIcon
+  - m_GUID: 1ca85ee6e4de21b4cb3ce30050165e5c
+    m_Address: UI_Panel_RelicPopup
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 1ca85ee6e4de21b4cb3ce30050165e5c
-    m_Address: UI_Panel_RelicPopup
+  - m_GUID: 1e50ba71d96022c48b2a7ab2b3d9f5ee
+    m_Address: Item_Diamond
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -110,6 +110,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2b10971a4b8e89e4eb6f9a6722226262
+    m_Address: Item_Iron
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2b57b464eb6ba9540a102aee3fd7d150
     m_Address: Effect_BossReward_Mineral
     m_ReadOnly: 0
@@ -145,6 +150,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 45ce372b1bcd8644e8298e4e62c5fedd
+    m_Address: Item_Chest
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 461fc622507087a44a9741e4e8f8d78f
     m_Address: UI_Panel_GameOver
     m_ReadOnly: 0
@@ -152,6 +162,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4c94b09a5400f974cb5154339f8ad1a4
     m_Address: UI_Prefab_InventorySlot
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4d9119da380fcfd48aae77de2c85fed4
+    m_Address: Item_Potion
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -175,6 +190,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5619caffb296f44408fe49511f277585
+    m_Address: Item_Key
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 58d026ea7eb168a46b25a45fc9b15961
     m_Address: Effect_Relic_PurificationRing
     m_ReadOnly: 0
@@ -182,6 +202,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5ac1c9a014528b842b13c4af89f26146
     m_Address: Effect_Debuff_Attack
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5d554be5fe4f8334fac21ec65ecc55dc
+    m_Address: Icon_Intent_Special
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -200,8 +225,23 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6ab1710b53aa4654788298945354e127
+    m_Address: UI_Prefab_MiningRewardIcon
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6b8de5f37938fa34ab2b02a291a92f38
+    m_Address: Icon_Intent_Buff
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6e2ebcbcc0067f047968fa9165ea2bd6
     m_Address: Item_Special
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 75bc9c5cf60bf3a41b01c47a127c1954
+    m_Address: Icon_Intent_Summon
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -245,8 +285,23 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 86f3d622432f50a4eb8b1a1895ee3719
+    m_Address: Icon_Intent_HeavyAttack
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 88cab1cf5bca1744ebcf698f01d94c14
     m_Address: Effect_Relic_HuntersEye
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 898a015abb18b154b88415b93696ca8c
+    m_Address: Icon_Intent_Heal
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8fd73a5b511d5704c9647033b6f2df94
+    m_Address: Icon_Intent_Attack
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -275,6 +330,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9fe47f7675704777af90c62f0b1b8c61
+    m_Address: UI_Panel_Battle
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a3437aece77db0344ab81d5c9f90dc29
     m_Address: Effect_BossReward_SpawnDecrease
     m_ReadOnly: 0
@@ -282,6 +342,16 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a4e9f7b1c3d24f3e91a6c8b0d5e7f209
     m_Address: Effect_Debuff_Mining
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a6c30010ebaac0042b4025335b0e7b6d
+    m_Address: Icon_Intent_Defend
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ab31ddca1ad4e6e4f838eb8aa762fcf1
+    m_Address: Item_Stone
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -295,8 +365,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9fe47f7675704777af90c62f0b1b8c61
-    m_Address: UI_Panel_Battle
+  - m_GUID: b894b00b22a1d7a499b7711f8efa3170
+    m_Address: Target_Ring
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -305,13 +375,33 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bc15b4524d986ea4d842c5f5a60ba3e0
+    m_Address: Item_Wood
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: be2ad0cc7ffe2594bac84050b20c1921
     m_Address: Effect_Relic_LavaContract
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: beea36b59d2d2d646aea1cac76584e83
+    m_Address: Item_Gold
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c048aaa968100224e84567eb25ce70e4
     m_Address: Effect_Relic_CursedPickaxe
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c43d18d39bdb2d7499f14e82dcc02c4b
+    m_Address: Icon_Intent_Debuff
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c548705dfb3641d478e0e1872e288c8f
+    m_Address: UI_Panel_RelicCopyPopup
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -335,6 +425,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dbc223c52d672dc4b8ece57bc9b8ab77
+    m_Address: Item_Silver
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: de3174505e4833c4ab86dbce850b967c
     m_Address: Effect_Buff_MaxHP
     m_ReadOnly: 0
@@ -352,6 +447,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f222473d9290aca43b30ed410732e0bc
     m_Address: Item_Chest
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f2a61fb596fdd7f41abd016703685d79
+    m_Address: Item_Special
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -377,51 +477,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f999d93508d273a4e994463b0bf07eb2
     m_Address: Effect_Debuff_MiningFail
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 8fd73a5b511d5704c9647033b6f2df94
-    m_Address: Icon_Intent_Attack
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 86f3d622432f50a4eb8b1a1895ee3719
-    m_Address: Icon_Intent_HeavyAttack
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: a6c30010ebaac0042b4025335b0e7b6d
-    m_Address: Icon_Intent_Defend
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6b8de5f37938fa34ab2b02a291a92f38
-    m_Address: Icon_Intent_Buff
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c43d18d39bdb2d7499f14e82dcc02c4b
-    m_Address: Icon_Intent_Debuff
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 898a015abb18b154b88415b93696ca8c
-    m_Address: Icon_Intent_Heal
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 75bc9c5cf60bf3a41b01c47a127c1954
-    m_Address: Icon_Intent_Summon
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 5d554be5fe4f8334fac21ec65ecc55dc
-    m_Address: Icon_Intent_Special
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b894b00b22a1d7a499b7711f8efa3170
-    m_Address: Target_Ring
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

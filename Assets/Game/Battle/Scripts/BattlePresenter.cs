@@ -58,6 +58,7 @@ namespace DeepEarth.Battle
             _intentPresenter.Clear();
             _battleModel.Turn.Phase = BattleState.Idle;
             StatManager.Instance.ResetShield();
+            StatManager.Instance.ResetCombatCounters();
 
             var makeWrapper = wrapperFactory ?? ((cp, pattern, turn) => new MonsterPresenter(cp, pattern, turn));
 
@@ -94,7 +95,9 @@ namespace DeepEarth.Battle
             {
                 monsterSource.OnMonsterSpawned -= RegisterMonster;
                 _battleModel.Turn.Phase = BattleState.BattleEnd;
+                RelicManager.Instance?.ApplyCombatEndEffects();
                 StatManager.Instance.ResetShield();
+                StatManager.Instance.ResetCombatCounters();
                 _intentPresenter.Clear();
                 _view?.SetVisible(false);
             }
@@ -102,12 +105,17 @@ namespace DeepEarth.Battle
 
         private void HandleMonsterKilled(MonsterPresenter wrapper)
         {
+            RelicManager.Instance?.ApplyMonsterKilledEffects(wrapper.CombatPresenter.Model.Type);
             _monsters.Remove(wrapper);
             _intentPresenter.RemoveIntent(wrapper);
         }
 
         private async UniTask PlayerTurnAsync()
         {
+            // 그룹 D: 턴 시작 시점 실드 보너스(강철 갑옷=첫 턴 한정, 성기사의 망토=매 턴) — 재시도 루프 밖에서 1회만 부여.
+            int turnStartShield = (RelicManager.Instance?.GetFirstTurnShieldBonus() ?? 0) + (RelicManager.Instance?.GetEveryTurnShieldBonus() ?? 0);
+            if (turnStartShield > 0) StatManager.Instance.AddShield(turnStartShield);
+
             // Cancel 시 턴을 소모하지 않고 이 루프를 재진입한다.
             while (true)
             {
@@ -136,6 +144,7 @@ namespace DeepEarth.Battle
                     }
 
                     _view?.PlayDefendEffect();
+                    StatManager.Instance.IncrementCombatTurn();
                     return;
                 }
 
@@ -158,7 +167,9 @@ namespace DeepEarth.Battle
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
                 Debug.Log("[Battle]\nAttack");
 #endif
-                await target.ReceivePlayerAttackAsync();
+                int aliveMonsterCount = _monsters.Count(m => !m.CombatPresenter.Model.IsDead);
+                await target.ReceivePlayerAttackAsync(aliveMonsterCount);
+                StatManager.Instance.IncrementCombatTurn();
                 return;
             }
         }

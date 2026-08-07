@@ -54,6 +54,7 @@ namespace DeepEarth.Core
         private GameObject _eventRevealObject;
         private GameObject _mapPopupObject;
         private GameObject _merchantObject;
+        private GameObject _relicCopyPopupObject;
 
         private GameUIPresenter _hudPresenter;
         private GameOverUIPresenter _gameOverPresenter;
@@ -64,6 +65,9 @@ namespace DeepEarth.Core
         private EventRevealPresenter _eventRevealPresenter;
         private MerchantPresenter _merchantPresenter;
         private DeepEarth.Map.RouteMapPresenter _routeMapPresenter;
+
+        // 그룹 L(수집가의 가방) 전용 — RelicManager가 참조하는 강제선택 팝업. 신규 Singleton이 아니라 GameManager가 소유.
+        public RelicCopyPopupPresenter RelicCopyPopupPresenter { get; private set; }
 
         private GameState _previousState;
 
@@ -331,6 +335,20 @@ namespace DeepEarth.Core
                 else
                 {
                     Debug.LogWarning("[GameManager] UI_Panel_Merchant not found — Addressables에 등록 필요");
+                }
+
+                // 그룹 L(수집가의 가방) 전용 팝업 — UI_Panel_RelicPopup 구조를 재활용해 신규 제작
+                _relicCopyPopupObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelRelicCopyPopup, canvas.transform);
+                if (_relicCopyPopupObject != null)
+                {
+                    var relicCopyPopupView = _relicCopyPopupObject.GetComponent<DeepEarth.UI.RelicCopyPopupView>();
+                    if (relicCopyPopupView != null)
+                        RelicCopyPopupPresenter = new DeepEarth.UI.RelicCopyPopupPresenter(relicCopyPopupView);
+                    _relicCopyPopupObject.SetActive(false);
+                }
+                else
+                {
+                    Debug.LogWarning("[GameManager] UI_Panel_RelicCopyPopup not found — Addressables에 등록 필요");
                 }
 
                 // Show Main HUD (다른 패널들은 각자 로드 직후 이미 비활성화됨)
@@ -628,6 +646,9 @@ namespace DeepEarth.Core
                 return;
             }
 
+            // 그룹 A: 노드 입장 시점 트리거(고대열쇠 등) — 모든 노드 타입 공통
+            RelicManager.Instance?.ApplyNodeArrivalEffects(nodeData.NodeType);
+
             switch (nodeData.NodeType)
             {
                 case DeepEarth.Map.RoomType.Mine:
@@ -643,6 +664,7 @@ namespace DeepEarth.Core
                     await CombatSystem.Instance.StartCombatAsync(mType, CurrentDepth);
 
                     if (StatManager.Instance.CurrentHP <= 0) return;
+                    RelicManager.Instance?.ApplyNodeCompletionEffects(nodeData.NodeType);
                     await _routeMapPresenter.OnNonMineNodeCompleted();
                     break;
 
@@ -651,24 +673,28 @@ namespace DeepEarth.Core
                     await EliteCombatSystem.Instance.StartEliteCombatAsync(CurrentDepth);
 
                     if (StatManager.Instance.CurrentHP <= 0) return;
+                    RelicManager.Instance?.ApplyNodeCompletionEffects(nodeData.NodeType);
                     await _routeMapPresenter.OnNonMineNodeCompleted();
                     break;
 
                 case DeepEarth.Map.RoomType.Treasure:
                     DeepEarth.Common.GameEvents.FireTreasureOpened();
                     await EventManager.Instance.TriggerRandomEventAsync(false);
+                    RelicManager.Instance?.ApplyNodeCompletionEffects(nodeData.NodeType);
                     await _routeMapPresenter.OnNonMineNodeCompleted();
                     break;
 
                 case DeepEarth.Map.RoomType.Grave:
                     DeepEarth.Common.GameEvents.FireTombstoneOpened();
                     await EventManager.Instance.TriggerRandomEventAsync(true);
+                    RelicManager.Instance?.ApplyNodeCompletionEffects(nodeData.NodeType);
                     await _routeMapPresenter.OnNonMineNodeCompleted();
                     break;
 
                 case DeepEarth.Map.RoomType.Event:
                     await NodeEventManager.Instance.TriggerEventAsync(CurrentDepth);
                     if (StatManager.Instance.CurrentHP <= 0) return;
+                    RelicManager.Instance?.ApplyNodeCompletionEffects(nodeData.NodeType);
                     await _routeMapPresenter.OnNonMineNodeCompleted();
                     break;
 
@@ -676,12 +702,14 @@ namespace DeepEarth.Core
                     if (_merchantPresenter != null)
                         await _merchantPresenter.OpenAsync(CurrentDepth);
                     if (StatManager.Instance.CurrentHP <= 0) return;
+                    RelicManager.Instance?.ApplyNodeCompletionEffects(nodeData.NodeType);
                     await _routeMapPresenter.OnNonMineNodeCompleted();
                     break;
 
                 case DeepEarth.Map.RoomType.Rest:
                     await NodeEventManager.Instance.TriggerRestAsync(CurrentDepth);
                     if (StatManager.Instance.CurrentHP <= 0) return;
+                    RelicManager.Instance?.ApplyNodeCompletionEffects(nodeData.NodeType);
                     await _routeMapPresenter.OnNonMineNodeCompleted();
                     break;
 
@@ -690,6 +718,9 @@ namespace DeepEarth.Core
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
                     Debug.Log("[Run]\nBoss Battle Started");
 #endif
+                    // 다른 노드 타입과 달리 여기서 await하지 않는다 — 보스는 전투 종료 후 보상 선택 UI까지
+                    // 이어지는 긴 흐름이라, 완료 시점은 BossManager.StartBossSequenceAsync 내부에서
+                    // 보상 선택이 끝난 뒤 OnBossSequenceComplete()를 호출하는 시점으로 위임된다.
                     BossManager.Instance.StartBossSequenceAsync(CurrentDepth).Forget();
                     break;
             }

@@ -97,6 +97,7 @@ namespace DeepEarth.Common
         public const string UIPanelBossRoom = "UI_Panel_BossRoom";
         public const string UIPanelBossReward = "UI_Panel_BossReward";
         public const string UIPanelRelicPopup = "UI_Panel_RelicPopup";
+        public const string UIPanelRelicCopyPopup = "UI_Panel_RelicCopyPopup"; // 그룹 L(수집가의 가방) 전용
         public const string UIPanelInventoryPopup = "UI_Panel_InventoryPopup";
         public const string UIPanelEventReveal = "UI_Panel_EventReveal";
         public const string UIPanelMerchant = "UI_Panel_Merchant";

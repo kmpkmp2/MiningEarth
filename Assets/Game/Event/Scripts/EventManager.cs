@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using DeepEarth.Common;
@@ -188,7 +189,8 @@ namespace DeepEarth.Event
 
             // 신규 패시브: TreasureHunter — 유물 등장 확률 증가 + 시작 유물(행운의 동전) 추가 가산
             var charID = CharacterManager.Instance.SelectedCharacterID;
-            bool bonusSlot = CharacterManager.Instance.HasTreasureRewardBonus(charID);
+            bool bonusSlot = CharacterManager.Instance.HasTreasureRewardBonus(charID)
+                            || (RelicManager.Instance?.HasTreasureRewardBonusRelic() ?? false); // 그룹 M: 도굴꾼 장갑
             float relicBonusChance = CharacterManager.Instance.GetTreasureRelicChanceBonus(charID)
                                     + (StartingRelicManager.Instance != null ? StartingRelicManager.Instance.GetTreasureRewardBonus() : 0f);
 
@@ -202,7 +204,7 @@ namespace DeepEarth.Event
                     optionsPool.Add(new EventOption(treasureRelics[UnityEngine.Random.Range(0, treasureRelics.Count)]));
             }
 
-            ShuffleList(optionsPool);
+            WeightedShuffleTreasureOptions(optionsPool);
             // 신규 패시브: TreasureHunter — 보상 개수 +1 (3→4)
             int count = Mathf.Min(bonusSlot ? 4 : 3, optionsPool.Count);
             var selectedOptions = new List<EventOption>();
@@ -259,6 +261,30 @@ namespace DeepEarth.Event
             for (int i = 0; i < count; i++) selectedOptions.Add(optionsPool[i]);
 
             return new EventData("event_tomb_title", "event_tomb_desc", true, selectedOptions);
+        }
+
+        // 그룹 J(B-2): Efraimidis-Spirakis 가중 셔플 — 유물 등급별 가중치로 보물상자 옵션 순서를 편향시키되
+        // 나머지 비-유물 옵션(채굴 버프/HP 버프/화상 치료)과의 상대적 다양성은 유지한다.
+        private void WeightedShuffleTreasureOptions(List<EventOption> list)
+        {
+            var (commonWeight, rareWeight, uniqueWeight) = RelicManager.Instance?.GetTreasureRarityWeights() ?? (1f, 1f, 1f);
+
+            float GetWeight(EventOption opt)
+            {
+                if (opt.RelicReward == null) return 1f;
+                return opt.RelicReward.rarity switch
+                {
+                    RelicRarity.Unique => Mathf.Max(0.0001f, uniqueWeight),
+                    RelicRarity.Rare   => Mathf.Max(0.0001f, rareWeight),
+                    _                  => Mathf.Max(0.0001f, commonWeight),
+                };
+            }
+
+            var keyed = list.Select(opt => (opt, key: Mathf.Pow(UnityEngine.Random.value, 1f / GetWeight(opt)))).ToList();
+            keyed.Sort((a, b) => b.key.CompareTo(a.key));
+
+            list.Clear();
+            foreach (var entry in keyed) list.Add(entry.opt);
         }
 
         private void ShuffleList<T>(List<T> list)

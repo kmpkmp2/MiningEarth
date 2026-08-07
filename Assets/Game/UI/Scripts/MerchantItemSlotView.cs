@@ -21,6 +21,7 @@ namespace DeepEarth.UI
 
         private static readonly Color CommonColor = new Color(0.75f, 0.75f, 0.75f);
         private static readonly Color RareColor = new Color(0.25f, 0.55f, 0.95f);
+        private static readonly Color UniqueColor = new Color(0.64f, 0.21f, 0.93f);
         private static readonly Color LegendaryColor = new Color(1.0f, 0.8f, 0.15f);
         private static readonly Color BtnBuy = new Color(0.12f, 0.26f, 0.52f, 1f);
         private static readonly Color BtnDisabled = new Color(0.20f, 0.20f, 0.25f, 1f);
@@ -64,6 +65,7 @@ namespace DeepEarth.UI
                 return slot.relic.rarity switch
                 {
                     RelicRarity.Rare => RareColor,
+                    RelicRarity.Unique => UniqueColor,
                     RelicRarity.Legendary => LegendaryColor,
                     _ => CommonColor,
                 };

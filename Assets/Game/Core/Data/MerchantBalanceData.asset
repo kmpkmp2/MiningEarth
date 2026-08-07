@@ -16,40 +16,49 @@ MonoBehaviour:
   consumableSlotCount: 2
   relicRarityByDepth:
   - minDepth: 0
-    commonChance: 0.75
-    rareChance: 0.24
+    commonChance: 0.7
+    rareChance: 0.2
+    uniqueChance: 0.09
     legendaryChance: 0.01
   - minDepth: 50
-    commonChance: 0.65
-    rareChance: 0.3
+    commonChance: 0.58
+    rareChance: 0.27
+    uniqueChance: 0.1
     legendaryChance: 0.05
   - minDepth: 100
-    commonChance: 0.55
-    rareChance: 0.38
+    commonChance: 0.48
+    rareChance: 0.32
+    uniqueChance: 0.13
     legendaryChance: 0.07
   - minDepth: 150
-    commonChance: 0.45
-    rareChance: 0.45
+    commonChance: 0.38
+    rareChance: 0.37
+    uniqueChance: 0.15
     legendaryChance: 0.1
   consumableRarityByDepth:
   - minDepth: 0
     commonChance: 0.95
     rareChance: 0.05
+    uniqueChance: 0
     legendaryChance: 0
   - minDepth: 50
     commonChance: 0.9
     rareChance: 0.1
+    uniqueChance: 0
     legendaryChance: 0
   - minDepth: 100
     commonChance: 0.88
     rareChance: 0.11
+    uniqueChance: 0
     legendaryChance: 0.01
   - minDepth: 150
     commonChance: 0.8
     rareChance: 0.18
+    uniqueChance: 0
     legendaryChance: 0.02
   relicPriceCommon: 3
   relicPriceRare: 3
+  relicPriceUnique: 3
   relicPriceLegendary: 3
   consumablePriceCommon: 2
   consumablePriceRare: 2
