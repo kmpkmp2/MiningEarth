@@ -16,6 +16,28 @@ MonoBehaviour:
   nameLocKey: relic_soul_contract_name
   descLocKey: relic_soul_contract_desc
   iconKey: Effect_Relic_SoulContract
+  rarity: 3
+  effects:
+  - effectType: 0
+    value: 5
+    triggerEvent: 0
+    triggerNodeType: 0
+    targetItems: []
+    buffDurationTurns: 0
+    buffMaxStacks: 1
+    conditionHpRatioMax: 1
+    scalingSource: 0
+    scalingDivisor: 1
+  - effectType: 2
+    value: -20
+    triggerEvent: 0
+    triggerNodeType: 0
+    targetItems: []
+    buffDurationTurns: 0
+    buffMaxStacks: 1
+    conditionHpRatioMax: 1
+    scalingSource: 0
+    scalingDivisor: 1
   isTombstone: 1
   burnDurationModifier: 0
   burnDamageModifier: 0
@@ -27,12 +49,3 @@ MonoBehaviour:
   monsterAttackBonus: 0
   monsterSpawnRateBonus: 0
   pickaxeDurabilityModifier: 0
-  rarity: 2
-  tags:
-  - 1
-  effects:
-  - effectType: 0
-    value: 5
-  - effectType: 2
-    value: -20
-  isUnique: 1

@@ -16,6 +16,18 @@ MonoBehaviour:
   nameLocKey: relic_dragon_fang_name
   descLocKey: relic_dragon_fang_desc
   iconKey: Effect_Relic_DragonFang
+  rarity: 3
+  effects:
+  - effectType: 25
+    value: 0.5
+    triggerEvent: 0
+    triggerNodeType: 0
+    targetItems: []
+    buffDurationTurns: 0
+    buffMaxStacks: 1
+    conditionHpRatioMax: 1
+    scalingSource: 0
+    scalingDivisor: 1
   isTombstone: 1
   burnDurationModifier: 0
   burnDamageModifier: 0
@@ -27,11 +39,3 @@ MonoBehaviour:
   monsterAttackBonus: 0
   monsterSpawnRateBonus: 0
   pickaxeDurabilityModifier: 0
-  rarity: 2
-  tags:
-  - 1
-  - 7
-  effects:
-  - effectType: 25
-    value: 0.5
-  isUnique: 1

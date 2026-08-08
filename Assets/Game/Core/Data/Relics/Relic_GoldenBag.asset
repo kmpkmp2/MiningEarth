@@ -16,6 +16,18 @@ MonoBehaviour:
   nameLocKey: relic_golden_bag_name
   descLocKey: relic_golden_bag_desc
   iconKey: Effect_Relic_GoldenBag
+  rarity: 3
+  effects:
+  - effectType: 3
+    value: 0.5
+    triggerEvent: 0
+    triggerNodeType: 0
+    targetItems: []
+    buffDurationTurns: 0
+    buffMaxStacks: 1
+    conditionHpRatioMax: 1
+    scalingSource: 0
+    scalingDivisor: 1
   isTombstone: 0
   burnDurationModifier: 0
   burnDamageModifier: 0
@@ -27,10 +39,3 @@ MonoBehaviour:
   monsterAttackBonus: 0
   monsterSpawnRateBonus: 0
   pickaxeDurabilityModifier: 0
-  rarity: 2
-  tags:
-  - 3
-  effects:
-  - effectType: 3
-    value: 0.5
-  isUnique: 1

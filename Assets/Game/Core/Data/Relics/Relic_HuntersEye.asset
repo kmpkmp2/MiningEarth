@@ -16,6 +16,28 @@ MonoBehaviour:
   nameLocKey: relic_hunters_eye_name
   descLocKey: relic_hunters_eye_desc
   iconKey: Effect_Relic_HuntersEye
+  rarity: 1
+  effects:
+  - effectType: 0
+    value: 1
+    triggerEvent: 0
+    triggerNodeType: 0
+    targetItems: []
+    buffDurationTurns: 0
+    buffMaxStacks: 1
+    conditionHpRatioMax: 1
+    scalingSource: 0
+    scalingDivisor: 1
+  - effectType: 9
+    value: -2
+    triggerEvent: 0
+    triggerNodeType: 0
+    targetItems: []
+    buffDurationTurns: 0
+    buffMaxStacks: 1
+    conditionHpRatioMax: 1
+    scalingSource: 0
+    scalingDivisor: 1
   isTombstone: 0
   burnDurationModifier: 0
   burnDamageModifier: 0
@@ -27,13 +49,3 @@ MonoBehaviour:
   monsterAttackBonus: 0
   monsterSpawnRateBonus: 0
   pickaxeDurabilityModifier: 0
-  rarity: 0
-  tags:
-  - 1
-  - 4
-  effects:
-  - effectType: 0
-    value: 1
-  - effectType: 9
-    value: -2
-  isUnique: 1

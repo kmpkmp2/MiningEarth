@@ -16,6 +16,18 @@ MonoBehaviour:
   nameLocKey: relic_vampire_pickaxe_name
   descLocKey: relic_vampire_pickaxe_desc
   iconKey: Effect_Relic_VampirePickaxe
+  rarity: 2
+  effects:
+  - effectType: 27
+    value: 0.1
+    triggerEvent: 0
+    triggerNodeType: 0
+    targetItems: []
+    buffDurationTurns: 0
+    buffMaxStacks: 1
+    conditionHpRatioMax: 1
+    scalingSource: 0
+    scalingDivisor: 1
   isTombstone: 1
   burnDurationModifier: 0
   burnDamageModifier: 0
@@ -27,11 +39,3 @@ MonoBehaviour:
   monsterAttackBonus: 0
   monsterSpawnRateBonus: 0
   pickaxeDurabilityModifier: 0
-  rarity: 1
-  tags:
-  - 5
-  - 1
-  effects:
-  - effectType: 27
-    value: 0.1
-  isUnique: 1

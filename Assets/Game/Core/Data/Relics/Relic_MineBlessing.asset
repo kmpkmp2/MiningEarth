@@ -16,6 +16,38 @@ MonoBehaviour:
   nameLocKey: relic_mine_blessing_name
   descLocKey: relic_mine_blessing_desc
   iconKey: Effect_Relic_MineBlessing
+  rarity: 3
+  effects:
+  - effectType: 0
+    value: 3
+    triggerEvent: 0
+    triggerNodeType: 0
+    targetItems: []
+    buffDurationTurns: 0
+    buffMaxStacks: 1
+    conditionHpRatioMax: 1
+    scalingSource: 0
+    scalingDivisor: 1
+  - effectType: 1
+    value: 3
+    triggerEvent: 0
+    triggerNodeType: 0
+    targetItems: []
+    buffDurationTurns: 0
+    buffMaxStacks: 1
+    conditionHpRatioMax: 1
+    scalingSource: 0
+    scalingDivisor: 1
+  - effectType: 2
+    value: 3
+    triggerEvent: 0
+    triggerNodeType: 0
+    targetItems: []
+    buffDurationTurns: 0
+    buffMaxStacks: 1
+    conditionHpRatioMax: 1
+    scalingSource: 0
+    scalingDivisor: 1
   isTombstone: 0
   burnDurationModifier: 0
   burnDamageModifier: 0
@@ -27,16 +59,3 @@ MonoBehaviour:
   monsterAttackBonus: 0
   monsterSpawnRateBonus: 0
   pickaxeDurabilityModifier: 0
-  rarity: 2
-  tags:
-  - 0
-  - 1
-  - 2
-  effects:
-  - effectType: 0
-    value: 3
-  - effectType: 1
-    value: 3
-  - effectType: 2
-    value: 3
-  isUnique: 1

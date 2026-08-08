@@ -16,6 +16,18 @@ MonoBehaviour:
   nameLocKey: relic_miner_lunchbox_name
   descLocKey: relic_miner_lunchbox_desc
   iconKey: Effect_Relic_MinerLunchbox
+  rarity: 2
+  effects:
+  - effectType: 16
+    value: 5
+    triggerEvent: 0
+    triggerNodeType: 0
+    targetItems: []
+    buffDurationTurns: 0
+    buffMaxStacks: 1
+    conditionHpRatioMax: 1
+    scalingSource: 0
+    scalingDivisor: 1
   isTombstone: 0
   burnDurationModifier: 0
   burnDamageModifier: 0
@@ -27,10 +39,3 @@ MonoBehaviour:
   monsterAttackBonus: 0
   monsterSpawnRateBonus: 0
   pickaxeDurabilityModifier: 0
-  rarity: 0
-  tags:
-  - 5
-  effects:
-  - effectType: 16
-    value: 5
-  isUnique: 1

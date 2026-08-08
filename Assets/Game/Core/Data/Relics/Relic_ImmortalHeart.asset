@@ -16,6 +16,18 @@ MonoBehaviour:
   nameLocKey: relic_immortal_heart_name
   descLocKey: relic_immortal_heart_desc
   iconKey: Effect_Relic_ImmortalHeart
+  rarity: 3
+  effects:
+  - effectType: 33
+    value: 0.3
+    triggerEvent: 0
+    triggerNodeType: 0
+    targetItems: []
+    buffDurationTurns: 0
+    buffMaxStacks: 1
+    conditionHpRatioMax: 1
+    scalingSource: 0
+    scalingDivisor: 1
   isTombstone: 1
   burnDurationModifier: 0
   burnDamageModifier: 0
@@ -27,10 +39,3 @@ MonoBehaviour:
   monsterAttackBonus: 0
   monsterSpawnRateBonus: 0
   pickaxeDurabilityModifier: 0
-  rarity: 2
-  tags:
-  - 2
-  effects:
-  - effectType: 33
-    value: 0.3
-  isUnique: 1

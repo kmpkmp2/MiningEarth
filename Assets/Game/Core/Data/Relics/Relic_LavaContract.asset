@@ -16,6 +16,28 @@ MonoBehaviour:
   nameLocKey: relic_lava_contract_name
   descLocKey: relic_lava_contract_desc
   iconKey: Effect_Relic_LavaContract
+  rarity: 1
+  effects:
+  - effectType: 5
+    value: 1
+    triggerEvent: 0
+    triggerNodeType: 0
+    targetItems: []
+    buffDurationTurns: 0
+    buffMaxStacks: 1
+    conditionHpRatioMax: 1
+    scalingSource: 0
+    scalingDivisor: 1
+  - effectType: 3
+    value: 0.25
+    triggerEvent: 0
+    triggerNodeType: 0
+    targetItems: []
+    buffDurationTurns: 0
+    buffMaxStacks: 1
+    conditionHpRatioMax: 1
+    scalingSource: 0
+    scalingDivisor: 1
   isTombstone: 0
   burnDurationModifier: 0
   burnDamageModifier: 0
@@ -26,13 +48,4 @@ MonoBehaviour:
   resourceMultiplierBonus: 0
   monsterAttackBonus: 0
   monsterSpawnRateBonus: 0
-  rarity: 2
-  tags:
-  - 6
-  - 3
-  effects:
-  - effectType: 5
-    value: 1
-  - effectType: 3
-    value: 0.25
-  isUnique: 1
+  pickaxeDurabilityModifier: 0
