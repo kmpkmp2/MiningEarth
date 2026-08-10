@@ -45,6 +45,6 @@ MonoBehaviour:
   PassiveValueFormatKey: effect_passive_priest_value_fmt
   PassiveHudIcon: "\u271D"
   PassiveHudFormat: '{0:0}%'
-  UnlockCost: []
+  UnlockWillCost: 90
   StartingItems: []
   StartingRelic: {fileID: 11400000, guid: f11ec7ba8d5410747850c7b897388402, type: 2}

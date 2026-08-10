@@ -12,8 +12,8 @@ namespace DeepEarth.Core
 
         public int ironToWill = 1;
         public int silverToWill = 2;
-        public int goldToWill = 3;
-        public int diamondToWill = 5;
+        public int goldToWill = 5;
+        public int diamondToWill = 10;
 
         // Adventurer 패시브 — Event Node 보너스 선택지 보상
         public int AdventurerBonusStoneReward = 3;

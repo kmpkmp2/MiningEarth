@@ -19,4 +19,5 @@ MonoBehaviour:
   baseMaxDurability: 50
   miningPower: 1
   repairEfficiency: 1
-  unlockCondition: 
+  isDefault: 0
+  unlockWillCost: 0

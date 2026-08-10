@@ -45,13 +45,7 @@ MonoBehaviour:
   PassiveValueFormatKey: effect_passive_miner_value_fmt
   PassiveHudIcon: "\u2692"
   PassiveHudFormat: '{0:0}'
-  UnlockCost:
-  - resourceType: 3
-    amount: 30
-  - resourceType: 4
-    amount: 20
-  - resourceType: 5
-    amount: 5
+  UnlockWillCost: 90
   StartingItems:
   - Item: {fileID: 11400000, guid: b427ece36b3b41c48009901376d7c214, type: 2}
     Quantity: 1

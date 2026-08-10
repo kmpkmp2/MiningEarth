@@ -45,7 +45,7 @@ MonoBehaviour:
   PassiveValueFormatKey: effect_passive_blacksmith_value_fmt
   PassiveHudIcon: "\U0001F527"
   PassiveHudFormat: '{0:0}%'
-  UnlockCost: []
+  UnlockWillCost: 130
   StartingItems:
   - Item: {fileID: 11400000, guid: b427ece36b3b41c48009901376d7c214, type: 2}
     Quantity: 2

@@ -75,21 +75,7 @@ namespace DeepEarth.Core
 
         public int GetUnlockWillCost(PickaxeData data)
         {
-            if (data == null || data.unlockCost == null) return 0;
-
-            int iron = 0, silver = 0, gold = 0, diamond = 0;
-            foreach (var cost in data.unlockCost)
-            {
-                switch (cost.resourceType)
-                {
-                    case BlockType.Iron:    iron    += cost.amount; break;
-                    case BlockType.Silver:  silver  += cost.amount; break;
-                    case BlockType.Gold:    gold    += cost.amount; break;
-                    case BlockType.Diamond: diamond += cost.amount; break;
-                }
-            }
-
-            return GameBalanceData.Instance.CalculateOreWillValue(iron, silver, gold, diamond);
+            return data?.unlockWillCost ?? 0;
         }
 
         public bool CanAfford(PickaxeData data)

@@ -16,5 +16,7 @@ MonoBehaviour:
   immortalityPotionBossChance: 0.02
   ironToWill: 1
   silverToWill: 2
-  goldToWill: 3
-  diamondToWill: 5
+  goldToWill: 5
+  diamondToWill: 10
+  AdventurerBonusStoneReward: 3
+  AdventurerBonusHealAmount: 1

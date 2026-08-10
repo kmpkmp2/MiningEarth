@@ -45,6 +45,6 @@ MonoBehaviour:
   PassiveValueFormatKey: effect_passive_treasurehunter_value_fmt
   PassiveHudIcon: "\U0001F4B0"
   PassiveHudFormat: '{0:0}%'
-  UnlockCost: []
+  UnlockWillCost: 160
   StartingItems: []
   StartingRelic: {fileID: 11400000, guid: c6d92ac8bfa70a04b9891ee39147b8f1, type: 2}

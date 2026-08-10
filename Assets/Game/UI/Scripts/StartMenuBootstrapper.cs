@@ -25,6 +25,11 @@ namespace DeepEarth.Core
             }
             await DeepEarth.Core.PickaxeManager.Instance.InitializeAsync();
 
+            // CharacterDatabase는 보통 LoadingScene에서 이미 로드되지만, StartMenuScene에
+            // LoadingScene을 거치지 않고 진입하는 경로(에디터 직접 재생 등)에서는 비어있을 수 있다.
+            // 이미 로드되어 있으면 즉시 반환되므로 중복 호출해도 안전하다.
+            await CharacterDatabase.LoadAsync();
+
             // AchievementManager may not exist when game starts at StartMenuScene
             if (AchievementManager.Instance == null)
             {

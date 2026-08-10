@@ -45,7 +45,7 @@ MonoBehaviour:
   PassiveValueFormatKey: effect_passive_adventurer_value_fmt
   PassiveHudIcon: "\u2753"
   PassiveHudFormat: '{0:0}%'
-  UnlockCost: []
+  UnlockWillCost: 60
   StartingItems:
   - Item: {fileID: 11400000, guid: 3d3c64afdb6528d43ba7c086f2cc9222, type: 2}
     Quantity: 1

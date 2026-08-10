@@ -82,15 +82,8 @@ namespace DeepEarth.UI
 
         private static string BuildCostString(PickaxeData data, LocalizationManager loc)
         {
-            if (data.unlockCost == null || data.unlockCost.Count == 0) return "";
-            var parts = new System.Text.StringBuilder();
-            foreach (var cost in data.unlockCost)
-            {
-                if (parts.Length > 0) parts.Append("  ");
-                string resName = loc.GetTranslation($"item_{cost.resourceType.ToString().ToLower()}_name");
-                parts.Append($"{resName} x{cost.amount}");
-            }
-            return parts.ToString();
+            if (data.unlockWillCost <= 0) return "";
+            return loc.GetFormatted("go_will_cost", data.unlockWillCost);
         }
 
         public static PickaxeSlotView Create(Transform parent)

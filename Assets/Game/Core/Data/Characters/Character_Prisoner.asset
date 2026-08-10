@@ -25,7 +25,7 @@ MonoBehaviour:
   PassiveValueFormatKey: 
   PassiveHudIcon: 
   PassiveHudFormat: '{0:0}'
-  UnlockCost: []
+  UnlockWillCost: 0
   StartingItems:
   - Item: {fileID: 11400000, guid: b427ece36b3b41c48009901376d7c214, type: 2}
     Quantity: 1

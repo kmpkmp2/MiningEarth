@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using DeepEarth.Common;
 
 namespace DeepEarth.Core
 {
@@ -84,21 +83,7 @@ namespace DeepEarth.Core
         public int GetUnlockWillCost(CharacterID id)
         {
             var staticData = CharacterDatabase.Get(id);
-            if (staticData == null || staticData.UnlockCost == null) return 0;
-
-            int iron = 0, silver = 0, gold = 0, diamond = 0;
-            foreach (var entry in staticData.UnlockCost)
-            {
-                switch (entry.resourceType)
-                {
-                    case BlockType.Iron: iron += entry.amount; break;
-                    case BlockType.Silver: silver += entry.amount; break;
-                    case BlockType.Gold: gold += entry.amount; break;
-                    case BlockType.Diamond: diamond += entry.amount; break;
-                }
-            }
-
-            return GameBalanceData.Instance.CalculateOreWillValue(iron, silver, gold, diamond);
+            return staticData?.UnlockWillCost ?? 0;
         }
 
         public bool CanUnlock(CharacterID id)

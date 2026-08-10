@@ -20,8 +20,4 @@ MonoBehaviour:
   miningPower: 4
   repairEfficiency: 1.8
   isDefault: 0
-  unlockCost:
-  - resourceType: 4
-    amount: 60
-  - resourceType: 5
-    amount: 20
+  unlockWillCost: 380

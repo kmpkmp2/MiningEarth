@@ -20,4 +20,4 @@ MonoBehaviour:
   miningPower: 1
   repairEfficiency: 1
   isDefault: 1
-  unlockCost: []
+  unlockWillCost: 0

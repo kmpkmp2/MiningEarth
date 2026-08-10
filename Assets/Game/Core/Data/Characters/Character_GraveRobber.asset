@@ -45,12 +45,6 @@ MonoBehaviour:
   PassiveValueFormatKey: effect_passive_graverobber_desc
   PassiveHudIcon: "\U0001F48E"
   PassiveHudFormat: '{0:0}%'
-  UnlockCost:
-  - resourceType: 4
-    amount: 30
-  - resourceType: 5
-    amount: 30
-  - resourceType: 6
-    amount: 12
+  UnlockWillCost: 150
   StartingItems: []
   StartingRelic: {fileID: 0}

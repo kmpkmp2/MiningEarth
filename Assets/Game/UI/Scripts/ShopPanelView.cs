@@ -11,6 +11,7 @@ namespace DeepEarth.UI
     {
         [SerializeField] private ShopContentView   contentView;
         [SerializeField] private ShopInfoView      infoView;
+        [SerializeField] private TextMeshProUGUI   willText;
 
         // 탭 순서: [0]=Pickaxe, [1]=Character, [2]=Consumable, [3]=Special
         [SerializeField] private Button[]          tabButtons;
@@ -25,6 +26,13 @@ namespace DeepEarth.UI
         public event Action<ShopCategory> OnCategorySelected;
 
         private void Awake() => EnsureTabs();
+
+        public void SetWillText(int amount)
+        {
+            if (!willText) return;
+            var loc = LocalizationManager.Instance;
+            willText.text = loc != null ? loc.GetFormatted("shop_will_display", amount) : $"Will: {amount}";
+        }
 
         public void SetActiveTab(ShopCategory category)
         {

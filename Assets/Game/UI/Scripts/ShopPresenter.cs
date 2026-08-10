@@ -24,6 +24,9 @@ namespace DeepEarth.UI
             if (LocalizationManager.Instance != null)
                 LocalizationManager.Instance.OnLanguageChanged += HandleLanguageChanged;
 
+            if (MetaProgressionManager.Instance != null)
+                MetaProgressionManager.Instance.OnMetaUpdated += HandleWillChanged;
+
             SelectCategory(ShopCategory.Pickaxe);
         }
 
@@ -55,6 +58,9 @@ namespace DeepEarth.UI
 
             if (LocalizationManager.Instance != null)
                 LocalizationManager.Instance.OnLanguageChanged -= HandleLanguageChanged;
+
+            if (MetaProgressionManager.Instance != null)
+                MetaProgressionManager.Instance.OnMetaUpdated -= HandleWillChanged;
 
             _pickaxePresenter.OnItemSelected -= HandleItemSelected;
             _pickaxePresenter.Dispose();
@@ -97,6 +103,8 @@ namespace DeepEarth.UI
             {
                 ShowComingSoon();
             }
+
+            RefreshWillDisplay();
         }
 
         private void HandleItemSelected(ShopItemDisplayData data)
@@ -108,6 +116,15 @@ namespace DeepEarth.UI
         {
             _panelView.LocalizeTabs();
             Refresh();
+            RefreshWillDisplay();
+        }
+
+        private void HandleWillChanged() => RefreshWillDisplay();
+
+        private void RefreshWillDisplay()
+        {
+            int will = MetaProgressionManager.Instance?.Will ?? 0;
+            _panelView.SetWillText(will);
         }
 
         private void ShowComingSoon()

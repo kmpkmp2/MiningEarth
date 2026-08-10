@@ -45,7 +45,7 @@ MonoBehaviour:
   PassiveValueFormatKey: effect_passive_alchemist_value_fmt
   PassiveHudIcon: "\U0001F9EA"
   PassiveHudFormat: +{0:0}%
-  UnlockCost: []
+  UnlockWillCost: 60
   StartingItems:
   - Item: {fileID: 11400000, guid: 94d1c85950b64995981dc68c5c76fabc, type: 2}
     Quantity: 10

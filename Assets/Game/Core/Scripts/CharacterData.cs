@@ -82,7 +82,7 @@ namespace DeepEarth.Core
         public string PassiveHudFormat = "{0:0}";
 
         [Header("Unlock")]
-        public List<PickaxeCostEntry> UnlockCost = new List<PickaxeCostEntry>();
+        public int UnlockWillCost = 0;
 
         [Header("Starting Loadout")]
         public List<StartingItemEntry> StartingItems = new List<StartingItemEntry>();

@@ -45,11 +45,7 @@ MonoBehaviour:
   PassiveValueFormatKey: effect_passive_mercenary_value_fmt
   PassiveHudIcon: "\u2694"
   PassiveHudFormat: '{0:0}'
-  UnlockCost:
-  - resourceType: 3
-    amount: 30
-  - resourceType: 4
-    amount: 10
+  UnlockWillCost: 60
   StartingItems:
   - Item: {fileID: 11400000, guid: acc76eb4d0dd4775a023633b9ca4aaf5, type: 2}
     Quantity: 1

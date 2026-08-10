@@ -65,7 +65,6 @@ namespace DeepEarth.UI
                     description      = loc.GetTranslation(data.DescKey),
                     iconKey          = "",
                     stat1Text        = BuildPassiveText(data, loc),
-                    stat2Text        = BuildOwnedResourcesText(loc),
                     costText         = BuildCostString(data, loc),
                     lockedActionText = loc.GetTranslation("char_unlock"),
                     isUnlocked       = isUnlocked,
@@ -113,14 +112,6 @@ namespace DeepEarth.UI
 
             string costValue = loc.GetFormatted("go_will_cost", willCost);
             return $"{loc.GetTranslation("char_cost_label")} {costValue}";
-        }
-
-        private static string BuildOwnedResourcesText(LocalizationManager loc)
-        {
-            int ownedWill = MetaProgressionManager.Instance?.Will ?? 0;
-            if (loc == null) return $"Will {ownedWill}";
-
-            return $"{loc.GetTranslation("char_owned_resources")} {loc.GetFormatted("menu_will", ownedWill)}";
         }
     }
 }

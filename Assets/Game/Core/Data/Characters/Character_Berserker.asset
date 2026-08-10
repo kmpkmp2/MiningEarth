@@ -45,6 +45,6 @@ MonoBehaviour:
   PassiveValueFormatKey: effect_passive_berserker_value_fmt
   PassiveHudIcon: "\U0001F978"
   PassiveHudFormat: max{0:0}%
-  UnlockCost: []
+  UnlockWillCost: 180
   StartingItems: []
   StartingRelic: {fileID: 11400000, guid: a3454b0aeea878144872dd98e5309ce8, type: 2}
