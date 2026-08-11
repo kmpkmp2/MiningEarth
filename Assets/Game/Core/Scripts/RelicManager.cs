@@ -272,6 +272,7 @@ namespace DeepEarth.Core
                 case RelicEffectType.MaxHPBonus:
                     StatManager.Instance.BossMaxHPModifier += intVal;
                     if (intVal > 0) StatManager.Instance.Heal(intVal);
+                    else StatManager.Instance.ClampCurrentHPToMax();
                     break;
                 case RelicEffectType.ResourceMultiplierBonus:
                     StatManager.Instance.BossResourceModifier += effect.value;
@@ -316,6 +317,7 @@ namespace DeepEarth.Core
             {
                 StatManager.Instance.BossMaxHPModifier += relic.maxHPBonus;
                 if (relic.maxHPBonus > 0) StatManager.Instance.Heal(relic.maxHPBonus);
+                else StatManager.Instance.ClampCurrentHPToMax();
             }
             if (relic.resourceMultiplierBonus != 0)
                 StatManager.Instance.BossResourceModifier += relic.resourceMultiplierBonus;

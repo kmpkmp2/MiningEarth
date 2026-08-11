@@ -711,6 +711,12 @@ namespace DeepEarth.Core
                 { "exit_run_cancel_btn",  "Cancel" },
                 { "exit_run_confirm_btn", "Give Up Run" },
 
+                // Game Exit (StartMenuScene only — unrelated to Exit Run above)
+                { "game_exit_title",       "Exit Game" },
+                { "game_exit_desc",        "Are you sure you want to exit the game?" },
+                { "game_exit_confirm_btn", "Confirm" },
+                { "game_exit_cancel_btn",  "Cancel" },
+
                 // Node Events — common
                 { "event_btn_continue",              "Continue" },
                 { "event_btn_continue_desc",         "Acknowledge and move on." },
@@ -1719,6 +1725,12 @@ namespace DeepEarth.Core
                 { "exit_run_confirm_msg", "현재 진행 중인 런을 종료하시겠습니까?\n획득한 모든 런 진행 정보는 사라집니다." },
                 { "exit_run_cancel_btn",  "취소" },
                 { "exit_run_confirm_btn", "런 종료" },
+
+                // 게임 완전 종료 (StartMenuScene 전용 — 위 런 종료와 무관)
+                { "game_exit_title",       "게임 종료" },
+                { "game_exit_desc",        "게임을 종료하시겠습니까?" },
+                { "game_exit_confirm_btn", "확인" },
+                { "game_exit_cancel_btn",  "취소" },
 
                 // 노드 이벤트 — 공통
                 { "event_btn_continue",              "계속" },

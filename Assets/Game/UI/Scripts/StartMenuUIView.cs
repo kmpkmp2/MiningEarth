@@ -68,11 +68,15 @@ namespace DeepEarth.UI
         [SerializeField] private TextMeshProUGUI achievementButtonLabel;
         [SerializeField] private AchievementPopupView achievementPopupView;
 
+        [Header("Game Exit Popup (StartMenuScene 전용, 런 종료와 무관)")]
+        [SerializeField] private GameExitPopupView gameExitPopupView;
+
         public UpgradePanelView     UpgradePanelView     => upgradePanelView;
         public AchievementPopupView AchievementPopupView => achievementPopupView;
         public ShopPanelView        ShopPanelView        => shopPanelView;
         public RunSetupPanelView    RunSetupPanelView    => runSetupPanelView;
         public Transform            ShopPanelTransform   => shopPanel != null ? shopPanel.transform : null;
+        public GameExitPopupView    GameExitPopupView    => gameExitPopupView;
 
         // Events
         public event Action OnPlayClicked;

@@ -55,6 +55,13 @@ namespace DeepEarth.Core
             }
         }
 
+        // 게임 완전 종료 팝업(ESC/Android Back) 입력 감지 — 매 프레임 폴링이 필요한 유일한 이유로 존재한다.
+        // 판단/처리 로직은 전부 GameExitPopupPresenter에 있고, 여기서는 프레임 신호만 전달한다.
+        private void Update()
+        {
+            _presenter?.HandleExitInput();
+        }
+
         private void OnDestroy()
         {
             _presenter?.Dispose();

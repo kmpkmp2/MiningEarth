@@ -523,6 +523,15 @@ namespace DeepEarth.Core
             OnHPChanged?.Invoke();
         }
 
+        // 유물 등으로 최대 체력이 감소했을 때, 현재 체력이 새 최대치를 넘지 않도록 맞춘다.
+        public void ClampCurrentHPToMax()
+        {
+            int newMax = GetMaxHP();
+            if (CurrentHP <= newMax) return;
+            CurrentHP = newMax;
+            OnHPChanged?.Invoke();
+        }
+
         public void TriggerStatsUpdated()
         {
             OnStatsUpdated?.Invoke();

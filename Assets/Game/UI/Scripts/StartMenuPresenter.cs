@@ -12,6 +12,7 @@ namespace DeepEarth.UI
         private ShopPresenter     _shopPresenter;
         private RunSetupPresenter _runSetupPresenter;
         private UpgradePresenter  _upgradePresenter;
+        private GameExitPopupPresenter _gameExitPopupPresenter;
 
         public StartMenuPresenter(StartMenuUIView view, GameObject shopSlotPrefab)
         {
@@ -48,6 +49,9 @@ namespace DeepEarth.UI
             if (_view.UpgradePanelView != null)
                 _upgradePresenter = new UpgradePresenter(_view.UpgradePanelView);
 
+            if (_view.GameExitPopupView != null)
+                _gameExitPopupPresenter = new GameExitPopupPresenter(_view.GameExitPopupView);
+
             if (LocalizationManager.Instance != null)
                 LocalizationManager.Instance.OnLanguageChanged += HandleLanguageChanged;
 
@@ -76,6 +80,7 @@ namespace DeepEarth.UI
             _shopPresenter?.Dispose();
             _runSetupPresenter?.Dispose();
             _upgradePresenter?.Dispose();
+            _gameExitPopupPresenter?.Dispose();
 
             if (LocalizationManager.Instance != null)
                 LocalizationManager.Instance.OnLanguageChanged -= HandleLanguageChanged;
@@ -128,6 +133,13 @@ namespace DeepEarth.UI
             if (LocalizationManager.Instance != null)
                 _view.UpdateLanguageVisuals(LocalizationManager.Instance.CurrentLanguageCode);
             _shopPresenter?.Localize();
+            _view.GameExitPopupView?.Localize();
+        }
+
+        // StartMenuBootstrapper.Update()가 매 프레임 호출한다 (게임 완전 종료 팝업 — ESC/Android Back 입력 감지).
+        public void HandleExitInput()
+        {
+            _gameExitPopupPresenter?.HandleExitInput();
         }
 
         private void HandleCharacterMenuClicked()
