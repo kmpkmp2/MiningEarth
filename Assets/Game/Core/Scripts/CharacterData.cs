@@ -83,6 +83,10 @@ namespace DeepEarth.Core
 
         [Header("Unlock")]
         public int UnlockWillCost = 0;
+        // false면 상점에서 Will로 구매 불가(존재는 하지만 잠금) — 업적 보상 등 별도 경로로만 해금 가능.
+        public bool PurchasableInShop = true;
+        // PurchasableInShop이 false일 때 상점 가격 표기 위치에 대신 표시할 해금 조건 로컬라이징 키.
+        public string LockedConditionLocKey = "";
 
         [Header("Starting Loadout")]
         public List<StartingItemEntry> StartingItems = new List<StartingItemEntry>();

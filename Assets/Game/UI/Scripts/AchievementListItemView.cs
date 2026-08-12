@@ -113,7 +113,7 @@ namespace DeepEarth.UI
             tmp.fontStyle = bold ? TMPro.FontStyles.Bold : TMPro.FontStyles.Normal;
             tmp.color     = color;
             tmp.alignment = align;
-            tmp.enableWordWrapping = true;
+            tmp.textWrappingMode = TMPro.TextWrappingModes.Normal;
             return tmp;
         }
     }

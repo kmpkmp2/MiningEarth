@@ -55,6 +55,8 @@ namespace DeepEarth.Core
         private GameObject _mapPopupObject;
         private GameObject _merchantObject;
         private GameObject _relicCopyPopupObject;
+        private GameObject _achievementNotifObject;
+        private DeepEarth.UI.AchievementNotificationView _achievementNotifView;
 
         private GameUIPresenter _hudPresenter;
         private GameOverUIPresenter _gameOverPresenter;
@@ -290,8 +292,21 @@ namespace DeepEarth.Core
                 // Achievement in-game notification
                 if (AchievementManager.Instance != null)
                 {
-                    var notifView = DeepEarth.UI.AchievementNotificationView.Create(canvas.transform);
-                    AchievementManager.Instance.OnAchievementCompleted += notifView.ShowNotification;
+                    // 이전 런(이전 씬 로드)에서 만들어진 알림 View가 있다면 먼저 구독 해제한다.
+                    // ReferenceEquals를 쓰는 이유: 씬 전환으로 이미 파괴된 UnityEngine.Object는
+                    // '!= null' 비교(오버로드된 연산자)가 false를 반환해 구독 해제 자체를 건너뛰게 되고,
+                    // 그 결과 파괴된 구독자가 계속 남아 이후 알림 델리게이트 호출을 통째로 막는 문제가 있었다.
+                    if (!ReferenceEquals(_achievementNotifView, null))
+                        AchievementManager.Instance.OnAchievementCompleted -= _achievementNotifView.ShowNotification;
+
+                    _achievementNotifObject = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPanelAchievementNotification, canvas.transform);
+                    _achievementNotifView = _achievementNotifObject != null
+                        ? _achievementNotifObject.GetComponent<DeepEarth.UI.AchievementNotificationView>()
+                        : null;
+                    if (_achievementNotifView != null)
+                        AchievementManager.Instance.OnAchievementCompleted += _achievementNotifView.ShowNotification;
+                    else
+                        Debug.LogWarning("[GameManager] UI_Panel_AchievementNotification not found — Addressables에 등록 필요");
                 }
 
                 _gameOverPresenter = new GameOverUIPresenter(gameOverView, this);

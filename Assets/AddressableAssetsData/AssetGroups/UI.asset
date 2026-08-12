@@ -440,6 +440,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e401416f523f758449aba8d3ef2f3231
+    m_Address: UI_Panel_AchievementNotification
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ecea9cbc7b866234b841620e1ad4087e
     m_Address: Effect_BossReward_MaxHP
     m_ReadOnly: 0

@@ -92,6 +92,7 @@ namespace DeepEarth.Core
 
             var staticData = CharacterDatabase.Get(id);
             if (staticData == null) return false;
+            if (!staticData.PurchasableInShop) return false;
 
             int willCost = GetUnlockWillCost(id);
             int ownedWill = MetaProgressionManager.Instance?.Will ?? 0;

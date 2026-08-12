@@ -107,6 +107,13 @@ namespace DeepEarth.UI
 
         private static string BuildCostString(CharacterData data, LocalizationManager loc)
         {
+            if (!data.PurchasableInShop)
+            {
+                return string.IsNullOrEmpty(data.LockedConditionLocKey)
+                    ? loc.GetTranslation("char_locked")
+                    : loc.GetTranslation(data.LockedConditionLocKey);
+            }
+
             int willCost = CharacterManager.Instance?.GetUnlockWillCost(data.ID) ?? 0;
             if (willCost <= 0) return "";
 

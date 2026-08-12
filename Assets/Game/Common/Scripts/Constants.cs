@@ -101,6 +101,7 @@ namespace DeepEarth.Common
         public const string UIPanelInventoryPopup = "UI_Panel_InventoryPopup";
         public const string UIPanelEventReveal = "UI_Panel_EventReveal";
         public const string UIPanelMerchant = "UI_Panel_Merchant";
+        public const string UIPanelAchievementNotification = "UI_Panel_AchievementNotification";
         public const string UIEffectIcon = "UI_EffectIcon";
         public const string UIEffectCard = "UI_EffectCard";
         public const string UIInventorySlot = "UI_Prefab_InventorySlot";

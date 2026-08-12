@@ -13,8 +13,15 @@ namespace DeepEarth.Core
 
         private const string AchievementLabel = "Achievement";
 
+        // OreMined는 채굴 블록 1개당 1회 발화하는 고빈도 이벤트라, 진행 틱마다 즉시 저장하면
+        // 연속 채굴 시 매번 전체 SaveData를 동기 디스크 쓰기하게 되어 프레임 히치를 유발할 수 있다.
+        // 그 경로에서만 저장을 배치(디바운스)하고, 완료(NotifyCompleted) 및 그 외 이벤트는 항상 즉시 저장한다.
+        private const float SaveDebounceInterval = 2f;
+
         private readonly List<AchievementModel> _models = new List<AchievementModel>();
         private bool _eventsSubscribed;
+        private bool _saveDirty;
+        private float _saveDirtyTimer;
 
         public event Action<AchievementModel> OnAchievementCompleted;
         public event Action OnProgressUpdated;
@@ -34,7 +41,27 @@ namespace DeepEarth.Core
 
         private void OnDestroy()
         {
+            FlushPendingSave();
             UnsubscribeEvents();
+        }
+
+        private void Update()
+        {
+            if (!_saveDirty) return;
+            _saveDirtyTimer += Time.deltaTime;
+            if (_saveDirtyTimer >= SaveDebounceInterval)
+                FlushPendingSave();
+        }
+
+        // 모바일 백그라운드 전환/앱 종료 시 배치 대기 중인 진행도가 유실되지 않도록 강제 반영한다.
+        private void OnApplicationPause(bool pauseStatus)
+        {
+            if (pauseStatus) FlushPendingSave();
+        }
+
+        private void OnApplicationQuit()
+        {
+            FlushPendingSave();
         }
 
         // ── Initialization ───────────────────────────────────────────────────
@@ -110,26 +137,11 @@ namespace DeepEarth.Core
         private void HandleWaterEncountered()  => UpdateByType(AchievementType.WaterEncounter);
 
         private void HandleOreMined(BlockType type, int amount)
-        {
-            foreach (var model in _models)
-            {
-                if (model.IsCompleted || model.Data.type != AchievementType.OreMined) continue;
-                if (model.Data.targetOreType != type) continue;
-                AddProgress(model, amount);
-            }
-        }
+            => UpdateMatching(AchievementType.OreMined, amount, m => m.Data.targetOreType == type, allowDeferredSave: true);
 
         private void HandleBossKilled(string bossID)
-        {
-            foreach (var model in _models)
-            {
-                if (model.IsCompleted || model.Data.type != AchievementType.BossKill) continue;
-                bool matchesBoss = string.IsNullOrEmpty(model.Data.targetBossID)
-                                   || model.Data.targetBossID == bossID;
-                if (!matchesBoss) continue;
-                AddProgress(model, 1);
-            }
-        }
+            => UpdateMatching(AchievementType.BossKill, 1,
+                m => string.IsNullOrEmpty(m.Data.targetBossID) || m.Data.targetBossID == bossID);
 
         private void HandleDepthReached(int depth)
         {
@@ -137,25 +149,12 @@ namespace DeepEarth.Core
             {
                 if (model.IsCompleted || model.Data.type != AchievementType.ReachDepth) continue;
                 if (depth > model.CurrentProgress)
-                {
-                    bool completed = model.SetProgress(depth);
-                    LogProgress(model);
-                    SaveProgress();
-                    OnProgressUpdated?.Invoke();
-                    if (completed) NotifyCompleted(model);
-                }
+                    AddProgress(model, depth - model.CurrentProgress);
             }
         }
 
         private void HandleRepairWithOre(BlockType oreType)
-        {
-            foreach (var model in _models)
-            {
-                if (model.IsCompleted || model.Data.type != AchievementType.RepairWithOre) continue;
-                if (model.Data.targetOreType != oreType) continue;
-                AddProgress(model, 1);
-            }
-        }
+            => UpdateMatching(AchievementType.RepairWithOre, 1, m => m.Data.targetOreType == oreType);
 
         private void HandleCharacterUnlocked(CharacterID id)
         {
@@ -164,21 +163,45 @@ namespace DeepEarth.Core
 
         // ── Progress helpers ─────────────────────────────────────────────────
         private void UpdateByType(AchievementType type, int amount = 1)
+            => UpdateMatching(type, amount, null);
+
+        // HandleOreMined/HandleBossKilled/HandleRepairWithOre/UpdateByType가 공유하던
+        // "완료된 항목 건너뛰기 + 타입 일치 + (선택적) 추가 조건" foreach 패턴을 통합한 헬퍼.
+        private void UpdateMatching(AchievementType type, int amount, Func<AchievementModel, bool> matches, bool allowDeferredSave = false)
         {
             foreach (var model in _models)
             {
                 if (model.IsCompleted || model.Data.type != type) continue;
-                AddProgress(model, amount);
+                if (matches != null && !matches(model)) continue;
+                AddProgress(model, amount, allowDeferredSave);
             }
         }
 
-        private void AddProgress(AchievementModel model, int amount)
+        // allowDeferredSave: OreMined처럼 고빈도로 호출되는 경로에서만 true로 넘겨 저장을 배치한다.
+        // 완료된 경우(completed)는 allowDeferredSave 값과 무관하게 항상 즉시 저장한다.
+        private void AddProgress(AchievementModel model, int amount, bool allowDeferredSave = false)
         {
             bool completed = model.AddProgress(amount);
             LogProgress(model);
-            SaveProgress();
+
+            if (completed || !allowDeferredSave)
+                SaveProgress();
+            else
+                MarkSaveDirty();
+
             OnProgressUpdated?.Invoke();
             if (completed) NotifyCompleted(model);
+        }
+
+        private void MarkSaveDirty()
+        {
+            _saveDirty = true;
+            _saveDirtyTimer = 0f;
+        }
+
+        private void FlushPendingSave()
+        {
+            if (_saveDirty) SaveProgress();
         }
 
         private void LogProgress(AchievementModel model)
@@ -207,6 +230,9 @@ namespace DeepEarth.Core
                 });
             }
             SaveManager.Save();
+
+            _saveDirty = false;
+            _saveDirtyTimer = 0f;
         }
 
         private AchievementSaveEntry FindSaveEntry(string id)
