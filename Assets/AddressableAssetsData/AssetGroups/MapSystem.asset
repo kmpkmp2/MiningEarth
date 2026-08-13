@@ -30,11 +30,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: c3972ac68a534ee4fa2939461637cadc
-    m_Address: Map_GenerationConfig
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d9f72122648e1c64785d9a5ae3c032a3
     m_Address: Map_Node
     m_ReadOnly: 0
