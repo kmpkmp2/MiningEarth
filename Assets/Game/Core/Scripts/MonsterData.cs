@@ -45,5 +45,11 @@ namespace DeepEarth.Core
         [Header("Mimic: Death Reward")]
         public bool hasDeathReward = false;
         public MimicRewardTable rewardTable;
+
+        [Header("Encounter Reveal: Death Trigger Warning")]
+        // 비어있지 않으면 조우 리빌 화면에 서브타이틀로 노출된다(예: 슬라임의 분열 경고).
+        // canSplit/hasDeathDebuff/hasDeathReward 같은 실제 로직 플래그와는 별개로,
+        // "플레이어에게 미리 알려줄 가치가 있는가"만 이 필드 하나로 판단한다.
+        public string deathTriggerDescKey;
     }
 }

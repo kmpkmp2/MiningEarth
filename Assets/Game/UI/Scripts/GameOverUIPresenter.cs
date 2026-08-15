@@ -15,6 +15,8 @@ namespace DeepEarth.UI
         private int _runIron, _runSilver, _runGold, _runDiamond;
         // Will 지급 전 보유량 (RunEnd Step2의 AddWill 호출 전 시점, 카운트업 연출의 시작값으로 사용)
         private int _totalWillBefore;
+        // 승리(최종보스 처치) 종료인지 사망 종료인지 — 언어 변경 시 텍스트 재적용에도 필요해 저장해둔다.
+        private bool _isVictory;
 
         public GameOverUIPresenter(GameOverUIView view, GameManager gameManager)
         {
@@ -40,8 +42,10 @@ namespace DeepEarth.UI
                 LocalizationManager.Instance.OnLanguageChanged -= HandleLanguageChanged;
         }
 
-        public void UpdateResultsUI()
+        public void UpdateResultsUI(bool isVictory = false)
         {
+            _isVictory = isVictory;
+
             // 자원 수량은 여기서 즉시 캡처한다 (RunEnd Step1 시점, ClearRunInventory 전)
             _runIron    = InventoryManager.Instance?.GetItemCount("Item_Iron")    ?? 0;
             _runSilver  = InventoryManager.Instance?.GetItemCount("Item_Silver")  ?? 0;
@@ -66,7 +70,7 @@ namespace DeepEarth.UI
 
             await _view.PlayResultAnimationAsync(
                 depth, willEarned, totalWill, bestDepth,
-                _runIron, _runSilver, _runGold, _runDiamond, _totalWillBefore);
+                _runIron, _runSilver, _runGold, _runDiamond, _totalWillBefore, _isVictory);
         }
 
         private void HandleLanguageChanged()
@@ -75,7 +79,7 @@ namespace DeepEarth.UI
             int willEarned = _gameManager.WillEarnedThisRun;
             int totalWill  = MetaProgressionManager.Instance?.Will ?? 0;
             int bestDepth  = SaveManager.CurrentData.BestDepth;
-            _view.SetResults(depth, willEarned, totalWill, bestDepth);
+            _view.SetResults(depth, willEarned, totalWill, bestDepth, _isVictory);
         }
 
         private void HandleResourceItemShown()

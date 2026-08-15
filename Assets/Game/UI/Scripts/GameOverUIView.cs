@@ -59,18 +59,18 @@ namespace DeepEarth.UI
             _cts = null;
         }
 
-        public void LocalizeStaticTexts()
+        public void LocalizeStaticTexts(bool isVictory = false)
         {
             if (LocalizationManager.Instance == null) return;
             if (titleText != null)
-                titleText.text = LocalizationManager.Instance.GetTranslation("go_title");
+                titleText.text = LocalizationManager.Instance.GetTranslation(isVictory ? "go_victory_title" : "go_title");
             if (restartButtonLabel != null)
-                restartButtonLabel.text = LocalizationManager.Instance.GetTranslation("go_restart_btn");
+                restartButtonLabel.text = LocalizationManager.Instance.GetTranslation(isVictory ? "go_victory_restart_btn" : "go_restart_btn");
         }
 
-        public void SetResults(int depth, int willEarned, int totalWill, int bestDepth)
+        public void SetResults(int depth, int willEarned, int totalWill, int bestDepth, bool isVictory = false)
         {
-            LocalizeStaticTexts();
+            LocalizeStaticTexts(isVictory);
             ShowAllTexts();
             if (resultDepthText != null)
                 resultDepthText.text = LocalizationManager.Instance.GetFormatted("go_depth", depth);
@@ -84,7 +84,7 @@ namespace DeepEarth.UI
 
         public async UniTask PlayResultAnimationAsync(
             int depth, int willEarned, int totalWill, int bestDepth,
-            int iron, int silver, int gold, int diamond, int totalWillBefore)
+            int iron, int silver, int gold, int diamond, int totalWillBefore, bool isVictory = false)
         {
             _cts?.Cancel();
             _cts?.Dispose();
@@ -93,7 +93,7 @@ namespace DeepEarth.UI
 
             try
             {
-                LocalizeStaticTexts();
+                LocalizeStaticTexts(isVictory);
 
                 // 초기 상태: 모두 숨김
                 SetTextActive(resultDepthText, false);

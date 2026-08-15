@@ -30,3 +30,4 @@ MonoBehaviour:
   deathDebuffEffect: {fileID: 11400000, guid: dae5a97deba549de84bd937fcf15e362, type: 2}
   hasDeathReward: 0
   rewardTable: {fileID: 0}
+  deathTriggerDescKey: monster_skeleton_death_debuff_desc

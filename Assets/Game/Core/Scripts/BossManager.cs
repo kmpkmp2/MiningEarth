@@ -104,8 +104,6 @@ namespace DeepEarth.Core
             }
         }
 
-        private static BossID PickRandomBoss(params BossID[] pool) => pool[UnityEngine.Random.Range(0, pool.Length)];
-
         public async UniTask StartBossSequenceAsync(int depth)
         {
             // Transition State to BossCombat
@@ -122,15 +120,13 @@ namespace DeepEarth.Core
             RouteMapPresenter.Instance?.HideMap();
 
             // Determine Boss type by MapIndex (0-based map progression counter).
-            // Route Map mode increments MapIndex after each boss defeat, so each 50-floor
-            // segment gets a unique boss regardless of CurrentDepth node-counter value.
-            // 각 구간마다 정해진 풀에서 랜덤으로 1종을 뽑는다(4구간 이후는 AllMetalColossus 고정).
+            // 3단계 구조(2026-08): 각 구간마다 고정된 메인 보스 1종. 3번째(AllMetalColossus, 깊이150)를
+            // 처치하면 GameManager.OnBossSequenceComplete()가 MapIndex를 더 늘리지 않고 런을 승리로 종료한다.
             int mapIndex = SaveManager.CurrentData?.MapSaveData?.MapIndex ?? 0;
             BossID bossId = mapIndex switch
             {
-                0 => PickRandomBoss(BossID.CaveRat, BossID.StoneGolem),
-                1 => PickRandomBoss(BossID.MotherCaveSpider, BossID.SkeletonWarlord),
-                2 => PickRandomBoss(BossID.CaveRat, BossID.StoneGolem, BossID.MotherCaveSpider, BossID.SkeletonWarlord),
+                0 => BossID.StoneGolem,
+                1 => BossID.SkeletonWarlord,
                 _ => BossID.AllMetalColossus
             };
 
@@ -277,7 +273,7 @@ namespace DeepEarth.Core
 
             _bossPresenter = new BossEncounterHandle(source, bodyPresenter);
 
-            // 일반 몬스터/엘리트와 동일한 공유 턴 루프 사용.
+            // 일반 몬스터/엘리트와 동일한 공유 턴 루프 사용. allowRetreat 기본값(false)이라 보스는 후퇴 불가.
             await CombatSystem.Instance.SharedBattlePresenter.RunTurnLoopAsync(source, GetBossPatternData, BossWrapperFactory);
 
             // Clear Boss 3D object

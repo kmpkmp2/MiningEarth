@@ -30,3 +30,4 @@ MonoBehaviour:
   deathDebuffEffect: {fileID: 0}
   hasDeathReward: 1
   rewardTable: {fileID: 11400000, guid: a40ea15eb9044da7bc341a3b0060811e, type: 2}
+  deathTriggerDescKey: monster_mimic_death_reward_desc

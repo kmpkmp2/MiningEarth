@@ -7,6 +7,7 @@ namespace DeepEarth.UI
     public class EventRevealView : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI eventNameText;
+        [SerializeField] private TextMeshProUGUI subtitleText;
         [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private Transform panelRoot;
 
@@ -14,6 +15,16 @@ namespace DeepEarth.UI
         {
             if (eventNameText != null)
                 eventNameText.text = name;
+        }
+
+        // 몬스터 사망 트리거 경고(예: "처치 시 분열합니다!") 등, 조우 이름 아래 보여줄 부가 설명.
+        // 빈 문자열이면 서브타이틀 텍스트 자체를 숨긴다.
+        public void SetSubtitle(string subtitle)
+        {
+            if (subtitleText == null) return;
+            bool hasSubtitle = !string.IsNullOrEmpty(subtitle);
+            subtitleText.gameObject.SetActive(hasSubtitle);
+            subtitleText.text = hasSubtitle ? subtitle : string.Empty;
         }
 
         public async UniTask PlayShowAsync()

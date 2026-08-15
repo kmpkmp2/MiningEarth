@@ -20,12 +20,20 @@ namespace DeepEarth.Core
         public event Action OnDurabilityChanged;
         public event Action OnPickaxeBroken;
         public event Action OnPickaxeRepaired;
+        public event Action OnDurabilityWarning;
+        public event Action OnDurabilityWarningCleared;
 
         public int CurrentDurability => _model?.CurrentDurability ?? 0;
         public int MaxDurability => _model?.MaxDurability ?? 0;
         public bool IsBroken => _model?.IsBroken ?? false;
+        public bool IsWarning => _model?.IsWarning ?? false;
         public bool BrokenAlertShown => _brokenAlertShown;
         public float CurrentPickaxeEfficiency => _currentPickaxeData?.repairEfficiency ?? 1f;
+
+        // 런 스코프 응급 수리 잔여 횟수. 자원 없이도 HP를 태워 즉시 내구도를 회복할 수 있는 안전판.
+        public int EmergencyRepairUsesRemaining { get; private set; }
+
+        public enum EmergencyRepairResult { Success, CombatBlocked, AlreadyFull, NoUsesLeft, NotEnoughHp }
 
         private void Awake()
         {
@@ -94,7 +102,10 @@ namespace DeepEarth.Core
             _model.OnDurabilityChanged += HandleDurabilityChanged;
             _model.OnPickaxeBroken += HandlePickaxeBroken;
             _model.OnPickaxeRepaired += HandlePickaxeRepaired;
+            _model.OnDurabilityWarning += HandleDurabilityWarning;
+            _model.OnDurabilityWarningCleared += HandleDurabilityWarningCleared;
             _brokenAlertShown = false;
+            EmergencyRepairUsesRemaining = GameSettings.EmergencyRepairMaxUsesPerRun;
 
             OnDurabilityChanged?.Invoke();
 
@@ -147,6 +158,35 @@ namespace DeepEarth.Core
                     Debug.Log($"[Pickaxe]\nBroken Mining Damage\nOre : {type}\nHP Loss : {damage}\nCurrent HP : {StatManager.Instance.CurrentHP}");
                 }
             }
+        }
+
+        // 채굴 화면 HUD 전용 안전판: 자원이 없어도 HP를 태워 내구도를 응급 복구한다.
+        // 전투 중에는 사용 불가, 이번 런 최대 사용 횟수 제한, 이 소모로는 HP가 1 미만으로 내려가지 않는다.
+        public EmergencyRepairResult TryEmergencyRepair()
+        {
+            if (_model == null) return EmergencyRepairResult.AlreadyFull;
+            if (DeepEarth.Combat.CombatSystem.Instance != null && DeepEarth.Combat.CombatSystem.Instance.IsCombatActive)
+                return EmergencyRepairResult.CombatBlocked;
+            if (CurrentDurability >= MaxDurability)
+                return EmergencyRepairResult.AlreadyFull;
+            if (EmergencyRepairUsesRemaining <= 0)
+                return EmergencyRepairResult.NoUsesLeft;
+            if (StatManager.Instance.CurrentHP <= GameSettings.EmergencyRepairHpCost)
+                return EmergencyRepairResult.NotEnoughHp;
+
+            StatManager.Instance.TakeDamage(GameSettings.EmergencyRepairHpCost);
+            Repair(GameSettings.EmergencyRepairDurabilityGain);
+            EmergencyRepairUsesRemaining--;
+
+            Debug.Log($"[Pickaxe]\nEmergency Repair Used\nHP Cost : {GameSettings.EmergencyRepairHpCost}\nDurability Gain : {GameSettings.EmergencyRepairDurabilityGain}\nUses Left : {EmergencyRepairUsesRemaining}");
+            return EmergencyRepairResult.Success;
+        }
+
+        // 채굴(OnOreHit)이 아닌 상황(예: 전투 후퇴)에서 곡괭이 내구도를 직접 소모시킬 때 사용.
+        public void ApplyDirectDurabilityLoss(int amount)
+        {
+            if (_model == null || amount <= 0) return;
+            _model.LoseDurability(amount);
         }
 
         public void Repair(int gain)
@@ -225,6 +265,17 @@ namespace DeepEarth.Core
             RelicManager.Instance?.ApplyPickaxeRepairedEffects();
         }
 
+        private void HandleDurabilityWarning()
+        {
+            Debug.Log($"[Pickaxe]\nDurability Warning\nCurrent : {_model?.CurrentDurability ?? 0}/{_model?.MaxDurability ?? 0}");
+            OnDurabilityWarning?.Invoke();
+        }
+
+        private void HandleDurabilityWarningCleared()
+        {
+            OnDurabilityWarningCleared?.Invoke();
+        }
+
         private void ClearModel()
         {
             if (_model != null)
@@ -232,6 +283,8 @@ namespace DeepEarth.Core
                 _model.OnDurabilityChanged -= HandleDurabilityChanged;
                 _model.OnPickaxeBroken -= HandlePickaxeBroken;
                 _model.OnPickaxeRepaired -= HandlePickaxeRepaired;
+                _model.OnDurabilityWarning -= HandleDurabilityWarning;
+                _model.OnDurabilityWarningCleared -= HandleDurabilityWarningCleared;
                 _model = null;
             }
         }

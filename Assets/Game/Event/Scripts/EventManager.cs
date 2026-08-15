@@ -38,7 +38,7 @@ namespace DeepEarth.Event
             _revealPresenter = presenter;
         }
 
-        public async UniTask PlayRevealAsync(EventRevealType type)
+        public async UniTask PlayRevealAsync(EventRevealType type, string subtitleLocKey = null)
         {
             if (_isRevealPlaying) return;
             _isRevealPlaying = true;
@@ -47,9 +47,16 @@ namespace DeepEarth.Event
             Debug.Log("[Event]\nReveal Start");
 
             string displayName = GetRevealDisplayName(type);
+            string subtitle = null;
+            if (!string.IsNullOrEmpty(subtitleLocKey))
+            {
+                subtitle = LocalizationManager.Instance.GetTranslation(subtitleLocKey);
+                if (string.IsNullOrEmpty(subtitle) || subtitle == subtitleLocKey) subtitle = null;
+            }
+
             if (_revealPresenter != null)
             {
-                await _revealPresenter.ShowAsync(displayName);
+                await _revealPresenter.ShowAsync(displayName, subtitle);
             }
 
             EffectSystem.Instance.ShakeCamera(0.1f, 0.05f);
@@ -155,6 +162,7 @@ namespace DeepEarth.Event
                 EventRevealType.Water         => "reveal_water",
                 EventRevealType.Lava          => "reveal_lava",
                 EventRevealType.Boss          => "reveal_boss",
+                EventRevealType.Rest          => "reveal_rest",
                 _                             => "reveal_unknown"
             };
 
@@ -172,6 +180,7 @@ namespace DeepEarth.Event
                     EventRevealType.Water         => "지하수 발견!",
                     EventRevealType.Lava          => "용암 지대 발견!",
                     EventRevealType.Boss          => "보스 출현!",
+                    EventRevealType.Rest          => "쉼터 발견!",
                     _                             => "???",
                 };
             }

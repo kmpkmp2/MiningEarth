@@ -89,6 +89,9 @@ namespace DeepEarth.Battle
             if (_combatPresenter.Model.IsDefending)
                 dmg = Mathf.RoundToInt(dmg * (1f - BattleBalanceData.Instance.defenseRate));
 
+            // 신규 로스터(2026-08) 확장 지점: 취약/보호 등 "다음 피격 1회" 류 효과. 기본값 1f(영향 없음).
+            dmg = Mathf.Max(1, Mathf.RoundToInt(dmg * GetIncomingDamageMultiplier()));
+
             await UniTask.Delay(TimeSpan.FromSeconds(BattleBalanceData.Instance.playerAttackAnimationTime));
 
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
@@ -135,6 +138,7 @@ namespace DeepEarth.Battle
                         EffectSystem.Instance.SpawnDamageText(textWorldPos, $"-{result.HpDamage} HP", Color.red);
 
                     await UniTask.Delay(TimeSpan.FromSeconds(hitEffectTime));
+                    OnAttackLanded();
                     break;
                 }
                 case IntentType.Defend:
@@ -168,6 +172,13 @@ namespace DeepEarth.Battle
         protected virtual void OnBuffStep() { }
         protected virtual void OnSummonStep() { }
         protected virtual void OnSpecialStep() { }
+
+        // 신규 로스터(2026-08) 확장 지점: 몬스터 자신의 공격이 적중한 직후 훅(화상/중독 등 부가 효과 부여용).
+        protected virtual void OnAttackLanded() { }
+
+        // 신규 로스터(2026-08) 확장 지점: 플레이어 공격을 받을 때 적용할 배율. 1f = 영향 없음.
+        // 취약(피해 증가)/보호(피해 감소) 등 "다음 피격 1회" 또는 지속형 효과에 사용.
+        protected virtual float GetIncomingDamageMultiplier() => 1f;
 
         public virtual void Dispose()
         {

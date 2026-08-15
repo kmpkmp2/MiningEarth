@@ -512,6 +512,20 @@ namespace DeepEarth.Core
             return new DamageResult(shieldDamage, hpDamage);
         }
 
+        // 후퇴(Retreat) 전용: Shield를 무시하고 HP만 직접 깎되, minHpFloor 아래로는 내려가지 않는다.
+        // 일반 TakeDamage와 달리 부활 아이템/유물을 트리거하지 않는다 — 애초에 죽지 않는 게 목적.
+        public DamageResult TakeGuaranteedDamage(int amount, int minHpFloor = 1)
+        {
+            if (amount <= 0) return new DamageResult(0, 0);
+
+            int maxReducible = Mathf.Max(0, CurrentHP - minHpFloor);
+            int hpDamage = Mathf.Min(amount, maxReducible);
+            CurrentHP = Mathf.Max(minHpFloor, CurrentHP - hpDamage);
+            OnHPChanged?.Invoke();
+
+            return new DamageResult(0, hpDamage);
+        }
+
         public void Heal(int amount)
         {
             if (amount <= 0) return;

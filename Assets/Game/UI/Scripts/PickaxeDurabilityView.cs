@@ -19,9 +19,26 @@ namespace DeepEarth.UI
         [SerializeField] private TextMeshProUGUI brokenAlertTitleText;
         [SerializeField] private TextMeshProUGUI brokenAlertDescText;
 
+        [Header("Emergency Repair")]
+        [SerializeField] private Button emergencyRepairButton;
+
+        public event System.Action OnEmergencyRepairClicked;
+
         private const float AlertDuration = 3f;
         private const float WarningThreshold = 0.25f;
         private Coroutine _alertCoroutine;
+
+        private void Awake()
+        {
+            if (emergencyRepairButton != null)
+                emergencyRepairButton.onClick.AddListener(() => OnEmergencyRepairClicked?.Invoke());
+        }
+
+        // 전투 중에는 버튼 자체를 눌러도 즉시 실패하지만, 애초에 손댈 수 없도록 interactable도 함께 끈다.
+        public void SetEmergencyRepairInteractable(bool interactable)
+        {
+            if (emergencyRepairButton != null) emergencyRepairButton.interactable = interactable;
+        }
 
         public void SetDurability(int current, int max, bool broken)
         {
@@ -51,14 +68,20 @@ namespace DeepEarth.UI
                 warningIndicator.SetActive(!broken && max > 0 && (float)current / max <= WarningThreshold);
         }
 
-        public void ShowBrokenAlert()
+        public void ShowBrokenAlert() => ShowAlert("pickaxe_broken_alert_title", "pickaxe_broken_alert_desc");
+
+        // 내구도 25% 이하 진입 시 1회성 경고(파손 전 미리 알림). 상시 표시되는 warningIndicator/텍스트 색상과는
+        // 별개로, 처음 그 구간에 들어가는 순간을 놓치지 않도록 짧은 팝업으로도 알려준다.
+        public void ShowWarningAlert() => ShowAlert("pickaxe_warning_alert_title", "pickaxe_warning_alert_desc");
+
+        private void ShowAlert(string titleKey, string descKey)
         {
             if (brokenAlertPanel == null) return;
 
             if (brokenAlertTitleText != null)
-                brokenAlertTitleText.text = LocalizationManager.Instance.GetTranslation("pickaxe_broken_alert_title");
+                brokenAlertTitleText.text = LocalizationManager.Instance.GetTranslation(titleKey);
             if (brokenAlertDescText != null)
-                brokenAlertDescText.text = LocalizationManager.Instance.GetTranslation("pickaxe_broken_alert_desc");
+                brokenAlertDescText.text = LocalizationManager.Instance.GetTranslation(descKey);
 
             if (_alertCoroutine != null) StopCoroutine(_alertCoroutine);
             _alertCoroutine = StartCoroutine(AlertCoroutine());

@@ -561,13 +561,23 @@ namespace DeepEarth.Core
                 return;
             }
 
+            // Rest checkpoint trigger: 이 시점에 도달했다는 것은 이미 보스 깊이(%50==0)가 아니라는 뜻이므로
+            // 별도의 겹침 방지 조건 없이 그대로 확정 체크포인트로 처리한다.
+            if (CurrentDepth > 0 && CurrentDepth % GameSettings.RestCheckpointInterval == 0)
+            {
+                await TriggerRestCheckpointAsync();
+                if (StatManager.Instance.CurrentHP > 0 && CurrentState == GameState.Playing)
+                    await MiningSystem.Instance.SpawnNextBlockAsync();
+                return;
+            }
+
             // 1. Combat trigger
             float monsterChance = GetMonsterSpawnChance(CurrentDepth) * StatManager.Instance.GetMonsterSpawnRateMultiplier();
             if (UnityEngine.Random.value < monsterChance)
             {
                 MonsterType mType = CombatSystem.Instance.PickMonsterForDepth(CurrentDepth);
                 EventRevealType mReveal = MonsterTypeToReveal(mType);
-                await EventManager.Instance.PlayRevealAsync(mReveal);
+                await EventManager.Instance.PlayRevealAsync(mReveal, CombatSystem.Instance.GetMonsterDeathTriggerDescKey(mType));
 
                 EffectSystem.Instance.FlashScreen(new Color(1f, 0f, 0f, 0.2f), 0.2f);
                 string nameLocKey   = CombatSystem.Instance.GetMonsterNameLocKey(mType);
@@ -673,7 +683,7 @@ namespace DeepEarth.Core
                 case DeepEarth.Map.RoomType.Monster:
                     MonsterType mType = CombatSystem.Instance.PickMonsterForDepth(CurrentDepth);
                     EventRevealType mReveal = MonsterTypeToReveal(mType);
-                    await EventManager.Instance.PlayRevealAsync(mReveal);
+                    await EventManager.Instance.PlayRevealAsync(mReveal, CombatSystem.Instance.GetMonsterDeathTriggerDescKey(mType));
 
                     EffectSystem.Instance.FlashScreen(new Color(1f, 0f, 0f, 0.2f), 0.2f);
                     await CombatSystem.Instance.StartCombatAsync(mType, CurrentDepth);
@@ -744,6 +754,14 @@ namespace DeepEarth.Core
         // BossManager가 보상 화면 종료 후 호출 (기존 흐름 교체 지점)
         public void OnBossSequenceComplete()
         {
+            // 3단계 구조(2026-08): 최종 보스(AllMetalColossus, 깊이150)를 처치했다면 다음 맵으로 넘어가지 않고
+            // 런을 승리로 종료한다. 선형/RouteMap 모드 공통 진입점.
+            if (CurrentDepth >= GameSettings.FinalBossDepth)
+            {
+                RunEnd(isVictory: true);
+                return;
+            }
+
             if (_routeMapPresenter != null)
             {
                 _routeMapPresenter.OnBossNodeCompleted()
@@ -774,14 +792,14 @@ namespace DeepEarth.Core
             }
         }
 
-        public void RunEnd()
+        public void RunEnd(bool isVictory = false)
         {
             Time.timeScale = 1f;
-            Debug.Log("[Run]\nRunEnd Start");
+            Debug.Log(isVictory ? "[Run]\nRunEnd Start (Victory)" : "[Run]\nRunEnd Start");
 
             try
             {
-                CurrentState = GameState.GameOver;
+                CurrentState = isVictory ? GameState.Victory : GameState.GameOver;
 
                 // Step 1: Open Result Popup / Graceful Fallback
                 bool popupSuccess = false;
@@ -793,7 +811,7 @@ namespace DeepEarth.Core
                         _hudObject.SetActive(false);
                     }
                     _gameOverObject.SetActive(true);
-                    _gameOverPresenter.UpdateResultsUI();
+                    _gameOverPresenter.UpdateResultsUI(isVictory);
                     popupSuccess = true;
                 }
                 else
@@ -946,6 +964,25 @@ namespace DeepEarth.Core
 
             Debug.Log("[Scene]\nMove\nMainMenuScene");
             UnityEngine.SceneManagement.SceneManager.LoadScene(DeepEarth.Common.SceneNames.StartMenu);
+        }
+
+        // 신규 유저 초반 런 밸런싱: 깊이 RestCheckpointInterval마다(보스 깊이 제외) 확정 회복 지점.
+        // 자원/HP 소모 없이 최대 체력의 일정 비율 회복 + 곡괭이 내구도 일부 무료 수리.
+        private async UniTask TriggerRestCheckpointAsync()
+        {
+            await EventManager.Instance.PlayRevealAsync(EventRevealType.Rest);
+
+            int healAmount = Mathf.RoundToInt(StatManager.Instance.GetMaxHP() * GameSettings.RestCheckpointHealRatio);
+            StatManager.Instance.Heal(healAmount);
+            PickaxeDurabilityManager.Instance?.Repair(GameSettings.RestCheckpointDurabilityGain);
+
+            Debug.Log($"[Run]\nRest Checkpoint\nDepth : {CurrentDepth}\nHeal : +{healAmount}\nPickaxe Durability : +{GameSettings.RestCheckpointDurabilityGain}");
+
+            EffectSystem.Instance.FlashScreen(new Color(0.3f, 1f, 0.5f, 0.25f), 0.3f);
+            Vector3 pos = Camera.main != null
+                ? Camera.main.transform.position + Camera.main.transform.forward * 1.5f
+                : Vector3.zero;
+            EffectSystem.Instance.SpawnDamageText(pos, $"+{healAmount} HP", Color.green);
         }
 
         private float GetMonsterSpawnChance(int depth)

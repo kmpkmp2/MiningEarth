@@ -92,8 +92,15 @@ namespace DeepEarth.Battle
         }
 
         // SkeletonMiner: 광물 도둑질을 실시간 5초 루프 대신 패턴의 Special 스텝으로 이식.
+        // MagmaLizard: 같은 스텝을 용암분출(취약 부여)로 재사용.
         protected override void OnSpecialStep()
         {
+            if (EliteModel.Data.eliteSkillType == EliteSkillType.BurnOnHit)
+            {
+                EliteCombat.SetVulnerable();
+                return;
+            }
+
             if (EliteModel.Data.eliteSkillType != EliteSkillType.MineralTheft) return;
 
             string stolen = EliteCombat.StealOneMineralFromInventory();
@@ -104,6 +111,21 @@ namespace DeepEarth.Battle
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             Debug.Log($"[Elite]\nSkill Activated\nSkeletonMiner Steal : {stolen}");
 #endif
+        }
+
+        // MagmaLizard: 공격 적중 후 확률적으로 화상 부여.
+        protected override void OnAttackLanded()
+        {
+            if (EliteModel.Data.eliteSkillType == EliteSkillType.BurnOnHit)
+                EliteCombat.ApplyBurnChance();
+        }
+
+        // MagmaLizard: 용암분출로 걸린 취약 상태를 다음 피격 1회에 소모(+50% 피해).
+        protected override float GetIncomingDamageMultiplier()
+        {
+            if (EliteModel.Data.eliteSkillType == EliteSkillType.BurnOnHit && EliteCombat.ConsumeVulnerable())
+                return 1.5f;
+            return base.GetIncomingDamageMultiplier();
         }
 
         // CursedPriest: 공격력 저하 디버프를 실시간 1초 루프 대신 패턴의 Debuff 스텝으로 이식.

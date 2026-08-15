@@ -13,6 +13,7 @@ namespace DeepEarth.UI
         [SerializeField] private GameObject popupRoot;
         [SerializeField] private Button attackButton;
         [SerializeField] private Button defendButton;
+        [SerializeField] private Button retreatButton;
         [SerializeField] private Button cancelButton;
         [SerializeField] private TextMeshProUGUI cancelButtonLabel;
         [SerializeField] private TextMeshProUGUI targetSelectGuidanceText;
@@ -27,6 +28,7 @@ namespace DeepEarth.UI
         public event Action OnAttackClicked;
         public event Action OnDefendClicked;
         public event Action OnCancelClicked;
+        public event Action OnRetreatClicked;
 
         public TurnView TurnView => turnView;
         public GameObject IntentViewPrefab => intentViewPrefab;
@@ -39,6 +41,7 @@ namespace DeepEarth.UI
         {
             if (attackButton != null) attackButton.onClick.AddListener(() => OnAttackClicked?.Invoke());
             if (defendButton != null) defendButton.onClick.AddListener(() => OnDefendClicked?.Invoke());
+            if (retreatButton != null) retreatButton.onClick.AddListener(() => OnRetreatClicked?.Invoke());
             if (cancelButton != null) cancelButton.onClick.AddListener(() => OnCancelClicked?.Invoke());
             if (cancelButtonLabel != null) cancelButtonLabel.text = LocalizationManager.Instance.GetTranslation("battle_cancel_button");
             SetTargetSelectUIVisible(false);
@@ -54,6 +57,13 @@ namespace DeepEarth.UI
         {
             if (attackButton != null) attackButton.interactable = interactable;
             if (defendButton != null) defendButton.interactable = interactable;
+            if (retreatButton != null) retreatButton.interactable = interactable;
+        }
+
+        // 보스전에서는 후퇴가 불가능하므로 버튼 자체를 감춘다(비활성화가 아니라 노출 자체를 제거).
+        public void SetRetreatButtonVisible(bool visible)
+        {
+            if (retreatButton != null) retreatButton.gameObject.SetActive(visible);
         }
 
         // Target Select 상태 진입/이탈 시 안내 문구 + 취소 버튼 표시 토글.

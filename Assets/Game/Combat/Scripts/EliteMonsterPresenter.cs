@@ -104,5 +104,41 @@ namespace DeepEarth.Combat
             StatManager.Instance.RemoveEffect(EffectType.CurseAttackDamage, _debuffStacksApplied);
             _debuffStacksApplied = 0;
         }
+
+        // MagmaLizard: 공격 적중 시 일정 확률로 화상 부여. public — 턴제 래퍼(OnAttackLanded)가 재사용.
+        public void ApplyBurnChance(float chance = 0.4f)
+        {
+            if (UnityEngine.Random.value >= chance) return;
+            StatusEffectManager.Instance?.ApplyBurn();
+
+            Vector3 textPos = Camera.main != null
+                ? Camera.main.transform.position + Camera.main.transform.forward * 1.5f
+                : View.transform.position + Vector3.up;
+            EffectSystem.Instance.SpawnDamageText(textPos, "화상!", new Color(1f, 0.4f, 0f));
+
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+            Debug.Log("[Elite]\nSkill Activated\nMagmaLizard BurnOnHit");
+#endif
+        }
+
+        // MagmaLizard: 용암분출 — 다음 피격 1회의 피해를 증가시키는 취약 상태.
+        private bool _vulnerableNextHit;
+
+        public void SetVulnerable()
+        {
+            _vulnerableNextHit = true;
+            Vector3 textPos = Camera.main != null
+                ? Camera.main.transform.position + Camera.main.transform.forward * 1.5f
+                : View.transform.position + Vector3.up;
+            EffectSystem.Instance.SpawnDamageText(textPos, "용암 분출!", new Color(1f, 0.5f, 0f));
+        }
+
+        // 소비형 — 호출 시점에 취약 상태였다면 true를 반환하고 즉시 해제한다.
+        public bool ConsumeVulnerable()
+        {
+            if (!_vulnerableNextHit) return false;
+            _vulnerableNextHit = false;
+            return true;
+        }
     }
 }

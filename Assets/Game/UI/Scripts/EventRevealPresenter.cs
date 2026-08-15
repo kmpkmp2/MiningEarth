@@ -12,9 +12,10 @@ namespace DeepEarth.UI
             _view.gameObject.SetActive(false);
         }
 
-        public async UniTask ShowAsync(string eventName)
+        public async UniTask ShowAsync(string eventName, string subtitle = null)
         {
             _view.SetEventName(eventName);
+            _view.SetSubtitle(subtitle);
             await _view.PlayShowAsync();
         }
 

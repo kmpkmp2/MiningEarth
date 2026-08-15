@@ -92,6 +92,9 @@ namespace DeepEarth.Combat
             return _spawnTable != null ? _spawnTable.PickMonster(depth) : MonsterType.CaveRat;
         }
 
+        // 채굴 HUD 액션(예: 응급 수리)이 전투 중에는 비활성화되어야 할 때 참조하는 플래그.
+        public bool IsCombatActive { get; private set; }
+
         public async UniTask StartCombatAsync(MonsterType type, int depth)
         {
             await EnsureDataLoadedAsync();
@@ -100,6 +103,7 @@ namespace DeepEarth.Combat
             _combatTcs    = new UniTaskCompletionSource();
             _spawnCounter = 0;
             _pendingSpawns = 0;
+            IsCombatActive = true;
 
             // Instant damage on encounter (CurseInstantDamageOnEncounter)
             int instantDmg = StatManager.Instance.GetEncounterInstantDamage();
@@ -138,11 +142,12 @@ namespace DeepEarth.Combat
             }
 
             if (_battlePresenter != null)
-                await _battlePresenter.RunTurnLoopAsync(this, GetPatternData);
+                await _battlePresenter.RunTurnLoopAsync(this, GetPatternData, GimmickWrapperFactory, allowRetreat: true);
             else
                 await _combatTcs.Task; // BattleUI 미구성(Addressables 미등록 등) 시 안전한 폴백 — 실시간 자동 처치 없이 대기만 함
 
             PostCombat:
+            IsCombatActive = false;
             ClearActiveMonsters();
 
             // 유물: 응급 붕대 — 전투 종료 후 HP 회복
@@ -380,9 +385,33 @@ namespace DeepEarth.Combat
             return _patternDataCache.TryGetValue(type, out var data) ? data : null;
         }
 
+        // 3단계 로스터 확장(2026-08): 고유 기믹을 가진 정규 몬스터 4종만 GimmickMonsterPresenter로
+        // 감싸고, 나머지는 기존과 동일하게 기본 Battle.MonsterPresenter를 사용한다.
+        private static DeepEarth.Battle.MonsterPresenter GimmickWrapperFactory(
+            MonsterPresenter cp, DeepEarth.Battle.MonsterPatternModel pattern, DeepEarth.Battle.TurnModel turn)
+        {
+            switch (cp.Model.Type)
+            {
+                case MonsterType.OreBurrower:
+                case MonsterType.MineMycelium:
+                case MonsterType.AbyssMinerBee:
+                case MonsterType.GoldVeinSpirit:
+                    return new DeepEarth.Battle.GimmickMonsterPresenter(cp, pattern, turn);
+                default:
+                    return new DeepEarth.Battle.MonsterPresenter(cp, pattern, turn);
+            }
+        }
+
         public string GetMonsterNameLocKey(MonsterType type)
         {
             return _monsterDataCache.TryGetValue(type, out var data) ? data.nameLocKey : string.Empty;
+        }
+
+        // 조우 리빌 화면에 경고 서브타이틀로 노출할 사망 트리거 설명(예: 슬라임 분열 경고).
+        // 설정 안 된 몬스터는 빈 문자열 반환 → 호출부에서 서브타이틀을 표시하지 않는다.
+        public string GetMonsterDeathTriggerDescKey(MonsterType type)
+        {
+            return _monsterDataCache.TryGetValue(type, out var data) ? data.deathTriggerDescKey : string.Empty;
         }
 
         private MonsterData GetMonsterData(MonsterType type)
@@ -391,6 +420,13 @@ namespace DeepEarth.Combat
         }
 
         // ── Cleanup ──────────────────────────────────────────────────────
+
+        // 후퇴(Retreat) 등 외부 트리거로 전투를 즉시 종료시킬 때 사용. 보상 없이 조우를 끝낸다 —
+        // RunTurnLoopAsync의 while(monsterSource.HasActiveMonsters) 조건을 다음 체크에서 false로 만든다.
+        public void ForceEndCombat()
+        {
+            ClearActiveMonsters();
+        }
 
         private void ClearActiveMonsters()
         {

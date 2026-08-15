@@ -35,7 +35,19 @@ namespace DeepEarth.Common
         SkeletonWarlordBoss,
         AllMetalColossusBoss,
         BossCore,
-        CaveRatBoss
+        CaveRatBoss,
+
+        // 3단계 구조 확장(2026-08) — 정규 6종 + 엘리트 3종. 기존 enum 값의 정수 매핑을 깨지 않도록
+        // 반드시 끝에만 추가한다(MonsterData/SpawnTable 에셋이 monsterType을 정수로 직렬화하기 때문).
+        OreBurrower,
+        CrystalBat,
+        MineMycelium,
+        PetrifiedMole,
+        AbyssMinerBee,
+        GoldVeinSpirit,
+        MagmaLizard,
+        CrystalSerpent,
+        FossilTroll
     }
 
     public enum GameState
@@ -47,7 +59,8 @@ namespace DeepEarth.Common
         SettingsPause,
         GameOver,
         BossCombat,
-        BossReward
+        BossReward,
+        Victory
     }
 
     public enum UpgradeType
@@ -271,7 +284,8 @@ namespace DeepEarth.Common
         MonsterSlime,
         Water,
         Lava,
-        Boss
+        Boss,
+        Rest
     }
 
     public static class GameSettings
@@ -279,9 +293,22 @@ namespace DeepEarth.Common
         public const int MaxBuffDebuffStack = 3;
         public const int BossSpawnDepthInterval = 50;
 
+        // 3단계 구조(2026-08): StoneGolem(50) → SkeletonWarlord(100) → AllMetalColossus(150, 최종).
+        // 이 깊이의 보스를 처치하면 런이 승리로 종료된다.
+        public const int FinalBossDepth = 150;
+
         public const int MaxHPUpgradeLevelCap = 20;
         public const int AttackUpgradeLevelCap = 20;
         public const int MiningPowerUpgradeLevelCap = 50;
+
+        // ── 신규 유저 초반 런 밸런싱 (후퇴/응급수리/쉼터 체크포인트) ──────────────
+        public const int RetreatPickaxeDurabilityCost = 5;
+        public const int EmergencyRepairHpCost = 2;
+        public const int EmergencyRepairDurabilityGain = 10;
+        public const int EmergencyRepairMaxUsesPerRun = 3;
+        public const int RestCheckpointInterval = 12;
+        public const float RestCheckpointHealRatio = 0.3f;
+        public const int RestCheckpointDurabilityGain = 15;
     }
 
     public static class SceneNames

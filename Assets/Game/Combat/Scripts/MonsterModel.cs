@@ -60,5 +60,13 @@ namespace DeepEarth.Combat
             OnHPChanged?.Invoke(CurrentHP, MaxHP);
             return true;
         }
+
+        // 몬스터 자힐(광산 균사체 등). 최대 체력을 넘지 않는다.
+        public void Heal(int amount)
+        {
+            if (CurrentHP <= 0 || amount <= 0) return;
+            CurrentHP = Mathf.Min(MaxHP, CurrentHP + amount);
+            OnHPChanged?.Invoke(CurrentHP, MaxHP);
+        }
     }
 }

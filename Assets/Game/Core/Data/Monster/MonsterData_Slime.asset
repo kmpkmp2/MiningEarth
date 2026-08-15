@@ -30,3 +30,4 @@ MonoBehaviour:
   deathDebuffEffect: {fileID: 0}
   hasDeathReward: 0
   rewardTable: {fileID: 0}
+  deathTriggerDescKey: monster_slime_death_split_desc

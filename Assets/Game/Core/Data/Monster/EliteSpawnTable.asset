@@ -16,18 +16,27 @@ MonoBehaviour:
   - monsterType: 7
     minDepth: 0
     weight: 1
-  - monsterType: 8
-    minDepth: 0
-    weight: 1
   - monsterType: 9
     minDepth: 0
     weight: 1
   - monsterType: 10
     minDepth: 0
     weight: 1
+  - monsterType: 8
+    minDepth: 50
+    weight: 1
   - monsterType: 11
-    minDepth: 0
+    minDepth: 50
     weight: 1
   - monsterType: 12
-    minDepth: 0
+    minDepth: 50
+    weight: 1
+  - monsterType: 25
+    minDepth: 100
+    weight: 1
+  - monsterType: 26
+    minDepth: 100
+    weight: 1
+  - monsterType: 27
+    minDepth: 100
     weight: 1

@@ -26,36 +26,35 @@ MonoBehaviour:
     maxDepth: 99
     entries:
     - monsterType: 0
-      weight: 25
+      weight: 18
     - monsterType: 1
-      weight: 25
-    - monsterType: 2
-      weight: 30
-    - monsterType: 4
-      weight: 20
-  - minDepth: 100
-    maxDepth: 199
-    entries:
-    - monsterType: 1
-      weight: 15
+      weight: 18
     - monsterType: 2
       weight: 20
     - monsterType: 4
-      weight: 30
-    - monsterType: 5
-      weight: 25
-    - monsterType: 6
+      weight: 14
+    - monsterType: 19
+      weight: 12
+    - monsterType: 20
       weight: 10
-  - minDepth: 200
+    - monsterType: 21
+      weight: 8
+  - minDepth: 100
     maxDepth: -1
     entries:
-    - monsterType: 2
+    - monsterType: 1
       weight: 10
+    - monsterType: 2
+      weight: 12
     - monsterType: 4
       weight: 20
     - monsterType: 5
-      weight: 35
+      weight: 18
     - monsterType: 6
-      weight: 20
-    - monsterType: 1
-      weight: 15
+      weight: 8
+    - monsterType: 22
+      weight: 12
+    - monsterType: 23
+      weight: 12
+    - monsterType: 24
+      weight: 8

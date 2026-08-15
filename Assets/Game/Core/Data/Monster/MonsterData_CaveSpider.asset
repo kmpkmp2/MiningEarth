@@ -20,12 +20,11 @@ MonoBehaviour:
   attackInterval: 0.8
   hpPerDifficultyLevel: 0
   damagePerDifficultyLevel: 1
-  spawnCount: 3
+  spawnCount: 2
   initialAttackDelayMin: 0.5
   initialAttackDelayMax: 1
   spawnOffsets:
   - {x: -1, y: 0, z: 0.5}
-  - {x: 0, y: 0, z: 0}
   - {x: 1, y: 0, z: 0.5}
   canSplit: 0
   splitIntoType: 2

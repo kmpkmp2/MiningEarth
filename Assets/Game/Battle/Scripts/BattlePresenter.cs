@@ -9,7 +9,7 @@ using DeepEarth.UI;
 
 namespace DeepEarth.Battle
 {
-    public enum PlayerActionType { Attack, Defend }
+    public enum PlayerActionType { Attack, Defend, Retreat }
 
     // 일반 몬스터 턴제 전투 루프 총괄. CombatSystem이 필드로 소유(신규 Singleton 없음).
     public class BattlePresenter
@@ -23,6 +23,7 @@ namespace DeepEarth.Battle
         private readonly ShieldPresenter _shieldPresenter;
         private readonly List<MonsterPresenter> _monsters = new List<MonsterPresenter>();
         private UniTaskCompletionSource<PlayerActionType> _playerActionTcs;
+        private bool _retreatAllowed;
 
         public BattlePresenter(BattleView view, MonsterIntentData intentData, GameObject intentViewPrefab, Transform intentLayer)
         {
@@ -36,6 +37,7 @@ namespace DeepEarth.Battle
             {
                 _view.OnAttackClicked += HandleAttackClicked;
                 _view.OnDefendClicked += HandleDefendClicked;
+                _view.OnRetreatClicked += HandleRetreatClicked;
             }
         }
 
@@ -45,18 +47,26 @@ namespace DeepEarth.Battle
             {
                 _view.OnAttackClicked -= HandleAttackClicked;
                 _view.OnDefendClicked -= HandleDefendClicked;
+                _view.OnRetreatClicked -= HandleRetreatClicked;
             }
             _shieldPresenter?.Dispose();
         }
 
+        // allowRetreat: 후퇴(Retreat) 액션 제공 여부. 기본 false(opt-in) — Retreat 종료 처리가
+        // CombatSystem.Instance.ForceEndCombat()를 직접 호출하기 때문에, monsterSource가 실제로
+        // CombatSystem.Instance인 일반 몬스터 조우에서만 true로 넘겨야 한다. 엘리트/보스는 별도의
+        // MonsterSource를 쓰고 그 인스턴스들은 조우 종료 시 몬스터 GameObject를 처치 이벤트에서만
+        // 정리하므로(사망 없이 강제 종료 시 유령 몬스터가 남음), 지금은 일반 몬스터 조우에서만 허용한다.
         public async UniTask RunTurnLoopAsync(
             IMonsterSource monsterSource,
             System.Func<MonsterType, MonsterPatternData> getPattern,
-            System.Func<Combat.MonsterPresenter, MonsterPatternModel, TurnModel, MonsterPresenter> wrapperFactory = null)
+            System.Func<Combat.MonsterPresenter, MonsterPatternModel, TurnModel, MonsterPresenter> wrapperFactory = null,
+            bool allowRetreat = false)
         {
             _monsters.Clear();
             _intentPresenter.Clear();
             _battleModel.Turn.Phase = BattleState.Idle;
+            _retreatAllowed = allowRetreat;
             StatManager.Instance.ResetShield();
             StatManager.Instance.ResetCombatCounters();
 
@@ -125,9 +135,33 @@ namespace DeepEarth.Battle
 
                 RefreshAllIntents();
                 _view?.SetActionButtonsInteractable(true);
+                _view?.SetRetreatButtonVisible(_retreatAllowed);
 
                 _playerActionTcs = new UniTaskCompletionSource<PlayerActionType>();
                 PlayerActionType action = await _playerActionTcs.Task;
+
+                if (action == PlayerActionType.Retreat)
+                {
+                    if (!_retreatAllowed) continue; // 방어적 가드 — 버튼은 숨겨두지만 만일을 대비.
+
+                    _view?.SetActionButtonsInteractable(false);
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                    Debug.Log("[Battle]\nRetreat Button");
+#endif
+                    var aliveMonsters = _monsters.Where(m => !m.CombatPresenter.Model.IsDead).ToList();
+                    int retreatDamage = aliveMonsters.Count > 0 ? aliveMonsters.Max(m => m.CombatPresenter.Model.Damage) : 0;
+
+                    var result = StatManager.Instance.TakeGuaranteedDamage(retreatDamage);
+                    PickaxeDurabilityManager.Instance?.ApplyDirectDurabilityLoss(GameSettings.RetreatPickaxeDurabilityCost);
+
+#if DEVELOPMENT_BUILD || UNITY_EDITOR
+                    Debug.Log($"[Battle]\nRetreat\nGuaranteed Damage : {result.HpDamage}\nPickaxe Durability Lost : {GameSettings.RetreatPickaxeDurabilityCost}");
+#endif
+
+                    Combat.CombatSystem.Instance.ForceEndCombat();
+                    StatManager.Instance.IncrementCombatTurn();
+                    return;
+                }
 
                 if (action == PlayerActionType.Defend)
                 {
@@ -198,5 +232,6 @@ namespace DeepEarth.Battle
 
         private void HandleAttackClicked() => _playerActionTcs?.TrySetResult(PlayerActionType.Attack);
         private void HandleDefendClicked() => _playerActionTcs?.TrySetResult(PlayerActionType.Defend);
+        private void HandleRetreatClicked() => _playerActionTcs?.TrySetResult(PlayerActionType.Retreat);
     }
 }

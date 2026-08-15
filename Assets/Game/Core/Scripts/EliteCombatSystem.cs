@@ -68,6 +68,19 @@ namespace DeepEarth.Core
                 Camera.main.transform.position + Camera.main.transform.forward * 1.5f,
                 $"Elite! {eliteName}", new Color(1f, 0.7f, 0f));
 
+            // 사망 시 트리거 경고(예: 빅슬라임 분열) — 일반 몬스터의 리빌 서브타이틀과 같은 목적,
+            // 엘리트는 전용 리빌 팝업이 없어 같은 위치에 두 번째 플로팅 텍스트로 대체한다.
+            if (!string.IsNullOrEmpty(data.deathTriggerDescKey))
+            {
+                string warning = LocalizationManager.Instance.GetTranslation(data.deathTriggerDescKey);
+                if (!string.IsNullOrEmpty(warning))
+                {
+                    EffectSystem.Instance.SpawnDamageText(
+                        Camera.main.transform.position + Camera.main.transform.forward * 1.5f + Vector3.down * 0.4f,
+                        warning, new Color(1f, 0.75f, 0.3f));
+                }
+            }
+
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             Debug.Log($"[Elite]\nSpawn\nName : {eliteName}\nDepth : {depth}");
 #endif
