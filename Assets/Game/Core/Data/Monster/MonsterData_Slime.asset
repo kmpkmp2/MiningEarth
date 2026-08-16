@@ -15,7 +15,7 @@ MonoBehaviour:
   monsterType: 2
   nameLocKey: monster_slime_name
   addressableKey: Combat_Monster_Slime
-  baseMaxHP: 5
+  baseMaxHP: 3
   baseDamage: 2
   attackInterval: 1.5
   hpPerDifficultyLevel: 1

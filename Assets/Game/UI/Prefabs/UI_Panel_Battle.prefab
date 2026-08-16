@@ -1257,6 +1257,41 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.UI.TurnView
   canvasGroup: {fileID: 372661671068846820}
   bannerText: {fileID: 5575331951198034998}
+--- !u!1 &2420248928739973900
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5615587129585104774}
+  m_Layer: 0
+  m_Name: HPBarLayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &5615587129585104774
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2420248928739973900}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 41398806992994629}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2697851947970779687
 GameObject:
   m_ObjectHideFlags: 0
@@ -2013,7 +2048,7 @@ MonoBehaviour:
   m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 0}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials:
   - {fileID: 0}
   m_fontMaterial: {fileID: 0}
@@ -2165,7 +2200,7 @@ MonoBehaviour:
   m_text: "\uD6C4\uD1F4"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 0}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials:
   - {fileID: 0}
   m_fontMaterial: {fileID: 0}
@@ -3110,6 +3145,7 @@ RectTransform:
   - {fileID: 6577249651300496270}
   - {fileID: 8483426770924726565}
   - {fileID: 8734733614096591454}
+  - {fileID: 5615587129585104774}
   m_Father: {fileID: 1340300403724025116}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3300,5 +3336,7 @@ MonoBehaviour:
   intentLayer: {fileID: 8479464247925886375}
   targetIndicatorPrefab: {fileID: 6879116576313556167, guid: a5c57f40a0ac5c448a4711d8b4695e70, type: 3}
   targetIndicatorLayer: {fileID: 8483426770924726565}
+  hpBarViewPrefab: {fileID: 1300163027380524045, guid: d77d6da956e2b8149bb38d8b1b338758, type: 3}
+  hpBarLayer: {fileID: 5615587129585104774}
   defenseEffectObject: {fileID: 1985765447488328338}
   shieldPopupView: {fileID: 552098040421158906}

@@ -21,6 +21,7 @@ namespace DeepEarth.Battle
 
         private readonly TargetSelectPresenter _targetSelectPresenter;
         private readonly ShieldPresenter _shieldPresenter;
+        private readonly HPBarPresenter _hpBarPresenter;
         private readonly List<MonsterPresenter> _monsters = new List<MonsterPresenter>();
         private UniTaskCompletionSource<PlayerActionType> _playerActionTcs;
         private bool _retreatAllowed;
@@ -32,6 +33,7 @@ namespace DeepEarth.Battle
             _intentPresenter = new IntentPresenter(intentData, intentViewPrefab, intentLayer);
             _targetSelectPresenter = new TargetSelectPresenter(view != null ? view.TargetIndicatorPrefab : null, view != null ? view.TargetIndicatorLayer : null);
             _shieldPresenter = new ShieldPresenter(view != null ? view.ShieldPopupView : null);
+            _hpBarPresenter = new HPBarPresenter(view != null ? view.HPBarViewPrefab : null, view != null ? view.HPBarLayer : null);
 
             if (_view != null)
             {
@@ -51,6 +53,10 @@ namespace DeepEarth.Battle
             }
             _shieldPresenter?.Dispose();
         }
+
+        // CombatSystem.SetupBattleUIAsync가 전투 UI 구성 시점에 미리 호출 — 세션 첫 조우에서
+        // 타겟 링 스프라이트 로드 중 몬스터 클릭이 씹히는 레이스 컨디션을 방지한다.
+        public UniTask PreloadTargetSelectAssetsAsync() => _targetSelectPresenter.PreloadRingSpriteAsync();
 
         // allowRetreat: 후퇴(Retreat) 액션 제공 여부. 기본 false(opt-in) — Retreat 종료 처리가
         // CombatSystem.Instance.ForceEndCombat()를 직접 호출하기 때문에, monsterSource가 실제로
@@ -78,6 +84,11 @@ namespace DeepEarth.Battle
                 var wrapper = makeWrapper(cp, new MonsterPatternModel(pattern), _battleModel.Turn);
                 _monsters.Add(wrapper);
                 cp.OnMonsterKilled += _ => HandleMonsterKilled(wrapper);
+
+                // 보스 본체(5종)는 BossView에 전용 HP 슬라이더가 이미 있으므로 제외 — 나머지
+                // (일반/엘리트/소환 미니언/전금속거인 광석 코어)에만 머리 위 HP바를 붙인다.
+                if (!IsBossMainBody(cp.Model.Type))
+                    _hpBarPresenter.Register(wrapper);
             }
 
             foreach (var cp in monsterSource.ActivePresenters)
@@ -109,6 +120,7 @@ namespace DeepEarth.Battle
                 StatManager.Instance.ResetShield();
                 StatManager.Instance.ResetCombatCounters();
                 _intentPresenter.Clear();
+                _hpBarPresenter.Clear();
                 _view?.SetVisible(false);
             }
         }
@@ -118,7 +130,16 @@ namespace DeepEarth.Battle
             RelicManager.Instance?.ApplyMonsterKilledEffects(wrapper.CombatPresenter.Model.Type);
             _monsters.Remove(wrapper);
             _intentPresenter.RemoveIntent(wrapper);
+            _hpBarPresenter.Remove(wrapper);
         }
+
+        // 보스 본체 6종(4보스+CaveRat) 판정 — BossView 전용 HP 슬라이더와 중복 표시를 피하기 위한 제외 목록.
+        private static bool IsBossMainBody(MonsterType type) => type switch
+        {
+            MonsterType.StoneGolemBoss or MonsterType.MotherCaveSpiderBoss or MonsterType.SkeletonWarlordBoss
+                or MonsterType.AllMetalColossusBoss or MonsterType.CaveRatBoss => true,
+            _ => false
+        };
 
         private async UniTask PlayerTurnAsync()
         {

@@ -16,7 +16,7 @@ MonoBehaviour:
   steps:
   - intentType: 0
     value: 0
-  - intentType: 0
+  - intentType: 2
     value: 0
   - intentType: 4
     value: 0

@@ -25,6 +25,12 @@ namespace DeepEarth.Battle
             _layer = layer;
         }
 
+        // 전투 UI 구성 시점에 미리 호출해 두면(CombatSystem.SetupBattleUIAsync) 세션 첫 조우에서
+        // SelectTargetAsync가 스프라이트 로드를 기다리는 동안 몬스터 클릭(OnTouched)이 씹히는
+        // 레이스 컨디션이 사라진다 — 그 시점엔 아직 구독 전이라 클릭이 유실되고 타겟 선택이
+        // 영원히 대기 상태로 남아 플레이어/몬스터 양쪽 다 피해가 발생하지 않는 정지 상태가 됐었다.
+        public UniTask PreloadRingSpriteAsync() => EnsureRingSpriteLoadedAsync();
+
         public async UniTask<MonsterPresenter> SelectTargetAsync(IReadOnlyList<MonsterPresenter> targets, BattleView view)
         {
             await EnsureRingSpriteLoadedAsync();

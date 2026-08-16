@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.Core.MonsterPatternData
   monsterType: 24
   steps:
-  - intentType: 3
-    value: 0
   - intentType: 0
+    value: 0
+  - intentType: 2
     value: 0
   - intentType: 7
     value: 0

@@ -22,6 +22,8 @@ namespace DeepEarth.UI
         [SerializeField] private Transform intentLayer;
         [SerializeField] private GameObject targetIndicatorPrefab;
         [SerializeField] private Transform targetIndicatorLayer;
+        [SerializeField] private GameObject hpBarViewPrefab;
+        [SerializeField] private Transform hpBarLayer;
         [SerializeField] private GameObject defenseEffectObject;
         [SerializeField] private ShieldPopupView shieldPopupView;
 
@@ -35,6 +37,8 @@ namespace DeepEarth.UI
         public Transform IntentLayer => intentLayer;
         public GameObject TargetIndicatorPrefab => targetIndicatorPrefab;
         public Transform TargetIndicatorLayer => targetIndicatorLayer;
+        public GameObject HPBarViewPrefab => hpBarViewPrefab;
+        public Transform HPBarLayer => hpBarLayer;
         public ShieldPopupView ShieldPopupView => shieldPopupView;
 
         private void Awake()

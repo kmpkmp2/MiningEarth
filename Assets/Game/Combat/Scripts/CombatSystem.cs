@@ -67,6 +67,7 @@ namespace DeepEarth.Combat
             var intentData = await ResourceManager.Instance.LoadAssetAsync<MonsterIntentData>(AddressableKeys.MonsterIntentDataKey);
             await ShieldData.LoadAsync();
             _battlePresenter = new DeepEarth.Battle.BattlePresenter(_battleView, intentData, _battleView.IntentViewPrefab, _battleView.IntentLayer);
+            await _battlePresenter.PreloadTargetSelectAssetsAsync();
             _battleView.SetVisible(false);
         }
 
