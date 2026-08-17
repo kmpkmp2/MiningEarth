@@ -1,6 +1,7 @@
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using DeepEarth.UI;
+using DeepEarth.Common;
 
 namespace DeepEarth.Core
 {
@@ -15,8 +16,16 @@ namespace DeepEarth.Core
         [SerializeField] private LoadingFailurePopupView   failureView;
         [SerializeField] private Camera                    mainCamera;
 
+        [Header("SafeBox")]
+        [SerializeField] private RectTransform safeBoxUIRoot;
+        [SerializeField] private Camera safeBoxBackgroundCamera;
+
         private void Start()
         {
+            if (FindAnyObjectByType<SafeBoxManager>() == null)
+                new GameObject("SafeBoxManager").AddComponent<SafeBoxManager>();
+            SafeBoxManager.Instance?.Initialize(mainCamera, safeBoxBackgroundCamera, safeBoxUIRoot);
+
             RunAsync().Forget();
         }
 

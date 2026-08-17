@@ -9,10 +9,19 @@ namespace DeepEarth.Core
     {
         [SerializeField] private StartMenuUIView view;
 
+        [Header("SafeBox")]
+        [SerializeField] private Camera mainCamera;
+        [SerializeField] private RectTransform safeBoxUIRoot;
+        [SerializeField] private Camera safeBoxBackgroundCamera;
+
         private StartMenuPresenter _presenter;
 
         private void Start()
         {
+            if (FindAnyObjectByType<SafeBoxManager>() == null)
+                new GameObject("SafeBoxManager").AddComponent<SafeBoxManager>();
+            SafeBoxManager.Instance?.Initialize(mainCamera, safeBoxBackgroundCamera, safeBoxUIRoot);
+
             BootAsync().Forget();
         }
 

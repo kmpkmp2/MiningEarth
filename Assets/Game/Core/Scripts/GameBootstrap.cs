@@ -20,6 +20,10 @@ namespace DeepEarth.Core
         [SerializeField] private Transform monsterSpawnPoint;
         [SerializeField] private Camera mainCamera;
 
+        [Header("SafeBox")]
+        [SerializeField] private RectTransform safeBoxUIRoot;
+        [SerializeField] private Camera safeBoxBackgroundCamera;
+
         private SceneReadyModel _readyModel;
         public SceneReadyModel ReadyModel => _readyModel;
 
@@ -78,6 +82,13 @@ namespace DeepEarth.Core
 
         private void InitializeSystems()
         {
+            if (FindAnyObjectByType<SafeBoxManager>() == null)
+            {
+                var go = CreateSceneObject("SafeBoxManager");
+                go.AddComponent<SafeBoxManager>();
+            }
+            SafeBoxManager.Instance?.Initialize(mainCamera, safeBoxBackgroundCamera, safeBoxUIRoot);
+
             // Initialize Core Managers in Scene if not present
             if (FindAnyObjectByType<GameManager>() == null)
             {
