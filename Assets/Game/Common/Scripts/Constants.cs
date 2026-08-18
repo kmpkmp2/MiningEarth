@@ -235,6 +235,9 @@ namespace DeepEarth.Common
         public const string TargetArrowIcon         = "Target_Arrow";
         public const string BattleSFXTargetSelect   = "Battle_SFX_TargetSelect";
 
+        // Common UI SFX — 전체 버튼 공용 기본 클릭음(개별 버튼은 ButtonClickSfx.overrideSfxId로 재정의 가능)
+        public const string UISFXButtonClick = "UI_SFX_ButtonClick";
+
         // Relic Addressable Labels (label-based load — no per-relic key needed)
         public const string LabelRelicTreasure = "Relic_Treasure";
         public const string LabelRelicTombstone = "Relic_Tombstone";

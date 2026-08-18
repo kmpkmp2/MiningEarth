@@ -12,6 +12,7 @@ namespace DeepEarth.Combat
         public IReadOnlyList<MonsterPresenter> ActivePresenters => _active;
         public bool HasActiveMonsters => _active.Count > 0;
         public event Action<MonsterPresenter> OnMonsterSpawned;
+        public event Action OnMonsterSplit;
 
         public void Add(MonsterPresenter presenter)
         {

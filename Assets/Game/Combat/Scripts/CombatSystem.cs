@@ -34,6 +34,10 @@ namespace DeepEarth.Combat
         // 전투 중 새로 스폰되는 몬스터(예: 슬라임 분열) 알림. BattlePresenter가 구독해 턴 시스템에 편입시킨다.
         public event Action<MonsterPresenter> OnMonsterSpawned;
 
+        // 슬라임 분열 발생 알림. BattlePresenter가 구독해 분열이 일어난 플레이어 턴 직후
+        // 몬스터 턴을 건너뛰고 곧바로 플레이어에게 턴을 넘기도록 한다.
+        public event Action OnMonsterSplit;
+
         private void Awake()
         {
             if (_instance == null) _instance = this;
@@ -261,7 +265,10 @@ namespace DeepEarth.Combat
             {
                 var splitData = GetMonsterData(data.splitIntoType);
                 if (splitData != null)
+                {
+                    OnMonsterSplit?.Invoke();
                     SpawnSplitsAsync(splitData, deathPos, depth, data.splitCount).Forget();
+                }
             }
 
             // Skeleton death debuff

@@ -98,14 +98,27 @@ namespace DeepEarth.Battle
             // 반드시 아래 finally에서 해제 — BattlePresenter는 세션 내내 재사용되는 공유 인스턴스라
             // 해제하지 않으면 다음 전투부터 구독이 누적되어 몬스터가 중복 등록된다.
             monsterSource.OnMonsterSpawned += RegisterMonster;
+
+            // 슬라임이 죽으면서 분열한 플레이어 턴에는, 방금 태어난 미니 슬라임이 같은 라운드에
+            // 바로 공격하지 않도록 몬스터 턴을 건너뛰고 곧바로 플레이어에게 턴을 넘긴다.
+            bool splitOccurred = false;
+            void OnSplit() => splitOccurred = true;
+            monsterSource.OnMonsterSplit += OnSplit;
             try
             {
                 _view?.SetVisible(true);
 
                 while (monsterSource.HasActiveMonsters)
                 {
+                    splitOccurred = false;
                     await PlayerTurnAsync();
                     if (StatManager.Instance.CurrentHP <= 0 || !monsterSource.HasActiveMonsters) break;
+
+                    if (splitOccurred)
+                    {
+                        Debug.Log("[Battle]\nSlime Split\nSkip Monster Turn, Hand Turn Back To Player");
+                        continue;
+                    }
 
                     await MonsterTurnAsync();
                     StatusEffectManager.Instance?.ProcessActionTurn();
@@ -115,6 +128,7 @@ namespace DeepEarth.Battle
             finally
             {
                 monsterSource.OnMonsterSpawned -= RegisterMonster;
+                monsterSource.OnMonsterSplit -= OnSplit;
                 _battleModel.Turn.Phase = BattleState.BattleEnd;
                 RelicManager.Instance?.ApplyCombatEndEffects();
                 StatManager.Instance.ResetShield();

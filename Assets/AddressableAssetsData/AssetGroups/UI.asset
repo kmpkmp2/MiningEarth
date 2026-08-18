@@ -15,6 +15,11 @@ MonoBehaviour:
   m_GroupName: UI
   m_GUID: da9e2a73d4441b9488429ab07884d7df
   m_SerializeEntries:
+  - m_GUID: 8953f00f4eadb4e4585ed02066065e2c
+    m_Address: UI_SFX_ButtonClick
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0110dd4786075104aa688cd4da7a6bc1
     m_Address: UI_EffectCard
     m_ReadOnly: 0

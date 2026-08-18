@@ -220,7 +220,13 @@ namespace DeepEarth.Audio
         }
 
         private void ApplyMixerVolume(string param, float linear)
-            => masterMixer?.SetFloat(param, ToDecibels(linear));
+        {
+            // Unity Object에는 "?."(C# 순수 null 체크)가 아니라 "== null"(엔진의 fake-null 판정)을 써야 한다.
+            // masterMixer가 Inspector에서 미할당 상태면 "?."는 이를 감지하지 못해 SetFloat 호출이 그대로
+            // UnassignedReferenceException을 던진다 — Mute()의 기존 명시적 null 체크와 동일하게 맞춘다.
+            if (masterMixer == null) return;
+            masterMixer.SetFloat(param, ToDecibels(linear));
+        }
 
         private static float ToDecibels(float linear)
             => Mathf.Log10(Mathf.Max(linear, 0.0001f)) * 20f;

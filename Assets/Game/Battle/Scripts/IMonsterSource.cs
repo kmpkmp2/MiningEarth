@@ -12,5 +12,9 @@ namespace DeepEarth.Battle
         IReadOnlyList<Combat.MonsterPresenter> ActivePresenters { get; }
         bool HasActiveMonsters { get; }
         event Action<Combat.MonsterPresenter> OnMonsterSpawned;
+
+        // 슬라임 분열처럼 몬스터 사망 시 새 몬스터가 즉시 생겨나는 경우, 그 사망을 유발한
+        // 플레이어 턴 직후 몬스터 턴을 건너뛰고 다시 플레이어에게 턴을 넘기기 위한 신호.
+        event Action OnMonsterSplit;
     }
 }
