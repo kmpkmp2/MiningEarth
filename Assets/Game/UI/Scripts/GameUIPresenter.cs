@@ -1,5 +1,7 @@
 using UnityEngine;
 using DeepEarth.Core;
+using DeepEarth.Audio;
+using DeepEarth.Common;
 
 namespace DeepEarth.UI
 {
@@ -7,6 +9,13 @@ namespace DeepEarth.UI
     {
         private readonly GameUIView _view;
         private readonly GameManager _gameManager;
+
+        // 저체력 경고음(Heartbeat) — HP 30% 이하 구간에서만 루프 재생. 1~30% 구간을 선형 보간해
+        // 체력이 낮을수록 재생 속도(pitch)를 가속하며, HP 1%일 때 2배속에 도달한다.
+        private const float HeartbeatHpThresholdPercent = 30f;
+        private const float HeartbeatMinHpPercent = 1f;
+        private const float HeartbeatMaxPitch = 2f;
+        private bool _heartbeatActive;
 
         public RectTransform GetInventoryButtonRect() => _view?.GetInventoryButtonRect();
 
@@ -82,6 +91,12 @@ namespace DeepEarth.UI
 
             _effectHUDPresenter?.Dispose();
             _inventoryHUDPresenter?.Dispose();
+
+            if (_heartbeatActive)
+            {
+                AudioManager.Instance?.StopHeartbeatWarning();
+                _heartbeatActive = false;
+            }
         }
 
         private void HandleSettingsClicked()
@@ -110,7 +125,34 @@ namespace DeepEarth.UI
 
         private void UpdateHP()
         {
-            _view.SetHP(StatManager.Instance.CurrentHP, StatManager.Instance.GetMaxHP());
+            int currentHP = StatManager.Instance.CurrentHP;
+            int maxHP     = StatManager.Instance.GetMaxHP();
+            _view.SetHP(currentHP, maxHP);
+            UpdateHeartbeatWarning(currentHP, maxHP);
+        }
+
+        private void UpdateHeartbeatWarning(int currentHP, int maxHP)
+        {
+            float hpPercent = maxHP > 0 ? (float)currentHP / maxHP * 100f : 0f;
+
+            if (currentHP > 0 && hpPercent <= HeartbeatHpThresholdPercent)
+            {
+                if (!_heartbeatActive)
+                {
+                    _heartbeatActive = true;
+                    AudioManager.Instance?.PlayHeartbeatWarning(AddressableKeys.HUDSFXLowHPHeartbeat);
+                }
+
+                // 30% → 1배속, 1%(이하) → 2배속으로 선형 가속.
+                float t = Mathf.Clamp01((HeartbeatHpThresholdPercent - hpPercent) / (HeartbeatHpThresholdPercent - HeartbeatMinHpPercent));
+                float pitch = Mathf.Lerp(1f, HeartbeatMaxPitch, t);
+                AudioManager.Instance?.SetHeartbeatWarningPitch(pitch);
+            }
+            else if (_heartbeatActive)
+            {
+                _heartbeatActive = false;
+                AudioManager.Instance?.StopHeartbeatWarning();
+            }
         }
 
         private void UpdateShield()

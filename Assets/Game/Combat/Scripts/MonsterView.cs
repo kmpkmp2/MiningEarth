@@ -13,6 +13,7 @@ namespace DeepEarth.Combat
         private Vector3 _originalScale;
         private Vector3 _spawnWorldPosition;
         private Color _originalColor;
+        private Sprite _originalSprite;
         private Material _instancedMaterial;
 
         private bool UseSprite => spriteRenderer != null;
@@ -25,7 +26,8 @@ namespace DeepEarth.Combat
 
             if (UseSprite)
             {
-                _originalColor = spriteRenderer.color;
+                _originalColor  = spriteRenderer.color;
+                _originalSprite = spriteRenderer.sprite;
             }
             else
             {
@@ -45,7 +47,13 @@ namespace DeepEarth.Combat
             // 풀 재사용 시 코루틴 중단으로 잔류한 플래시 색상 초기화
             if (UseSprite)
             {
-                if (spriteRenderer != null) spriteRenderer.color = _originalColor;
+                if (spriteRenderer != null)
+                {
+                    spriteRenderer.color  = _originalColor;
+                    // SetSprite로 덮어쓴 스프라이트(엘리트 전용 등)가 다음 풀 재사용 때
+                    // 다른 몬스터로 새어나가지 않도록 프리팹 기본 스프라이트로 되돌린다.
+                    spriteRenderer.sprite = _originalSprite;
+                }
             }
             else
             {
@@ -128,6 +136,14 @@ namespace DeepEarth.Combat
         public Color GetMonsterColor()
         {
             return _originalColor;
+        }
+
+        // 공유 프리팹을 쓰는 몬스터(예: 엘리트 빅 슬라임)가 겉모습만 다른 스프라이트로
+        // 표시되어야 할 때 스폰 직후 1회 호출한다.
+        public void SetSprite(Sprite sprite)
+        {
+            if (!UseSprite || sprite == null) return;
+            spriteRenderer.sprite = sprite;
         }
 
         private void OnDestroy()

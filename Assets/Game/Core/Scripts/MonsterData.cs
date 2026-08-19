@@ -12,6 +12,12 @@ namespace DeepEarth.Core
         public string nameLocKey;
         public string addressableKey;
 
+        // addressableKey가 가리키는 프리팹(스프라이트 포함)을 다른 몬스터와 공유하면서
+        // 겉모습만 구분하고 싶을 때 쓰는 Addressable Sprite 키. 비어있으면 프리팹에 내장된
+        // 기본 스프라이트를 그대로 쓴다. (예: 엘리트 빅 슬라임이 일반 슬라임 프리팹을 공유하되
+        // 전용 스프라이트로 덮어쓰는 경우)
+        public string spriteOverrideKey;
+
         [Header("Elite: Spawn Depth Range")]
         [Min(0)] public int spawnDepthMin = 0;
         [Min(-1)] public int spawnDepthMax = -1; // -1 = no upper limit

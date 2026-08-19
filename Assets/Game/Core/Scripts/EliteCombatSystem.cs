@@ -131,6 +131,9 @@ namespace DeepEarth.Core
             if (view == null) view = eliteGo.AddComponent<MonsterView>();
             view.InitializeSpawn(0);
 
+            if (!string.IsNullOrEmpty(data.spriteOverrideKey))
+                ApplySpriteOverrideAsync(view, data.spriteOverrideKey).Forget();
+
             var model     = new EliteMonsterModel(data, depth);
             var presenter = new EliteMonsterPresenter(model, view);
 
@@ -146,6 +149,20 @@ namespace DeepEarth.Core
             };
 
             source.Add(presenter);
+        }
+
+        // 공유 프리팹(예: Combat_Monster_Slime)을 쓰는 엘리트가 전용 스프라이트로 표시되도록
+        // 스폰 직후 비동기로 덮어쓴다. 실패해도 프리팹 기본 스프라이트로 그대로 보이므로 안전.
+        private async UniTaskVoid ApplySpriteOverrideAsync(MonsterView view, string spriteKey)
+        {
+            Sprite sprite;
+            try { sprite = await ResourceManager.Instance.LoadAssetAsync<Sprite>(spriteKey); }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[Elite]\nSprite override load failed: {spriteKey}\n{e.Message}");
+                return;
+            }
+            if (view != null) view.SetSprite(sprite);
         }
 
         // ── Rewards ──────────────────────────────────────────────────────────────

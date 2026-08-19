@@ -172,6 +172,10 @@ namespace DeepEarth.Common
 
         // Elite System Data
         public const string EliteSpawnTableKey  = "Elite_SpawnTable";
+
+        // Elite Monster Sprite Overrides — 공유 프리팹(Combat_Monster_*)을 쓰는 엘리트가
+        // MonsterData.spriteOverrideKey로 참조해 겉모습만 바꿔 표시할 때 쓰는 키
+        public const string EliteSpriteMotherSlime = "Elite_Sprite_MotherSlime";
         public const string LabelEliteData      = "EliteData";
 
         // Pickaxe
@@ -237,6 +241,9 @@ namespace DeepEarth.Common
 
         // Common UI SFX — 전체 버튼 공용 기본 클릭음(개별 버튼은 ButtonClickSfx.overrideSfxId로 재정의 가능)
         public const string UISFXButtonClick = "UI_SFX_ButtonClick";
+
+        // 저체력 경고 — HP 30% 이하일 때 루프 재생, 낮을수록 재생 속도 가속(GameUIPresenter)
+        public const string HUDSFXLowHPHeartbeat = "HUD_SFX_LowHP_Heartbeat";
 
         // Relic Addressable Labels (label-based load — no per-relic key needed)
         public const string LabelRelicTreasure = "Relic_Treasure";

@@ -20,6 +20,16 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 022205605ecdd7146965e2400bad4855
+    m_Address: HUD_SFX_LowHP_Heartbeat
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e174adc8355cc1a4395c436b937cec70
+    m_Address: Elite_Sprite_MotherSlime
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 0110dd4786075104aa688cd4da7a6bc1
     m_Address: UI_EffectCard
     m_ReadOnly: 0

@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DeepEarth.Audio.AudioDatabase
   _clips:
   - {fileID: 11400000, guid: 2d6776c676194c8e92ba638d8f57d5bf, type: 2}
+  - {fileID: 11400000, guid: fdce7b8f3678462f960562c1a049127a, type: 2}

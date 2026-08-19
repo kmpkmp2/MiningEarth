@@ -14,6 +14,7 @@ namespace DeepEarth.Audio
         [SerializeField] private AudioSource bgmSource;
         [SerializeField] private AudioSource sfxSource;
         [SerializeField] private AudioSource uiSource;
+        [SerializeField] private AudioSource heartbeatSource;
 
         [Header("Mixer")]
         [SerializeField] private AudioMixer masterMixer;
@@ -158,6 +159,43 @@ namespace DeepEarth.Audio
         {
             sfxSource.Stop();
             uiSource.Stop();
+        }
+
+        // ── Low HP Heartbeat ─────────────────────────────────────────
+        // 저체력 경고음 전용 루프 채널. 재생 중 다시 호출해도 클립을 재시작하지 않고
+        // 이미 재생 중이면 무시한다 — 매 HP 변경 프레임마다 호출돼도 루프가 끊기지 않도록.
+        private string _heartbeatId;
+
+        public void PlayHeartbeatWarning(string id)
+        {
+            if (_heartbeatId == id && heartbeatSource.isPlaying) return;
+            _heartbeatId = id;
+            PlayHeartbeatWarningAsync(id).Forget();
+        }
+
+        public void StopHeartbeatWarning()
+        {
+            _heartbeatId = null;
+            heartbeatSource.Stop();
+        }
+
+        public void SetHeartbeatWarningPitch(float pitch)
+        {
+            heartbeatSource.pitch = pitch;
+        }
+
+        private async UniTaskVoid PlayHeartbeatWarningAsync(string id)
+        {
+            var data = database?.GetClip(id);
+            if (data == null) return;
+
+            var clip = await LoadClipAsync(data.AddressableKey);
+            if (clip == null || _heartbeatId != id) return; // 로드 중 취소/교체됐으면 재생하지 않음
+
+            heartbeatSource.clip   = clip;
+            heartbeatSource.loop   = true;
+            heartbeatSource.volume = data.Volume;
+            heartbeatSource.Play();
         }
 
         private async UniTaskVoid PlaySourceAsync(AudioClipData data, AudioSource source)

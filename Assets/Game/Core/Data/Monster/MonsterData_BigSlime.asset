@@ -15,6 +15,7 @@ MonoBehaviour:
   monsterType: 7
   nameLocKey: monster_big_slime_name
   addressableKey: Combat_Monster_Slime
+  spriteOverrideKey: Elite_Sprite_MotherSlime
   grade: 1
   spawnDepthMin: 0
   spawnDepthMax: -1
