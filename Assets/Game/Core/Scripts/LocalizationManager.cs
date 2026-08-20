@@ -1077,7 +1077,7 @@ namespace DeepEarth.Core
                 { "go_best_depth", "최고 깊이: {0}m" },
                 
                 // Menu translations
-                { "menu_title", "디프 어스" },
+                { "menu_title", "DeepEarth" },
                 { "menu_play", "게임 시작" },
                 { "menu_upgrade", "업그레이드" },
                 { "menu_shop", "상점" },
