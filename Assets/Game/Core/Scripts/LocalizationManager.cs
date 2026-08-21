@@ -572,6 +572,17 @@ namespace DeepEarth.Core
                 { "status_mining_up_name", "Mining Power Up" },
                 { "status_mining_up_desc", "Mining power is boosted for a few turns." },
 
+                // Monster Status Icons (below-monster status row during combat)
+                { "monster_status_death_trigger_title", "On Death" },
+                { "monster_status_armor_title", "Armored" },
+                { "monster_status_armor_desc", "Absorbs damage instead of HP while armor remains ({0}/{1})." },
+                { "monster_status_armor_broken_title", "Armor Broken" },
+                { "monster_status_armor_broken_desc", "Armor is destroyed. Inflicts Poison every 3 hits." },
+                { "monster_status_enrage_title", "Enraged" },
+                { "monster_status_enrage_desc", "Enrage stage {0} — attack damage increased." },
+                { "monster_status_vulnerable_title", "Volatile" },
+                { "monster_status_vulnerable_desc", "The next hit this monster takes will deal bonus damage." },
+
                 { "reveal_monster_slime", "Slime Appears!" },
                 { "monster_slime_name", "Slime" },
                 { "monster_slime_death_split_desc", "Warning: Splits into 2 Small Slimes on death!" },
@@ -1567,6 +1578,17 @@ namespace DeepEarth.Core
                 { "status_mining_down_desc", "채굴력이 감소합니다." },
                 { "status_mining_up_name", "채굴력 증가" },
                 { "status_mining_up_desc", "채굴력이 증가합니다." },
+
+                // 몬스터 상태 아이콘 (전투 중 몬스터 하단 상태 표시줄)
+                { "monster_status_death_trigger_title", "사망 시" },
+                { "monster_status_armor_title", "방어구" },
+                { "monster_status_armor_desc", "방어구가 남아있는 동안 체력 대신 피해를 흡수합니다 ({0}/{1})." },
+                { "monster_status_armor_broken_title", "방어구 파괴" },
+                { "monster_status_armor_broken_desc", "방어구가 파괴되었습니다. 3회 피격마다 중독을 겁니다." },
+                { "monster_status_enrage_title", "격노" },
+                { "monster_status_enrage_desc", "격노 {0}단계 — 공격력이 증가했습니다." },
+                { "monster_status_vulnerable_title", "불안정" },
+                { "monster_status_vulnerable_desc", "다음 피격 시 추가 피해를 입습니다." },
 
                 { "reveal_monster_slime", "슬라임 발견!" },
                 { "monster_slime_name", "슬라임" },

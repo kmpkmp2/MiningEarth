@@ -23,6 +23,7 @@ namespace DeepEarth.Battle
         private readonly TargetSelectPresenter _targetSelectPresenter;
         private readonly ShieldPresenter _shieldPresenter;
         private readonly HPBarPresenter _hpBarPresenter;
+        private readonly MonsterStatusPresenter _statusPresenter;
         private readonly List<MonsterPresenter> _monsters = new List<MonsterPresenter>();
         private UniTaskCompletionSource<PlayerActionType> _playerActionTcs;
         private bool _retreatAllowed;
@@ -35,6 +36,7 @@ namespace DeepEarth.Battle
             _targetSelectPresenter = new TargetSelectPresenter(view != null ? view.TargetIndicatorPrefab : null, view != null ? view.TargetIndicatorLayer : null);
             _shieldPresenter = new ShieldPresenter(view != null ? view.ShieldPopupView : null);
             _hpBarPresenter = new HPBarPresenter(view != null ? view.HPBarViewPrefab : null, view != null ? view.HPBarLayer : null);
+            _statusPresenter = new MonsterStatusPresenter(view != null ? view.StatusHUDViewPrefab : null, view != null ? view.HPBarLayer : null);
 
             if (_view != null)
             {
@@ -90,6 +92,8 @@ namespace DeepEarth.Battle
                 // (일반/엘리트/소환 미니언/전금속거인 광석 코어)에만 머리 위 HP바를 붙인다.
                 if (!IsBossMainBody(cp.Model.Type))
                     _hpBarPresenter.Register(wrapper);
+
+                _statusPresenter.Register(wrapper);
             }
 
             foreach (var cp in monsterSource.ActivePresenters)
@@ -136,6 +140,7 @@ namespace DeepEarth.Battle
                 StatManager.Instance.ResetCombatCounters();
                 _intentPresenter.Clear();
                 _hpBarPresenter.Clear();
+                _statusPresenter.Clear();
                 _view?.SetVisible(false);
             }
         }
@@ -146,6 +151,7 @@ namespace DeepEarth.Battle
             _monsters.Remove(wrapper);
             _intentPresenter.RemoveIntent(wrapper);
             _hpBarPresenter.Remove(wrapper);
+            _statusPresenter.Remove(wrapper);
         }
 
         // 보스 본체 6종(4보스+CaveRat) 판정 — BossView 전용 HP 슬라이더와 중복 표시를 피하기 위한 제외 목록.

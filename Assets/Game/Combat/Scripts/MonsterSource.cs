@@ -21,6 +21,10 @@ namespace DeepEarth.Combat
             OnMonsterSpawned?.Invoke(presenter);
         }
 
+        // 엘리트(예: 빅 슬라임)가 사망하며 분열할 때 호출 — BattlePresenter가 이번 라운드의
+        // 몬스터 턴을 건너뛰고 플레이어에게 턴을 돌려주도록 신호를 보낸다.
+        public void NotifySplit() => OnMonsterSplit?.Invoke();
+
         private void HandleKilled(MonsterPresenter presenter)
         {
             presenter.OnMonsterKilled -= HandleKilled;

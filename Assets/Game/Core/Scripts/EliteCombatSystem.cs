@@ -145,7 +145,12 @@ namespace DeepEarth.Core
                 // BigSlime: 사망 시 일반 슬라임 3마리로 분열 — 기존 CombatSystem.HandleMonsterKilled의
                 // 슬라임 분열 패턴과 동일하게 사망 이벤트에서 처리한다.
                 if (data.eliteSkillType == EliteSkillType.SplitOnDeath)
+                {
+                    // 일반 슬라임 분열과 동일하게, 방금 태어난 미니 슬라임이 같은 라운드에
+                    // 바로 공격하지 않도록 몬스터 턴을 건너뛰고 플레이어에게 턴을 돌려준다.
+                    source.NotifySplit();
                     SpawnSplitSlimesAsync(depth, source).Forget();
+                }
             };
 
             source.Add(presenter);

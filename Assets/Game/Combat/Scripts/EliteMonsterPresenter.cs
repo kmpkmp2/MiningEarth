@@ -124,6 +124,9 @@ namespace DeepEarth.Combat
         // MagmaLizard: 용암분출 — 다음 피격 1회의 피해를 증가시키는 취약 상태.
         private bool _vulnerableNextHit;
 
+        // 상태 아이콘 표시 등 읽기 전용 조회용. ConsumeVulnerable()과 달리 상태를 소모하지 않는다.
+        public bool IsVulnerableNextHit => _vulnerableNextHit;
+
         public void SetVulnerable()
         {
             _vulnerableNextHit = true;

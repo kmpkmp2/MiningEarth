@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using DeepEarth.Core;
@@ -43,6 +44,24 @@ namespace DeepEarth.Battle
         // 엘리트/보스 서브클래스가 공격 데미지에 자신의 스킬 보정(예: 격노 스택)을 얹는 확장 지점.
         // GetDisplayValue/ExecuteTurnAsync가 공통으로 거쳐가므로 인텐트 표시값과 실제 데미지가 항상 일치한다.
         protected virtual int ModifyOutgoingDamage(int baseDamage) => baseDamage;
+
+        // 몬스터 하단 상태 아이콘 목록. 기본은 MonsterData의 "사망 시 효과" 경고 하나뿐 —
+        // canSplit/hasDeathDebuff/hasDeathReward가 true인 몬스터는 항상 deathTriggerDescKey도
+        // 채워져 있으므로(데이터 컨벤션) 이 필드 하나만 확인하면 된다. 엘리트/보스 서브클래스는
+        // 진행 중인 스킬 상태(방어구/격노 등)를 추가로 얹기 위해 오버라이드한다.
+        public virtual List<MonsterStatusEntry> GetStatusEntries()
+        {
+            var list = new List<MonsterStatusEntry>();
+            var data = _combatPresenter.Model.Data;
+            if (data != null && !string.IsNullOrEmpty(data.deathTriggerDescKey))
+            {
+                list.Add(new MonsterStatusEntry(
+                    "Icon_Intent_Special",
+                    LocalizationManager.Instance.GetTranslation("monster_status_death_trigger_title"),
+                    LocalizationManager.Instance.GetTranslation(data.deathTriggerDescKey)));
+            }
+            return list;
+        }
 
         public MonsterPresenter(Combat.MonsterPresenter combatPresenter, MonsterPatternModel pattern, TurnModel turn)
         {

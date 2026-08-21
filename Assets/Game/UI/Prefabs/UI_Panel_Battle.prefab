@@ -2576,10 +2576,10 @@ RectTransform:
   - {fileID: 8316201721424785646}
   m_Father: {fileID: 41398806992994629}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.05, y: 0.03}
-  m_AnchorMax: {x: 0.95, y: 0.13}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 400}
+  m_SizeDelta: {x: 972, y: 192}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &957706669062093331
 CanvasRenderer:
@@ -3175,7 +3175,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -3296,7 +3296,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -3338,5 +3338,6 @@ MonoBehaviour:
   targetIndicatorLayer: {fileID: 8483426770924726565}
   hpBarViewPrefab: {fileID: 1300163027380524045, guid: d77d6da956e2b8149bb38d8b1b338758, type: 3}
   hpBarLayer: {fileID: 5615587129585104774}
+  statusHUDViewPrefab: {fileID: 6080280118367460652, guid: 33fb24614660a974e82c4e7c1345896d, type: 3}
   defenseEffectObject: {fileID: 1985765447488328338}
   shieldPopupView: {fileID: 552098040421158906}

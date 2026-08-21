@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using DeepEarth.Core;
@@ -146,6 +147,55 @@ namespace DeepEarth.Battle
             if (EliteModel.Data.eliteSkillType == EliteSkillType.Enrage)
                 return baseDamage + EliteModel.EnrageCount;
             return base.ModifyOutgoingDamage(baseDamage);
+        }
+
+        // 진행 중인 엘리트 스킬 상태(방어구/격노/취약)를 기본 상태 목록(사망 시 효과 경고)에 추가로 얹는다.
+        public override List<MonsterStatusEntry> GetStatusEntries()
+        {
+            var list = base.GetStatusEntries();
+            var loc = LocalizationManager.Instance;
+
+            switch (EliteModel.Data.eliteSkillType)
+            {
+                case EliteSkillType.IronArmor:
+                    if (!EliteModel.IsArmorBroken)
+                    {
+                        list.Add(new MonsterStatusEntry(
+                            "Icon_Intent_Defend",
+                            loc.GetTranslation("monster_status_armor_title"),
+                            loc.GetFormatted("monster_status_armor_desc", EliteModel.ArmorCurrentHP, EliteModel.ArmorMaxHP)));
+                    }
+                    else
+                    {
+                        list.Add(new MonsterStatusEntry(
+                            "Icon_Intent_Debuff",
+                            loc.GetTranslation("monster_status_armor_broken_title"),
+                            loc.GetTranslation("monster_status_armor_broken_desc")));
+                    }
+                    break;
+
+                case EliteSkillType.Enrage:
+                    if (EliteModel.EnrageCount > 0)
+                    {
+                        list.Add(new MonsterStatusEntry(
+                            "Icon_Intent_HeavyAttack",
+                            loc.GetTranslation("monster_status_enrage_title"),
+                            loc.GetFormatted("monster_status_enrage_desc", EliteModel.EnrageCount)));
+                    }
+                    break;
+
+                case EliteSkillType.BurnOnHit:
+                    if (EliteCombat.IsVulnerableNextHit)
+                    {
+                        list.Add(new MonsterStatusEntry(
+                            "Icon_Intent_Debuff",
+                            loc.GetTranslation("monster_status_vulnerable_title"),
+                            loc.GetTranslation("monster_status_vulnerable_desc")));
+                    }
+                    break;
+            }
+
+            return list;
         }
     }
 }
