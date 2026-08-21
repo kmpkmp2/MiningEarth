@@ -157,7 +157,7 @@ namespace DeepEarth.UI
 
         private void UpdateShield()
         {
-            _view.SetShield(StatManager.Instance.CurrentShield);
+            _view.SetShield(StatManager.Instance.CurrentShield, StatManager.Instance.GetMaxHP());
         }
 
         private void UpdateStats()

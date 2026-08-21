@@ -11,6 +11,8 @@ namespace DeepEarth.Combat
 
         public event Action<MonsterPresenter> OnMonsterKilled;
 
+        private static readonly Color ShieldDamageColor = new Color(0.3f, 0.6f, 1f);
+
         public MonsterPresenter(MonsterModel model, MonsterView view)
         {
             Model = model;
@@ -24,9 +26,13 @@ namespace DeepEarth.Combat
         {
             if (Model.IsDead) return;
 
-            Model.TakeDamage(damage);
+            var result = Model.TakeDamage(damage);
 
-            EffectSystem.Instance.SpawnDamageText(View.transform.position + Vector3.up * 0.5f, damage.ToString(), Color.white);
+            if (result.ShieldDamage > 0)
+                EffectSystem.Instance.SpawnDamageText(View.transform.position + Vector3.up * 0.5f, $"-{result.ShieldDamage}", ShieldDamageColor);
+            if (result.HpDamage > 0)
+                EffectSystem.Instance.SpawnDamageText(View.transform.position + Vector3.up * 0.5f, result.HpDamage.ToString(), Color.white);
+
             EffectSystem.Instance.SpawnHitParticles(View.transform.position, View.GetMonsterColor());
             EffectSystem.Instance.ShakeCamera(0.12f, 0.04f);
             View.PlayHurtFeedback();

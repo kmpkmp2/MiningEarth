@@ -86,9 +86,6 @@ namespace DeepEarth.Battle
                 }
             }
 
-            if (_combatPresenter.Model.IsDefending)
-                dmg = Mathf.RoundToInt(dmg * (1f - BattleBalanceData.Instance.defenseRate));
-
             // 신규 로스터(2026-08) 확장 지점: 취약/보호 등 "다음 피격 1회" 류 효과. 기본값 1f(영향 없음).
             dmg = Mathf.Max(1, Mathf.RoundToInt(dmg * GetIncomingDamageMultiplier()));
 
@@ -110,6 +107,9 @@ namespace DeepEarth.Battle
             if (step == null || _combatPresenter.Model.IsDead) return step;
 
             _combatPresenter.Model.IsDefending = false;
+
+            // 실드는 단발성 — 지난 턴에 얻은 실드가 남아 있어도 자신의 턴이 다시 돌아오면 소멸한다.
+            _combatPresenter.Model.ResetShield();
 
             switch (step.intentType)
             {
@@ -142,8 +142,22 @@ namespace DeepEarth.Battle
                     break;
                 }
                 case IntentType.Defend:
+                {
                     _combatPresenter.Model.IsDefending = true;
+
+                    // 기존 "받는 피해 %감소" 방식을 유저와 동일한 숫자 실드(흡수형)로 전환.
+                    // MaxHP 기준 defenseRate 비율만큼 실드를 부여해 기존 밸런스 감각을 유지한다.
+                    int shieldAmount = Mathf.Max(1, Mathf.RoundToInt(_combatPresenter.Model.MaxHP * BattleBalanceData.Instance.defenseRate));
+                    _combatPresenter.Model.AddShield(shieldAmount);
+
+                    EffectSystem.Instance.SpawnDamageText(_combatPresenter.View.transform.position + Vector3.up * 0.5f, $"+{shieldAmount}", ShieldDamageColor);
+                    EffectSystem.Instance.SpawnHitParticles(_combatPresenter.View.transform.position, ShieldDamageColor);
+                    EffectSystem.Instance.SpawnIconPopup(_combatPresenter.View.transform.position, "Icon_Intent_Defend");
+
+                    // 유저 방어 연출과 동일하게, 다음 턴으로 넘어가기 전 연출을 볼 시간을 준다.
+                    await UniTask.Delay(TimeSpan.FromSeconds(BattleBalanceData.Instance.defenseEffectHoldTime));
                     break;
+                }
                 case IntentType.Debuff:
                     OnDebuffStep();
                     break;

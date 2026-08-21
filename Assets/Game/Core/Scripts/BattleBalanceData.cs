@@ -17,6 +17,9 @@ namespace DeepEarth.Core
         [Min(0f)] public float turnTransitionTime = 0.10f;
         [Min(0f)] public float intentAnimationTime = 0.15f;
         [Min(0f)] public float defenseAnimationTime = 0.10f;
+        // 방어 선택 → 실드 획득 연출(파란 +n 텍스트+파티클)을 플레이어가 충분히 볼 수 있도록
+        // 몬스터 턴으로 넘어가기 전 잠깐 멈추는 시간.
+        [Min(0f)] public float defenseEffectHoldTime = 0.6f;
         [Min(0f)] public float bossSkillAnimationTime = 0.5f;
 
         // Target Select: 인디케이터 등장/확정 연출 시간값.

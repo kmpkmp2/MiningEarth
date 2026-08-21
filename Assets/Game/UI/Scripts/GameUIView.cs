@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -12,6 +13,10 @@ namespace DeepEarth.UI
         [SerializeField] private TextMeshProUGUI hpText;
         [SerializeField] private Slider hpSlider;
         [SerializeField] private TextMeshProUGUI shieldText;
+
+        // hpSlider와 같은 크기/위치로 겹쳐 배치되는 실드 전용 바(선택 사항) — 비어있으면 실드 표시를 건너뛴다.
+        [SerializeField] private Slider shieldSlider;
+        private Coroutine _shieldFillCoroutine;
         [SerializeField] private TextMeshProUGUI depthText;
         [SerializeField] private TextMeshProUGUI difficultyText;
         [SerializeField] private TextMeshProUGUI inventorySizeText;
@@ -107,13 +112,36 @@ namespace DeepEarth.UI
             }
         }
 
-        public void SetShield(int current)
+        public void SetShield(int current, int maxHP)
         {
-            if (shieldText == null) return;
-            bool hasShield = current > 0;
-            shieldText.gameObject.SetActive(hasShield);
-            if (hasShield)
-                shieldText.text = LocalizationManager.Instance.GetFormatted("hud_shield", current);
+            if (shieldText != null)
+            {
+                bool hasShield = current > 0;
+                shieldText.gameObject.SetActive(hasShield);
+                if (hasShield)
+                    shieldText.text = LocalizationManager.Instance.GetFormatted("hud_shield", current);
+            }
+
+            if (shieldSlider != null)
+            {
+                shieldSlider.maxValue = maxHP;
+                if (_shieldFillCoroutine != null) StopCoroutine(_shieldFillCoroutine);
+                _shieldFillCoroutine = StartCoroutine(CoAnimateShieldFill(current));
+            }
+        }
+
+        private IEnumerator CoAnimateShieldFill(int target)
+        {
+            const float duration = 0.25f;
+            float start = shieldSlider.value;
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                shieldSlider.value = Mathf.Lerp(start, target, elapsed / duration);
+                yield return null;
+            }
+            shieldSlider.value = target;
         }
 
         public void SetDepth(int depth, string difficultyKey)

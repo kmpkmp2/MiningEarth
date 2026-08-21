@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
@@ -157,6 +158,9 @@ namespace DeepEarth.Battle
 
         private async UniTask PlayerTurnAsync()
         {
+            // 실드는 단발성 — 지난 턴에 얻은 실드가 남아 있어도 내 턴이 다시 돌아오면 소멸한다.
+            StatManager.Instance.ResetShield();
+
             // 그룹 D: 턴 시작 시점 실드 보너스(강철 갑옷=첫 턴 한정, 성기사의 망토=매 턴) — 재시도 루프 밖에서 1회만 부여.
             int turnStartShield = (RelicManager.Instance?.GetFirstTurnShieldBonus() ?? 0) + (RelicManager.Instance?.GetEveryTurnShieldBonus() ?? 0);
             if (turnStartShield > 0) StatManager.Instance.AddShield(turnStartShield);
@@ -213,6 +217,10 @@ namespace DeepEarth.Battle
                     }
 
                     _view?.PlayDefendEffect();
+
+                    // 실드 획득 연출(파란 +n 텍스트+파티클)을 볼 시간을 준 뒤 몬스터 턴으로 넘어간다.
+                    await UniTask.Delay(TimeSpan.FromSeconds(BattleBalanceData.Instance.defenseEffectHoldTime));
+
                     StatManager.Instance.IncrementCombatTurn();
                     return;
                 }

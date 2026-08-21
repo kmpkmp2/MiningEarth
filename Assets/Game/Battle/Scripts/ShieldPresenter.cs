@@ -9,6 +9,8 @@ namespace DeepEarth.Battle
     // 방어 버튼 클릭 시 광물 선택 팝업 대기/취소 처리 + 선택 시 소비/Shield 부여. BattlePresenter가 소유(신규 Singleton 아님).
     public class ShieldPresenter
     {
+        private static readonly Color ShieldGainColor = new Color(0.3f, 0.6f, 1f);
+
         private readonly ShieldPopupView _view;
         private UniTaskCompletionSource<BlockType?> _selectionTcs;
 
@@ -77,6 +79,12 @@ namespace DeepEarth.Battle
             if (!InventoryManager.Instance.RemoveItem(itemId, 1)) return; // 방어적 체크(버튼이 이미 0개면 비활성화되어 있어야 함)
 
             StatManager.Instance.AddShield(shieldAmount);
+
+            Vector3 textWorldPos = Camera.main != null
+                ? Camera.main.transform.position + Camera.main.transform.forward * 1.5f
+                : Vector3.zero;
+            EffectSystem.Instance.SpawnDamageText(textWorldPos, $"+{shieldAmount}", ShieldGainColor);
+            EffectSystem.Instance.SpawnHitParticles(textWorldPos, ShieldGainColor);
 
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             Debug.Log($"[Battle]\nGuard Selected\nMaterial : {type}\nConsumed : 1\nShield +{shieldAmount}\nCurrent Shield : {StatManager.Instance.CurrentShield}\n----------------");

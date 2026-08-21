@@ -13,6 +13,7 @@ namespace DeepEarth.Battle
         private readonly Transform _layer;
         private readonly Dictionary<MonsterPresenter, MonsterHPBarView> _views = new();
         private readonly Dictionary<MonsterPresenter, Action<int, int>> _handlers = new();
+        private readonly Dictionary<MonsterPresenter, Action<int, int>> _shieldHandlers = new();
 
         public HPBarPresenter(GameObject viewPrefab, Transform layer)
         {
@@ -36,13 +37,18 @@ namespace DeepEarth.Battle
 
             var model = monster.CombatPresenter.Model;
             view.SetHP(model.CurrentHP, model.MaxHP);
+            view.SetShield(model.Shield, model.MaxHP);
             view.SetVisible(true);
 
             Action<int, int> handler = (cur, max) => view.SetHP(cur, max);
             model.OnHPChanged += handler;
 
+            Action<int, int> shieldHandler = (cur, max) => view.SetShield(cur, max);
+            model.OnShieldChanged += shieldHandler;
+
             _views[monster] = view;
             _handlers[monster] = handler;
+            _shieldHandlers[monster] = shieldHandler;
         }
 
         public void Remove(MonsterPresenter monster)
@@ -52,6 +58,13 @@ namespace DeepEarth.Battle
                 if (monster?.CombatPresenter?.Model != null)
                     monster.CombatPresenter.Model.OnHPChanged -= handler;
                 _handlers.Remove(monster);
+            }
+
+            if (_shieldHandlers.TryGetValue(monster, out var shieldHandler))
+            {
+                if (monster?.CombatPresenter?.Model != null)
+                    monster.CombatPresenter.Model.OnShieldChanged -= shieldHandler;
+                _shieldHandlers.Remove(monster);
             }
 
             if (_views.TryGetValue(monster, out var view))
@@ -67,6 +80,11 @@ namespace DeepEarth.Battle
                 if (kv.Key?.CombatPresenter?.Model != null)
                     kv.Key.CombatPresenter.Model.OnHPChanged -= kv.Value;
             _handlers.Clear();
+
+            foreach (var kv in _shieldHandlers)
+                if (kv.Key?.CombatPresenter?.Model != null)
+                    kv.Key.CombatPresenter.Model.OnShieldChanged -= kv.Value;
+            _shieldHandlers.Clear();
 
             foreach (var kv in _views)
                 if (kv.Value != null) UnityEngine.Object.Destroy(kv.Value.gameObject);

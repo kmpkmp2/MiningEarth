@@ -290,6 +290,71 @@ namespace DeepEarth.Common
             Destroy(particles, 1.5f);
         }
 
+        // 실드 획득 등, 대상 앞에 아이콘(방패 등)이 잠깐 떠올랐다 사라지는 연출. iconKey는 Addressable Sprite 키
+        // (예: 인텐트 프리뷰와 동일한 "Icon_Intent_Defend" 재사용 — 별도 에셋 추가 불필요).
+        public void SpawnIconPopup(Vector3 worldPosition, string iconKey, float duration = 0.8f)
+        {
+            SpawnIconPopupAsync(worldPosition, iconKey, duration).Forget();
+        }
+
+        private async UniTaskVoid SpawnIconPopupAsync(Vector3 worldPosition, string iconKey, float duration)
+        {
+            if (_uiCanvas == null) _uiCanvas = FindFirstObjectByType<Canvas>();
+            EnsureCameraReference();
+            if (_uiCanvas == null || _mainCamera == null || string.IsNullOrEmpty(iconKey)) return;
+
+            Sprite sprite;
+            try { sprite = await ResourceManager.Instance.LoadAssetAsync<Sprite>(iconKey); }
+            catch (Exception) { return; }
+            if (sprite == null) return;
+
+            GameObject iconGo = new GameObject("IconPopup");
+            iconGo.transform.SetParent(_uiCanvas.transform, false);
+            iconGo.transform.SetAsLastSibling();
+
+            var img = iconGo.AddComponent<Image>();
+            img.sprite = sprite;
+            img.preserveAspect = true;
+            img.raycastTarget = false;
+            img.rectTransform.sizeDelta = new Vector2(56f, 56f);
+
+            Vector2 screenPos = _mainCamera.WorldToScreenPoint(worldPosition);
+            iconGo.transform.position = screenPos;
+
+            StartCoroutine(CoAnimateIconPopup(iconGo, img, duration));
+        }
+
+        private IEnumerator CoAnimateIconPopup(GameObject go, Image img, float duration)
+        {
+            float scaleInTime = duration * 0.25f;
+            float holdTime    = duration * 0.45f;
+            float fadeOutTime = duration - scaleInTime - holdTime;
+
+            float elapsed = 0f;
+            while (elapsed < scaleInTime)
+            {
+                go.transform.localScale = Vector3.one * Mathf.Lerp(0f, 1.15f, elapsed / scaleInTime);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+            go.transform.localScale = Vector3.one * 1.15f;
+
+            yield return new WaitForSeconds(holdTime);
+
+            elapsed = 0f;
+            Color startColor = img.color;
+            while (elapsed < fadeOutTime)
+            {
+                float t = elapsed / fadeOutTime;
+                img.color = new Color(startColor.r, startColor.g, startColor.b, Mathf.Lerp(1f, 0f, t));
+                go.transform.localScale = Vector3.one * Mathf.Lerp(1.15f, 0.9f, t);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            Destroy(go);
+        }
+
         // 채굴 보상 아이콘이 HUD 인벤토리 버튼으로 날아가는 연출 + 획득 SFX.
         // ResourceItemView.AbsorbToAsync(GameOver 재화 흡수 연출)와 동일한 이징 방식을 일반화한 것.
         public void SpawnMiningRewardPickup(Vector3 worldStartPosition, string iconKey, int amount, RectTransform target)
