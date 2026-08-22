@@ -17,3 +17,4 @@ MonoBehaviour:
   baseHits: 1
   baseRewardCount: 1
   unlockDepth: 0
+  spawnWeight: 0.5

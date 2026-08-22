@@ -194,17 +194,26 @@ namespace DeepEarth.Mining
             }
         }
 
-        // 깊이는 더 이상 "출현 확률"을 가중하지 않는다 — MineralData.unlockDepth 이상인 광물들 중
-        // 완전 균등 랜덤으로 선택한다(깊이는 이후 RewardCalculator의 획득량 계산에만 관여).
+        // 깊이는 "출현 확률"에 직접 관여하지 않는다 — MineralData.unlockDepth 이상인 광물들 중
+        // 각자의 spawnWeight 가중치 랜덤으로 선택한다(깊이는 이후 RewardCalculator의 획득량 계산에만 관여).
         private BlockType ChooseBlockTypeByDepth(int depth)
         {
             var candidates = _mineralDataCache
                 .Where(kv => depth >= kv.Value.unlockDepth)
-                .Select(kv => kv.Key)
+                .Select(kv => kv.Value)
                 .ToList();
 
             if (candidates.Count == 0) return BlockType.Dirt; // MineralData 로드 실패 시 안전 폴백
-            return candidates[UnityEngine.Random.Range(0, candidates.Count)];
+
+            float totalWeight = candidates.Sum(c => c.spawnWeight);
+            float roll = UnityEngine.Random.value * totalWeight;
+            float acc = 0f;
+            foreach (var candidate in candidates)
+            {
+                acc += candidate.spawnWeight;
+                if (roll < acc) return candidate.blockType;
+            }
+            return candidates[candidates.Count - 1].blockType;
         }
 
         private string GetAddressableKeyForBlock(BlockType type)
