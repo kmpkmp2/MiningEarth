@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using DeepEarth.Core;
@@ -11,6 +12,13 @@ namespace DeepEarth.UI
 {
     public class InventoryPopupPresenter
     {
+        // 정렬 우선순위: 소비재 → 광물 → 그 외. BlockType(Constants.cs) 기반 7종 광물의 itemID 고정 목록 —
+        // 새 광물(BlockType enum 값)이 추가되면 여기도 함께 갱신해야 한다.
+        private static readonly HashSet<string> MineralItemIDs = new HashSet<string>
+        {
+            "Item_Dirt", "Item_Stone", "Item_Wood", "Item_Iron", "Item_Silver", "Item_Gold", "Item_Diamond"
+        };
+
         private readonly InventoryPopupView _view;
         private readonly InventoryCollection _collection;
         private readonly List<GameObject> _activeSlots = new List<GameObject>();
@@ -75,7 +83,8 @@ namespace DeepEarth.UI
 
         private async UniTaskVoid RefreshGridAsync(int refreshId)
         {
-            var slotsCopy = new List<InventorySlotModel>(_collection.Slots);
+            // 1순위: 소비재, 2순위: 광물, 3순위: 그 외. 같은 우선순위 내에서는 기존 순서를 유지한다(안정 정렬).
+            var slotsCopy = _collection.Slots.OrderBy(GetSortPriority).ToList();
 
             var parent = _view.GetGridContentParent();
             if (parent == null) return;
@@ -153,6 +162,13 @@ namespace DeepEarth.UI
                     if (detailPanel != null) detailPanel.SetVisible(false);
                 }
             }
+        }
+
+        private static int GetSortPriority(InventorySlotModel slot)
+        {
+            if (slot.Item != null && slot.Item.type == ItemType.Consumable) return 0;
+            if (MineralItemIDs.Contains(slot.ItemID)) return 1;
+            return 2;
         }
 
         private async UniTask<Sprite> LoadIconSpriteAsync(string iconKey)
