@@ -409,5 +409,56 @@ namespace DeepEarth.Common
             await view.FlyToAsync(target);
             Destroy(iconGo);
         }
+
+        // 몬스터 도둑질(SkeletonMiner 등)로 광물을 잃을 때, HUD 인벤토리 버튼에서 아이콘이 빠져나와
+        // 몬스터 쪽으로 날아가 사라지는 연출. SpawnMiningRewardPickup과 이동 방향만 반대.
+        public void SpawnMineralStealAway(string iconKey, Vector3 targetWorldPosition)
+        {
+            SpawnMineralStealAwayAsync(iconKey, targetWorldPosition).Forget();
+        }
+
+        private async UniTaskVoid SpawnMineralStealAwayAsync(string iconKey, Vector3 targetWorldPosition)
+        {
+            if (_uiCanvas == null) _uiCanvas = FindFirstObjectByType<Canvas>();
+            EnsureCameraReference();
+            if (_uiCanvas == null || _mainCamera == null) return;
+
+            RectTransform sourceRect = GameManager.Instance.GetInventoryButtonRect();
+            if (sourceRect == null) return;
+
+            GameObject iconGo = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPrefabMiningRewardIcon, _uiCanvas.transform);
+            if (iconGo == null) return;
+
+            iconGo.transform.SetAsLastSibling();
+
+            var view = iconGo.GetComponent<MiningRewardIconView>();
+            if (view == null)
+            {
+                Destroy(iconGo);
+                return;
+            }
+
+            var rt = iconGo.GetComponent<RectTransform>();
+            if (rt != null) rt.position = sourceRect.position;
+
+            Sprite sprite = null;
+            if (!string.IsNullOrEmpty(iconKey))
+            {
+                try { sprite = await ResourceManager.Instance.LoadAssetAsync<Sprite>(iconKey); }
+                catch (Exception) { sprite = null; }
+            }
+            if (sprite == null)
+            {
+                try { sprite = await ResourceManager.Instance.LoadAssetAsync<Sprite>("Empty_item_Icon"); }
+                catch (Exception) { sprite = null; }
+            }
+
+            view.SetIcon(sprite);
+            view.SetAmount(1);
+
+            Vector2 targetScreenPos = _mainCamera.WorldToScreenPoint(targetWorldPosition);
+            await view.FlyToAsync(targetScreenPos);
+            Destroy(iconGo);
+        }
     }
 }

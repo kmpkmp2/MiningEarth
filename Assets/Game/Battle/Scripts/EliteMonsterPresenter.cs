@@ -109,6 +109,7 @@ namespace DeepEarth.Battle
 
             Vector3 textPos = CombatPresenter.View != null ? CombatPresenter.View.transform.position + Vector3.up * 0.5f : Vector3.up;
             EffectSystem.Instance.SpawnDamageText(textPos, "광물 도둑!!", Color.yellow);
+            EffectSystem.Instance.SpawnMineralStealAway(stolen, textPos);
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             Debug.Log($"[Elite]\nSkill Activated\nSkeletonMiner Steal : {stolen}");
 #endif

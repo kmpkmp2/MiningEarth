@@ -43,8 +43,16 @@ namespace DeepEarth.UI
 
         public async UniTask FlyToAsync(RectTransform target, CancellationToken ct = default)
         {
+            if (target == null) return;
+            await FlyToAsync(target.position, ct);
+        }
+
+        // 도둑질 연출(SkeletonMiner) 등 RectTransform이 아닌 화면 좌표(몬스터 WorldToScreenPoint 결과)로
+        // 날아가야 하는 경우를 위한 오버로드. 이동/포물선/페이드 로직은 위 오버로드와 동일하게 공유한다.
+        public async UniTask FlyToAsync(Vector3 targetScreenPosition, CancellationToken ct = default)
+        {
             if (_rt == null) _rt = GetComponent<RectTransform>();
-            if (_rt == null || target == null) return;
+            if (_rt == null) return;
 
             Vector3 startPos = _rt.position;
             Vector3 startScale = _rt.localScale;
@@ -67,7 +75,7 @@ namespace DeepEarth.UI
 
             // 이동 구간: 위로 튀는 포물선 경로. 스케일 축소와 알파 페이드아웃은 후반부에만 적용해
             // 목표에 도달하기 훨씬 전부터 흐려지지 않도록 한다.
-            Vector3 targetPos = target.position;
+            Vector3 targetPos = targetScreenPosition;
             float flyElapsed = 0f;
             while (flyElapsed < FlyDuration)
             {
