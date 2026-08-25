@@ -18,7 +18,7 @@ MonoBehaviour:
   spawnDepthMin: 100
   spawnDepthMax: -1
   eliteSkillType: 0
-  eliteRewardTable: {fileID: 0}
+  eliteRewardTable: {fileID: 11400000, guid: a1b2c3d4e5f647a89012345678901008, type: 2}
   baseMaxHP: 14
   baseDamage: 4
   hpPerDifficultyLevel: 2

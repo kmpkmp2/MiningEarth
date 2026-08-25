@@ -61,7 +61,11 @@ namespace DeepEarth.Mining
                 return;
             }
 
-            // Set local position relative to BlockSpawnRoot using depth to slide into view
+            // BlockSpawnRoot는 MapRoot의 자식이고, MapPresenter.HandleBlockMinedAsync()가 채굴마다
+            // MapView.MoveMapBack()으로 MapRoot를 -Z로 1유닛씩 계속 밀어낸다(터널 스크롤 연출).
+            // 그래서 여기서 depth를 로컬 Z로 다시 밀어 넣어야 MapRoot의 누적 이동을 상쇄해서
+            // 블록이 카메라 기준 항상 같은 월드 위치에 스폰된다 — depth를 안 쓰면(과거 수정) 블록이
+            // MapRoot를 따라 카메라 쪽으로/뒤로 계속 흘러가 버린다(2026-08-25 재발 확인, 원상복구).
             _currentBlockObject.transform.localPosition = new Vector3(0, 0, depth);
             _currentBlockObject.transform.localRotation = Quaternion.identity;
 

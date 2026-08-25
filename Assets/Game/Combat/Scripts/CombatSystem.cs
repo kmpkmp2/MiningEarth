@@ -151,6 +151,11 @@ namespace DeepEarth.Combat
             else
                 await _combatTcs.Task; // BattleUI 미구성(Addressables 미등록 등) 시 안전한 폴백 — 실시간 자동 처치 없이 대기만 함
 
+            // 유물 선택 보상 — 일반 몬스터도 엘리트/보스와 동일한 유물 선택 UI(BossRewardView)를 재사용한다.
+            // allowRetreat:true라 후퇴로 루프가 끝날 수도 있으므로, 몬스터 전멸(진짜 승리) + 플레이어 생존 시에만 띄운다.
+            if (!HasActiveMonsters && StatManager.Instance.CurrentHP > 0 && EliteCombatSystem.Instance != null)
+                await EliteCombatSystem.Instance.ShowRelicChoiceAsync(3);
+
             PostCombat:
             IsCombatActive = false;
             ClearActiveMonsters();

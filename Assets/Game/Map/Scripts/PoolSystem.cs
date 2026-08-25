@@ -13,6 +13,11 @@ namespace DeepEarth.Map
         private readonly Dictionary<string, Queue<GameObject>> _pools = new Dictionary<string, Queue<GameObject>>();
         private readonly Dictionary<GameObject, string> _activeObjects = new Dictionary<GameObject, string>();
 
+        // 프리팹 원본 localScale 캐시(최초 인스턴스화 시 1회 기록). 풀 재사용 시 되돌리기 위함 —
+        // 예: 빅슬라임 분열 미니 슬라임이 0.7배로 줄인 뒤 반환되면, 같은 풀(같은 addressableKey)을 쓰는
+        // 다음 스폰(일반 슬라임/빅슬라임 본체 등)이 스케일을 재설정하지 않는 한 그대로 작게 나와버렸다.
+        private readonly Dictionary<GameObject, Vector3> _defaultScales = new Dictionary<GameObject, Vector3>();
+
         private void Awake()
         {
             if (_instance == null)
@@ -44,6 +49,10 @@ namespace DeepEarth.Map
                     {
                         cached.transform.SetParent(parent, false);
                     }
+                    if (_defaultScales.TryGetValue(cached, out var originalScale))
+                    {
+                        cached.transform.localScale = originalScale;
+                    }
                     _activeObjects[cached] = key;
                     return cached;
                 }
@@ -54,6 +63,7 @@ namespace DeepEarth.Map
             if (spawned != null)
             {
                 _activeObjects[spawned] = key;
+                _defaultScales[spawned] = spawned.transform.localScale;
             }
             return spawned;
         }
@@ -92,6 +102,7 @@ namespace DeepEarth.Map
             }
             _pools.Clear();
             _activeObjects.Clear();
+            _defaultScales.Clear();
         }
 
         private void OnDestroy()

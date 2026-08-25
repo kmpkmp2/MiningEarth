@@ -222,8 +222,9 @@ namespace DeepEarth.Core
         }
 
         // ── Relic Choice (reuses BossRewardView) ─────────────────────────────────
+        // public — CombatSystem(일반 몬스터 전투)도 동일한 유물 선택 UI를 재사용한다.
 
-        private async UniTask ShowRelicChoiceAsync(int count)
+        public async UniTask ShowRelicChoiceAsync(int count)
         {
             var relics = RelicManager.Instance?.GetRandomRelicChoices(count);
             if (relics == null || relics.Count == 0) return;
