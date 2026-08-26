@@ -357,57 +357,75 @@ namespace DeepEarth.Common
 
         // 채굴 보상 아이콘이 HUD 인벤토리 버튼으로 날아가는 연출 + 획득 SFX.
         // ResourceItemView.AbsorbToAsync(GameOver 재화 흡수 연출)와 동일한 이징 방식을 일반화한 것.
-        public void SpawnMiningRewardPickup(Vector3 worldStartPosition, string iconKey, int amount, RectTransform target)
+        private UniTaskCompletionSource _pickupAnimationTcs;
+
+        // 이 연출이 끝날 때까지 기다려야 하는 다른 시스템(예: RouteMapPresenter가 다음 노드가
+        // 채광 노드가 아닐 때 맵 팝업을 띄우기 전)이 호출한다. 진행 중인 연출이 없으면 즉시 완료.
+        public UniTask WaitForMiningRewardPickupAsync()
         {
-            SpawnMiningRewardPickupAsync(worldStartPosition, iconKey, amount, target).Forget();
+            return _pickupAnimationTcs != null ? _pickupAnimationTcs.Task : UniTask.CompletedTask;
         }
 
-        private async UniTaskVoid SpawnMiningRewardPickupAsync(Vector3 worldStartPosition, string iconKey, int amount, RectTransform target)
+        public void SpawnMiningRewardPickup(Vector3 worldStartPosition, string iconKey, int amount, RectTransform target)
         {
-            if (_uiCanvas == null) _uiCanvas = FindFirstObjectByType<Canvas>();
-            EnsureCameraReference();
-            if (_uiCanvas == null || _mainCamera == null || target == null) return;
+            var tcs = new UniTaskCompletionSource();
+            _pickupAnimationTcs = tcs;
+            SpawnMiningRewardPickupAsync(worldStartPosition, iconKey, amount, target, tcs).Forget();
+        }
 
-            GameObject iconGo = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPrefabMiningRewardIcon, _uiCanvas.transform);
-            if (iconGo == null) return;
-
-            // 다른 팝업/패널이 나중에 캔버스에 추가되어도 항상 최상단에 렌더링되도록 보장.
-            iconGo.transform.SetAsLastSibling();
-
-            var view = iconGo.GetComponent<MiningRewardIconView>();
-            if (view == null)
+        private async UniTaskVoid SpawnMiningRewardPickupAsync(Vector3 worldStartPosition, string iconKey, int amount, RectTransform target, UniTaskCompletionSource tcs)
+        {
+            try
             {
+                if (_uiCanvas == null) _uiCanvas = FindFirstObjectByType<Canvas>();
+                EnsureCameraReference();
+                if (_uiCanvas == null || _mainCamera == null || target == null) return;
+
+                GameObject iconGo = await ResourceManager.Instance.InstantiateAsync(AddressableKeys.UIPrefabMiningRewardIcon, _uiCanvas.transform);
+                if (iconGo == null) return;
+
+                // 다른 팝업/패널이 나중에 캔버스에 추가되어도 항상 최상단에 렌더링되도록 보장.
+                iconGo.transform.SetAsLastSibling();
+
+                var view = iconGo.GetComponent<MiningRewardIconView>();
+                if (view == null)
+                {
+                    Destroy(iconGo);
+                    return;
+                }
+
+                var rt = iconGo.GetComponent<RectTransform>();
+                if (rt != null)
+                {
+                    // 파괴 파티클/데미지 텍스트와 같은 지점에서 겹치지 않도록 시작 위치를 살짝 위로 오프셋.
+                    Vector3 offsetStartPosition = worldStartPosition + Vector3.up * 0.4f;
+                    rt.position = _mainCamera.WorldToScreenPoint(offsetStartPosition);
+                }
+
+                Sprite sprite = null;
+                if (!string.IsNullOrEmpty(iconKey))
+                {
+                    try { sprite = await ResourceManager.Instance.LoadAssetAsync<Sprite>(iconKey); }
+                    catch (Exception) { sprite = null; }
+                }
+                if (sprite == null)
+                {
+                    try { sprite = await ResourceManager.Instance.LoadAssetAsync<Sprite>("Empty_item_Icon"); }
+                    catch (Exception) { sprite = null; }
+                }
+
+                view.SetIcon(sprite);
+                view.SetAmount(amount);
+
+                AudioManager.Instance?.PlaySFX(AddressableKeys.MiningSFXPickup);
+
+                await view.FlyToAsync(target);
                 Destroy(iconGo);
-                return;
             }
-
-            var rt = iconGo.GetComponent<RectTransform>();
-            if (rt != null)
+            finally
             {
-                // 파괴 파티클/데미지 텍스트와 같은 지점에서 겹치지 않도록 시작 위치를 살짝 위로 오프셋.
-                Vector3 offsetStartPosition = worldStartPosition + Vector3.up * 0.4f;
-                rt.position = _mainCamera.WorldToScreenPoint(offsetStartPosition);
+                tcs.TrySetResult();
             }
-
-            Sprite sprite = null;
-            if (!string.IsNullOrEmpty(iconKey))
-            {
-                try { sprite = await ResourceManager.Instance.LoadAssetAsync<Sprite>(iconKey); }
-                catch (Exception) { sprite = null; }
-            }
-            if (sprite == null)
-            {
-                try { sprite = await ResourceManager.Instance.LoadAssetAsync<Sprite>("Empty_item_Icon"); }
-                catch (Exception) { sprite = null; }
-            }
-
-            view.SetIcon(sprite);
-            view.SetAmount(amount);
-
-            AudioManager.Instance?.PlaySFX(AddressableKeys.MiningSFXPickup);
-
-            await view.FlyToAsync(target);
-            Destroy(iconGo);
         }
 
         // 몬스터 도둑질(SkeletonMiner 등)로 광물을 잃을 때, HUD 인벤토리 버튼에서 아이콘이 빠져나와

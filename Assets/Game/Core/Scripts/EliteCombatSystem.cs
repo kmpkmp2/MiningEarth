@@ -295,7 +295,9 @@ namespace DeepEarth.Core
             if (go == null) return;
 
             go.transform.position = worldPos;
-            go.transform.localScale = Vector3.one * 0.7f; // 70% scale per spec
+            // 원본 슬라임 프리팹의 실제 스케일(Combat_Monster_Slime.prefab: 약 0.117, 1.0이 아님)의 70% —
+            // 과거엔 Vector3.one * 0.7f(절대값)을 대입해 원본보다 약 6배 커지는 버그였다.
+            go.transform.localScale *= 0.7f;
 
             var view = go.GetComponent<MonsterView>();
             if (view == null) view = go.AddComponent<MonsterView>();

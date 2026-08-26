@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using DeepEarth.UI;
 using DeepEarth.Core;
+using DeepEarth.Common;
 
 namespace DeepEarth.Map
 {
@@ -120,7 +121,7 @@ namespace DeepEarth.Map
             if (_activeNode == null) return;
             CompleteCurrentNode();
             await UniTask.Yield();
-            ProcessNodeCompletion();
+            await ProcessNodeCompletionAsync();
         }
 
         public async UniTask OnNonMineNodeCompleted()
@@ -128,7 +129,7 @@ namespace DeepEarth.Map
             if (_activeNode == null) return;
             CompleteCurrentNode();
             await UniTask.Yield();
-            ProcessNodeCompletion();
+            await ProcessNodeCompletionAsync();
         }
 
         public async UniTask OnBossNodeCompleted()
@@ -279,7 +280,7 @@ namespace DeepEarth.Map
 
         // ─── Auto Traverse ──────────────────────────────────────────────────
 
-        private void ProcessNodeCompletion()
+        private async UniTask ProcessNodeCompletionAsync()
         {
             bool willAutoTraverse = ShouldAutoTraverse();
 
@@ -300,6 +301,12 @@ namespace DeepEarth.Map
             }
             else
             {
+                // 다음 노드가 채광 노드가 아니라서 맵 팝업으로 돌아가는 경우 — 방금 채굴한 광물/아이템이
+                // 인벤토리로 날아가는 연출(EffectSystem.SpawnMiningRewardPickup)이 아직 진행 중이라면
+                // 그 연출이 끝날 때까지 기다렸다가 팝업을 띄운다. 연출이 없으면 즉시 통과.
+                if (EffectSystem.Instance != null)
+                    await EffectSystem.Instance.WaitForMiningRewardPickupAsync();
+
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
                 Debug.Log("[Run]\nReturn To Map");
 #endif
