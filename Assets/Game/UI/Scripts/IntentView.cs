@@ -56,6 +56,7 @@ namespace DeepEarth.UI
         {
             _loadedIconKey = iconKey;
             var sprite = await ResourceManager.Instance.LoadAssetAsync<Sprite>(iconKey);
+            if (this == null) return; // 로드 대기 중 몬스터 사망/풀 반환 등으로 이 View가 파괴됐으면 중단.
             if (_loadedIconKey != iconKey) return; // 로드 도중 다른 아이콘으로 바뀌었으면 이 결과는 버린다.
 
             if (sprite != null && iconImage != null)
@@ -82,6 +83,12 @@ namespace DeepEarth.UI
 
         private async Cysharp.Threading.Tasks.UniTaskVoid PlayChangeAnimAsync()
         {
+            // 이 코루틴이 프레임에 걸쳐 진행되는 동안 몬스터가 죽거나(IntentPresenter.RemoveIntent) 풀로
+            // 반환되어 이 GameObject/CanvasGroup이 파괴될 수 있다 — 매 반복 파괴 여부를 확인해서
+            // MissingReferenceException(마더 동굴거미처럼 새끼가 자주 죽는 전투에서 반복 발생, 콘솔에
+            // 예외가 쌓이며 진행이 눈에 띄게 느려짐/멈춘 것처럼 보임)을 막는다.
+            if (this == null || canvasGroup == null) return;
+
             float duration = BattleBalanceData.Instance.intentAnimationTime;
             float elapsed = 0f;
             Vector3 baseScale = Vector3.one;
@@ -91,13 +98,16 @@ namespace DeepEarth.UI
 
             while (elapsed < duration)
             {
+                await Cysharp.Threading.Tasks.UniTask.Yield();
+                if (this == null || canvasGroup == null) return;
+
                 float t = duration > 0f ? elapsed / duration : 1f;
                 canvasGroup.alpha = t;
                 transform.localScale = Vector3.Lerp(baseScale * 0.6f, baseScale, t);
                 elapsed += Time.deltaTime;
-                await Cysharp.Threading.Tasks.UniTask.Yield();
             }
 
+            if (this == null || canvasGroup == null) return;
             canvasGroup.alpha = 1f;
             transform.localScale = baseScale;
         }

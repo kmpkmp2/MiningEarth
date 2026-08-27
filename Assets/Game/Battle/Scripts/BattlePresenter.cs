@@ -61,6 +61,19 @@ namespace DeepEarth.Battle
         // 타겟 링 스프라이트 로드 중 몬스터 클릭이 씹히는 레이스 컨디션을 방지한다.
         public UniTask PreloadTargetSelectAssetsAsync() => _targetSelectPresenter.PreloadRingSpriteAsync();
 
+        // 현재 진행 중인 조우(일반/엘리트/보스 무관, RunTurnLoopAsync에 전달된 monsterSource 기준)에
+        // 몬스터가 남아있는지. CombatSystem.HasActiveMonsters는 CombatSystem 자신의 _activePresenters만
+        // 보므로 엘리트/보스 전투(별도 MonsterSource) 중에는 항상 false다 — 소모 아이템(폭탄 등)처럼
+        // "지금 전투 중인가"를 물어야 하는 코드는 반드시 이 프로퍼티를 써야 한다.
+        public bool HasActiveMonsters => _monsters.Count > 0;
+
+        // 폭탄류 소모 아이템 전용 진입점 — 현재 조우 중인 몬스터 전체(일반/엘리트/보스 무관)에게 즉시 피해를 준다.
+        public void ApplyDamageToAllMonsters(int amount)
+        {
+            for (int i = _monsters.Count - 1; i >= 0; i--)
+                _monsters[i]?.CombatPresenter?.ApplyExternalDamage(amount);
+        }
+
         // allowRetreat: 후퇴(Retreat) 액션 제공 여부. 기본 false(opt-in) — Retreat 종료 처리가
         // CombatSystem.Instance.ForceEndCombat()를 직접 호출하기 때문에, monsterSource가 실제로
         // CombatSystem.Instance인 일반 몬스터 조우에서만 true로 넘겨야 한다. 엘리트/보스는 별도의

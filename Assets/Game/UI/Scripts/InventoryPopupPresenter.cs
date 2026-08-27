@@ -326,13 +326,16 @@ namespace DeepEarth.UI
 
         private void HandleCombatItem(ItemData item, string itemId)
         {
-            if (CombatSystem.Instance == null || !CombatSystem.Instance.HasActiveMonsters)
+            // CombatSystem.HasActiveMonsters는 일반 몬스터 전용 목록만 보므로 엘리트/보스 전투(별도
+            // MonsterSource)에서는 항상 false였다 — SharedBattlePresenter의 조우 전체 기준으로 판단한다.
+            var battlePresenter = CombatSystem.Instance?.SharedBattlePresenter;
+            if (battlePresenter == null || !battlePresenter.HasActiveMonsters)
             {
                 TriggerFloatingText(LocalizationManager.Instance.GetTranslation("item_combat_only"), Color.yellow);
                 return;
             }
 
-            CombatSystem.Instance.ApplyItemDamageToActiveMonsters(item.combatDamage);
+            battlePresenter.ApplyDamageToAllMonsters(item.combatDamage);
             TriggerFloatingText($"-{item.combatDamage} HP", Color.red);
             _collection.RemoveItem(itemId, 1);
             GameManager.Instance.TriggerStatsOrResourcesChanged();

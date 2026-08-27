@@ -270,9 +270,10 @@ namespace DeepEarth.Core
                     StatManager.Instance.RelicMiningModifier += intVal;
                     break;
                 case RelicEffectType.MaxHPBonus:
+                    // 최대 체력 증가 시 현재 체력은 그대로 둔다(자동 회복 없음). 감소 시에는 새 최대치를
+                    // 넘는 현재 체력만 클램프해서 낮춘다.
                     StatManager.Instance.BossMaxHPModifier += intVal;
-                    if (intVal > 0) StatManager.Instance.Heal(intVal);
-                    else StatManager.Instance.ClampCurrentHPToMax();
+                    if (intVal < 0) StatManager.Instance.ClampCurrentHPToMax();
                     break;
                 case RelicEffectType.ResourceMultiplierBonus:
                     StatManager.Instance.BossResourceModifier += effect.value;
@@ -315,9 +316,10 @@ namespace DeepEarth.Core
                 StatManager.Instance.RelicMiningModifier += relic.miningPowerBonus;
             if (relic.maxHPBonus != 0)
             {
+                // 최대 체력 증가 시 현재 체력은 그대로 둔다(자동 회복 없음). 감소 시에는 새 최대치를
+                // 넘는 현재 체력만 클램프해서 낮춘다.
                 StatManager.Instance.BossMaxHPModifier += relic.maxHPBonus;
-                if (relic.maxHPBonus > 0) StatManager.Instance.Heal(relic.maxHPBonus);
-                else StatManager.Instance.ClampCurrentHPToMax();
+                if (relic.maxHPBonus < 0) StatManager.Instance.ClampCurrentHPToMax();
             }
             if (relic.resourceMultiplierBonus != 0)
                 StatManager.Instance.BossResourceModifier += relic.resourceMultiplierBonus;
@@ -530,7 +532,10 @@ namespace DeepEarth.Core
                         StatManager.Instance.BossAttackModifier += intVal;  // 영구 가산(탐험가의 일지/보물 감지기 등, 즉시적용형 AttackBonus와 동일 처리)
                     break;
                 case RelicEffectType.MaxHPBonus:
-                    if (intVal > 0) { StatManager.Instance.BossMaxHPModifier += intVal; StatManager.Instance.Heal(intVal); }
+                    // 최대 체력 증가 시 현재 체력은 그대로 둔다(자동 회복 없음). 감소 시에는 새 최대치를
+                    // 넘는 현재 체력만 클램프해서 낮춘다.
+                    StatManager.Instance.BossMaxHPModifier += intVal;
+                    if (intVal < 0) StatManager.Instance.ClampCurrentHPToMax();
                     break;
                 case RelicEffectType.MiningPowerBonus:
                     StatManager.Instance.RelicMiningModifier += intVal;

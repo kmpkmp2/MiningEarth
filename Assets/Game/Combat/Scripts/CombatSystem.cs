@@ -85,13 +85,6 @@ namespace DeepEarth.Combat
         // 새 Singleton을 만들지 않고 기존 CombatSystem.Instance를 경유한다.
         public DeepEarth.Battle.BattlePresenter SharedBattlePresenter => _battlePresenter;
 
-        // 폭탄류 소모 아이템 전용 진입점 — 현재 전투 중인 몬스터 전체에게 즉시 피해를 준다.
-        public void ApplyItemDamageToActiveMonsters(int amount)
-        {
-            for (int i = _activePresenters.Count - 1; i >= 0; i--)
-                _activePresenters[i]?.ApplyExternalDamage(amount);
-        }
-
         public MonsterType PickMonsterForDepth(int depth)
         {
             return _spawnTable != null ? _spawnTable.PickMonster(depth) : MonsterType.CaveRat;
