@@ -466,6 +466,10 @@ namespace DeepEarth.Core
             if (DeepEarth.Map.TunnelGenerator.Instance != null)
                 DeepEarth.Map.TunnelGenerator.Instance.ResetGenerator();
 
+            // MapRoot가 방금 월드 원점으로 리셋됐으니, 채광 블록의 고정 스폰 앵커도 그 시점 위치로 다시 캡처.
+            if (DeepEarth.Mining.MiningSystem.Instance != null)
+                DeepEarth.Mining.MiningSystem.Instance.ResetSpawnAnchor();
+
             if (DeepEarth.Map.MapPresenter.Instance != null && DeepEarth.Map.MapPresenter.Instance.Model != null)
                 DeepEarth.Map.MapPresenter.Instance.Model.CurrentDepth = 0;
 

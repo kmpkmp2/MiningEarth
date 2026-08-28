@@ -16,6 +16,14 @@ namespace DeepEarth.Mining
 
         [SerializeField] private Transform spawnPoint;
 
+        // 블록이 항상 스폰되어야 할 고정 월드 좌표(런 시작 시 1회 캡처). depth 기반 보정을 시도했었으나
+        // (아래 SpawnNextBlockAsync 주석 참고) GameManager.CurrentDepth는 채광이 아닌 노드(몬스터/이벤트 등)
+        // 방문 시에도 증가하는 반면 MapRoot는 실제로 채광이 일어날 때만 밀려나서, 두 카운터가 어긋나며
+        // 채광 노드가 아닌 노드를 지날 때마다 블록이 카메라에서 점점 멀어지는 버그가 있었다(2026-08-27).
+        // 이 앵커 방식은 어떤 카운터도 추적하지 않고 항상 같은 월드 좌표를 직접 타겟하므로 그 문제와 무관하다.
+        private Vector3 _blockSpawnAnchorWorldPos;
+        private bool _anchorCaptured;
+
         private BlockPresenter _currentBlockPresenter;
         private GameObject _currentBlockObject;
 
@@ -42,6 +50,15 @@ namespace DeepEarth.Mining
             spawnPoint = blockSpawnPoint;
         }
 
+        // GameManager.RunStart()가 TunnelGenerator.ResetGenerator()(MapRoot를 월드 원점으로 리셋)와
+        // 함께 호출한다 — 그 시점의 spawnPoint 월드 위치를 이번 런 내내 블록이 스폰될 고정 지점으로 고정한다.
+        public void ResetSpawnAnchor()
+        {
+            if (spawnPoint == null) return;
+            _blockSpawnAnchorWorldPos = spawnPoint.position;
+            _anchorCaptured = true;
+        }
+
         public async UniTask SpawnNextBlockAsync()
         {
             // Clear current block if any
@@ -61,13 +78,16 @@ namespace DeepEarth.Mining
                 return;
             }
 
-            // BlockSpawnRoot는 MapRoot의 자식이고, MapPresenter.HandleBlockMinedAsync()가 채굴마다
-            // MapView.MoveMapBack()으로 MapRoot를 -Z로 1유닛씩 계속 밀어낸다(터널 스크롤 연출).
-            // 그래서 여기서 depth를 로컬 Z로 다시 밀어 넣어야 MapRoot의 누적 이동을 상쇄해서
-            // 블록이 카메라 기준 항상 같은 월드 위치에 스폰된다 — depth를 안 쓰면(과거 수정) 블록이
-            // MapRoot를 따라 카메라 쪽으로/뒤로 계속 흘러가 버린다(2026-08-25 재발 확인, 원상복구).
-            _currentBlockObject.transform.localPosition = new Vector3(0, 0, depth);
-            _currentBlockObject.transform.localRotation = Quaternion.identity;
+            // BlockSpawnRoot는 MapRoot의 자식이라 채광마다 MapView.MoveMapBack()이 MapRoot를 밀어내는 만큼
+            // 같이 움직인다. depth를 로컬 Z 보정값으로 쓰는 방식(과거 시도)은 GameManager.CurrentDepth와
+            // MapRoot의 실제 이동 횟수가 항상 1:1이라는 전제가 있어야 하는데, 채광 노드가 아닌 노드(몬스터/
+            // 이벤트/상인/휴식 등)에서도 CurrentDepth는 증가하지만 MapRoot는 그때 움직이지 않아 전제가
+            // 깨진다 — 그래서 계속 조금씩 어긋나 카메라에서 멀어졌다. 대신 런 시작 시 1회 캡처해둔
+            // 고정 월드 좌표(_blockSpawnAnchorWorldPos)를 그대로 타겟한다 — 어떤 카운터도 참조하지 않으므로
+            // MapRoot가 실제로 몇 번 움직였든 항상 정확하다.
+            if (!_anchorCaptured) ResetSpawnAnchor();
+            _currentBlockObject.transform.position = _blockSpawnAnchorWorldPos;
+            _currentBlockObject.transform.rotation = spawnPoint.rotation;
 
             var view = _currentBlockObject.GetComponent<BlockView>();
             if (view == null)
