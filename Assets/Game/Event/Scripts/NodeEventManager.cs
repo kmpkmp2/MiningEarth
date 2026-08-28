@@ -303,7 +303,7 @@ namespace DeepEarth.Event
             else
             {
                 int spent = SpendMinerals(5);
-                ShowFeedback($"-{spent} 광물", Color.gray);
+                ShowFeedback(LocalizationManager.Instance.GetFormatted("event_poisonmist_rush_result_fmt", spent), Color.gray);
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
                 Debug.Log($"[Event]\nPoison Mist\nChoice : Dash\nMinerals Spent : {spent}");
 #endif
@@ -360,7 +360,7 @@ namespace DeepEarth.Event
             {
                 int loss = Mathf.Max(1, Mathf.RoundToInt(pdm.MaxDurability * 0.2f));
                 pdm.ApplyRelicDurabilityModifier(-loss);
-                ShowFeedback($"내구도 -{loss}", new Color(0.7f, 0.5f, 0.2f));
+                ShowFeedback(LocalizationManager.Instance.GetFormatted("event_collapsedtunnel_result_fmt", loss), new Color(0.7f, 0.5f, 0.2f));
             }
             SkipNextNode = true;
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
@@ -418,7 +418,7 @@ namespace DeepEarth.Event
             int repair = Mathf.Max(1, Mathf.RoundToInt((PickaxeDurabilityManager.Instance?.MaxDurability ?? 10) * 0.2f));
             PickaxeDurabilityManager.Instance?.Repair(repair);
 
-            ShowFeedback($"+{heal} HP  내구도 회복", Color.green);
+            ShowFeedback(LocalizationManager.Instance.GetFormatted("event_camp_result_fmt", heal), Color.green);
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             Debug.Log($"[Event]\nAbandoned Camp\nHP : +{heal}\nRepair : +{repair}");
 #endif
@@ -465,7 +465,7 @@ namespace DeepEarth.Event
             StatManager.Instance.Heal(heal);
             StatusEffectManager.Instance?.CureBurn();
             StatusEffectManager.Instance?.CurePoison();
-            ShowFeedback($"+{heal} HP  화상/중독 해제", Color.cyan);
+            ShowFeedback(LocalizationManager.Instance.GetFormatted("event_hotspring_result_fmt", heal), Color.cyan);
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             Debug.Log($"[Event]\nHot Spring\nHeal : {heal}");
 #endif
@@ -480,16 +480,16 @@ namespace DeepEarth.Event
             {
                 case 0:
                     StatManager.Instance.AddEffect(EffectType.BuffAttackDamage);
-                    ShowFeedback("공격력 +1", new Color(1f, 0.7f, 0.2f));
+                    ShowFeedback(LocalizationManager.Instance.GetTranslation("event_equipment_atk_result"), new Color(1f, 0.7f, 0.2f));
                     break;
                 case 1:
                     StatManager.Instance.AddEffect(EffectType.BuffMiningPower);
-                    ShowFeedback("채굴력 +1", new Color(0.5f, 0.9f, 0.5f));
+                    ShowFeedback(LocalizationManager.Instance.GetTranslation("event_equipment_mining_result"), new Color(0.5f, 0.9f, 0.5f));
                     break;
                 case 2:
                     int repair = Mathf.Max(1, Mathf.RoundToInt((PickaxeDurabilityManager.Instance?.MaxDurability ?? 10) * 0.2f));
                     PickaxeDurabilityManager.Instance?.Repair(repair);
-                    ShowFeedback("곡괭이 내구도 +20%", new Color(0.8f, 0.6f, 0.3f));
+                    ShowFeedback(LocalizationManager.Instance.GetTranslation("event_equipment_repair_result"), new Color(0.8f, 0.6f, 0.3f));
                     break;
             }
         }
@@ -509,7 +509,7 @@ namespace DeepEarth.Event
                 "Event",
                 "Effect_Buff_OreGain"
             );
-            ShowFeedback("+20% 광석 획득 (20층)", new Color(0.9f, 0.7f, 0.2f));
+            ShowFeedback(LocalizationManager.Instance.GetTranslation("event_journal_result"), new Color(0.9f, 0.7f, 0.2f));
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             Debug.Log("[Event]\nMiner's Journal\nOre Gain : +20%\nFloors : 20");
 #endif
@@ -543,7 +543,7 @@ namespace DeepEarth.Event
             {
                 StatManager.Instance.AddEffect(chosen[choice].type);
                 string label = LocalizationManager.Instance.GetTranslation(chosen[choice].titleKey);
-                ShowFeedback(label + " 획득!", new Color(0.5f, 0.9f, 1f));
+                ShowFeedback(LocalizationManager.Instance.GetFormatted("event_shrine_acquired_fmt", label), new Color(0.5f, 0.9f, 1f));
             }
         }
 
@@ -572,7 +572,7 @@ namespace DeepEarth.Event
                     {
                         InventoryManager.Instance.RemoveItem("Item_Gold", 5);
                         StatManager.Instance.AddEffect(EffectType.BuffAttackDamage);
-                        ShowFeedback("-5 Gold  공격력+1", Color.yellow);
+                        ShowFeedback(LocalizationManager.Instance.GetTranslation("event_forge_atk_result"), Color.yellow);
                     }
                     else ShowFeedback(noFunds, Color.red);
                     break;
@@ -581,7 +581,7 @@ namespace DeepEarth.Event
                     {
                         InventoryManager.Instance.RemoveItem("Item_Iron", 5);
                         StatManager.Instance.AddEffect(EffectType.BuffMiningPower);
-                        ShowFeedback("-5 Iron  채굴력+1", new Color(0.5f, 0.9f, 0.5f));
+                        ShowFeedback(LocalizationManager.Instance.GetTranslation("event_forge_mining_result"), new Color(0.5f, 0.9f, 0.5f));
                     }
                     else ShowFeedback(noFunds, Color.red);
                     break;
@@ -614,13 +614,13 @@ namespace DeepEarth.Event
             {
                 StatManager.Instance.AddEffect(EffectType.BuffAttackDamage);
                 StatManager.Instance.AddEffect(EffectType.BuffAttackDamage);
-                ShowFeedback($"-{loss} HP  공격력+2", new Color(1f, 0.3f, 0.3f));
+                ShowFeedback(LocalizationManager.Instance.GetFormatted("event_devil_atk_result_fmt", loss), new Color(1f, 0.3f, 0.3f));
             }
             else
             {
                 StatManager.Instance.AddEffect(EffectType.BuffMiningPower);
                 StatManager.Instance.AddEffect(EffectType.BuffMiningPower);
-                ShowFeedback($"-{loss} HP  채굴력+2", new Color(0.5f, 0.7f, 1f));
+                ShowFeedback(LocalizationManager.Instance.GetFormatted("event_devil_mining_result_fmt", loss), new Color(0.5f, 0.7f, 1f));
             }
         }
 
@@ -632,15 +632,15 @@ namespace DeepEarth.Event
             {
                 case 0:
                     StatManager.Instance.AddEffect(EffectType.BuffAttackDamage);
-                    ShowFeedback("공격력 +1", new Color(1f, 0.8f, 0.2f));
+                    ShowFeedback(LocalizationManager.Instance.GetTranslation("event_minegod_atk_result"), new Color(1f, 0.8f, 0.2f));
                     break;
                 case 1:
                     StatManager.Instance.AddEffect(EffectType.BuffMiningPower);
-                    ShowFeedback("채굴력 +1", new Color(0.5f, 0.9f, 0.5f));
+                    ShowFeedback(LocalizationManager.Instance.GetTranslation("event_minegod_mining_result"), new Color(0.5f, 0.9f, 0.5f));
                     break;
                 case 2:
                     StatManager.Instance.AddEffect(EffectType.BuffMaxHP);
-                    ShowFeedback("최대 체력 +2", Color.green);
+                    ShowFeedback(LocalizationManager.Instance.GetTranslation("event_minegod_hp_result"), Color.green);
                     break;
             }
         }
