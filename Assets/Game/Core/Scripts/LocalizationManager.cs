@@ -35,10 +35,6 @@ namespace DeepEarth.Core
                 DontDestroyOnLoad(gameObject);
                 InitializeTranslations();
             }
-            else
-            {
-                Destroy(gameObject);
-            }
         }
 
         private void InitializeTranslations()
